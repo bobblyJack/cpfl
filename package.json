@@ -1,0 +1,15 @@
+{
+  "name": "office-addin",
+  "version": "1.0.0",
+  "description": "an office add-in for clark panagakos family law",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://lg-cpfl@dev.azure.com/lg-cpfl/office-addin/_git/office-addin"
+  },
+  "author": "",
+  "license": "MIT"
+}
