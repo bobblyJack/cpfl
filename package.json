@@ -10,6 +10,12 @@
     "type": "git",
     "url": "https://lg-cpfl@dev.azure.com/lg-cpfl/office-addin/_git/office-addin"
   },
-  "author": "",
-  "license": "MIT"
+  "author": "LG",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "typescript": "^5.5.3"
+  },
+  "dependencies": {
+    "office-js": "^0.1.0"
+  }
 }
