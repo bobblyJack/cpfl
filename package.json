@@ -1,10 +1,9 @@
 {
   "name": "office-addin",
   "version": "1.0.0",
-  "description": "an office add-in for clark panagakos family law",
-  "main": "index.js",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "ps": "node ./scripts/shell.js"
   },
   "repository": {
     "type": "git",
@@ -13,9 +12,11 @@
   "author": "LG",
   "license": "UNLICENSED",
   "devDependencies": {
+    "@types/node": "^20.14.11",
+    "@types/office-js": "^1.0.402",
     "typescript": "^5.5.3"
   },
   "dependencies": {
-    "office-js": "^0.1.0"
+    "core-js": "^3.37.1"
   }
 }
