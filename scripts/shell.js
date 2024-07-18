@@ -1,3 +1,5 @@
+// npm run ps -- <script>
+
 const { exec } = require('node:child_process');
 
 const scriptName = process.argv.slice(2);
