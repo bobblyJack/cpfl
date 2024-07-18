@@ -19,8 +19,15 @@ exec(`powershell -Command "Set-ExecutionPolicy Unrestricted -Scope Process"; pow
   }
 
   if (stderr) {
-    console.error(`script error: ${stderr}`);
-    process.exitCode = 3;
+    const lines = stderr.split('\n');
+    lines.forEach(line => {
+      if (line.startsWith('warning:')) {
+        console.warn(`script ${line}`);
+      } else {
+        console.error(`script ${line}`);
+        process.exitCode = 3;
+      }
+    });
     return;
   }
   
