@@ -1,0 +1,32 @@
+@font-face {
+    font-family: "Saudagar";
+    src: url('assets/fonts/Saudagar.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+    font-family: "Open Sans", Arial, Helvetica, sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-variation-settings: "wdth" 100;
+    font-size: 16px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: "Saudagar", "Open Sans", Arial, Helvetica, sans-serif;
+    font-weight: normal;
+}
+
+.color-dk-green {
+    color: #2f4534;
+}
+
+.color-lt-green {
+    color: #6a7a6a;
+}
+
+.color-peach {
+    color: #dfb691;
+}

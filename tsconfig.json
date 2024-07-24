@@ -8,13 +8,11 @@
     ],
     "module": "CommonJS",
     "moduleResolution": "node",
-    "outFile": "taskpane/taskpane.js",
-    "sourceMap": true,
-    "sourceRoot": "../src",
+    "outDir": "dist",
     "strict": true,
-    "target": "es5"
+    "removeComments": true
   },
-  "exclude": [
-    "node_modules"
+  "include": [
+    "src/**/*"
   ]
 }

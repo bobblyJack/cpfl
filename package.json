@@ -1,22 +1,27 @@
 {
-  "name": "office-addin",
+  "name": "@cpfl/office-addin",
+  "description": "an office add-in designed for clark panagakos family law",
+  "author": "LG-CPFL",
   "version": "1.0.0",
+
   "private": true,
-  "scripts": {
-    "ps": "node ./scripts/shell.js"
-  },
+  "license": "UNLICENSED",
+
   "repository": {
     "type": "git",
     "url": "https://lg-cpfl@dev.azure.com/lg-cpfl/office-addin/_git/office-addin"
   },
-  "author": "LG",
-  "license": "UNLICENSED",
-  "devDependencies": {
-    "@types/node": "^20.14.11",
-    "@types/office-js": "^1.0.402",
-    "typescript": "^5.5.3"
+
+  "scripts": {
+    "ps": "node ./scripts/powershell.js",
+    "build": "node ./scripts/build.js",
+    "ts-lib": "tsc -p ./scripts/lib/tsconfig.json"
   },
-  "dependencies": {
-    "core-js": "^3.37.1"
+
+  "devDependencies": {
+    "@types/office-js": "latest",
+    "typescript": "latest",
+    "office-addin-dev-certs": "latest",
+    "office-addin-manifest": "latest"
   }
 }

@@ -10,7 +10,7 @@ if (!scriptName) {
   return;
 }
 
-exec(`powershell -Command "Set-ExecutionPolicy Unrestricted -Scope Process"; powershell -File "./scripts/${scriptName[0]}.ps1"`, (error, stdout, stderr) => {
+exec(`powershell -Command "Set-ExecutionPolicy Unrestricted -Scope Process"; powershell -File "./scripts/powershell/${scriptName[0]}.ps1"`, (error, stdout, stderr) => {
  
   if (error) {
     console.error(`exec error: ${error}`);
