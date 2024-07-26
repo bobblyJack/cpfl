@@ -1,0 +1,8 @@
+{ // tsc mod files to library
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../lib",
+    "noEmit": false,
+    "declaration": true
+  }
+}

@@ -13,9 +13,9 @@
   },
 
   "scripts": {
-    "ps": "node ./scripts/powershell.js",
     "build": "node ./scripts/build.js",
-    "ts-lib": "tsc -p ./scripts/lib/tsconfig.json"
+    "test": "echo placeholder",
+    "tsc": "tsc -p ./src/tsconfig.json && tsc -p ./scripts/mods/tsconfig.json" 
   },
 
   "devDependencies": {

@@ -3,12 +3,7 @@ const { tabs } = require('../../lib/utils.js');
 
 // import manifest JSON and set App Domain
 const manifest = require('../../src/manifest.json');
-let domain = "";
-if (process.argv.slice(2) === "prod") {
-  domain = "https://dev.azure.com/lg-apfl/office-addin";
-} else {
-  domain = "https://localhost:3000";
-}
+const domain = "https://localhost:3000";
 
 if (manifest) {
   console.log('Generating manifest - ' + domain);

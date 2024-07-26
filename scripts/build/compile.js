@@ -2,7 +2,7 @@
 
 const { exec } = require('node:child_process');
 
-exec('npx tsc', (error, stdout, stderr) => {
+exec('npx tsc -p ./src/tsconfig.json', (error, stdout, stderr) => {
     
     if (error) {
         console.error(`exec error: ${error}`);

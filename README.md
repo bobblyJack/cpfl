@@ -1,5 +1,9 @@
 ok i think i am getting the hang of the whole thing.
 
+# to do
+make this an index doc with links to readmes in subdirectories
+add a git script
+
 # references
 https://github.com/OfficeDev/generator-office
 https://github.com/OfficeDev/Office-Addin-TaskPane-SSO

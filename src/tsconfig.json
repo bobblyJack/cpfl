@@ -1,0 +1,8 @@
+{ // tsc src files to distribution
+    "extends": "../tsconfig.json",
+    "compilerOptions": {
+        "outdir": "../dist",
+        "noEmit": false,
+        "removeComments": true
+    }
+}

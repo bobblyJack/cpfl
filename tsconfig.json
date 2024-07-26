@@ -1,18 +1,13 @@
-{
+{ // base tsc config
   "compilerOptions": {
     "esModuleInterop": true,
-    "jsx": "react",
     "lib": [
       "es7",
       "dom"
     ],
     "module": "CommonJS",
     "moduleResolution": "node",
-    "outDir": "dist",
     "strict": true,
-    "removeComments": true
-  },
-  "include": [
-    "src/**/*"
-  ]
+    "noEmit": true
+  }
 }

@@ -1,7 +1,17 @@
+// if html becomes modular, will need to think about bundling (or hybrid bundling idk)
+// could also add some in-line styles maybe by filtering for important stuff idk
+// in the meantime...
+
+const fs = require('fs');
+
+fs.copyFileSync('src/index.html','dist/index.html');
+fs.copyFileSync('src/styles.css','dist/styles.css');
+
+// also ->
+
 // checks what assets are in use and just grabs those
 // however given assets pretty small, for now, grabs all of them
 
-const fs = require('fs');
 const path = require('path');
 
 function copyDirectory(src,dest) {

@@ -22,6 +22,8 @@ export async function attempt(fn: Function) {
     } catch (lg: unknown) {
         if (lg instanceof Error) {
             console.error(`error! ${lg.message}`);
+        } else if (lg instanceof TypeError) {
+            console.error('error! how did this get here?')
         } else {
             console.error(`unknown error! ${lg}`)
         }
