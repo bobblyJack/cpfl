@@ -180,7 +180,7 @@
           "SCT": {"ATT": true, "VAL": true}
         }
       },
-      "bt:Shortstrings": {
+      "bt:ShortStrings": {
         "bt:String|1": {
           "id": {"ATT": true, "VAL": "GetStarted.Title"},
           "DefaultValue": {"ATT": true, "VAL": "Get Started"},

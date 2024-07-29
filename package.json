@@ -18,8 +18,7 @@
     "signout": "office-addin-dev-settings m365-account logout",
     "test": "office-addin-debugging dist/manifest.xml",
     "test:desktop": "office-addin-debugging dist/manifest.xml desktop",
-    "test:web": "office-addin-debugging dist/manifest.xml web",
-    "validate": "office-addin-manifest validate dist/manifest.xml"
+    "test:web": "office-addin-debugging dist/manifest.xml web"
   },
 
   "devDependencies": {

@@ -3,6 +3,9 @@ const path = require('path');
 const { exec } = require('node:child_process');
 
 try {
+    // set build location
+    const dest = 'dist/';
+
     // get app domain (default local)
     let domain = "https://localhost:3000"
     if (process.argv.slice(2) === "hosted") {
@@ -10,14 +13,14 @@ try {
     }
 
     // get manifest template
-    const manifest = require('../src/manifest.json');
+    const template = require('../src/manifest.json');
 
     // clean up old build
-    fs.rmSync('dist',{recursive: true});
+    fs.rmSync(dest,{recursive: true});
 
     // start new build
     console.log('building @ ' + domain);
-    fs.mkdirSync('dist');
+    fs.mkdirSync(dest);
 
     // compile typescript
     exec('npx tsc');
@@ -81,8 +84,14 @@ try {
         return xml;
     }
 
-    // write XML to file
-    fs.writeFileSync('dist/manifest.xml', jsonConverter(manifest) + "</OfficeApp>")
+    // create and validate XML manifest
+    const xml = jsonConverter(template) + "</OfficeApp>";
+    fs.writeFileSync(dest+'manifest.xml',xml);
+    exec('office-addin-manifest validate ' + dest + 'manifest.xml', (exrr,stdo,stde) => {
+        if (exrr) {
+            throw exrr
+        }
+    });
 
     /* if html becomes modular, will need to think about bundling (or hybrid bundling idk)
     * could also add some in-line styles maybe by filtering for important stuff
@@ -115,9 +124,9 @@ try {
     }
 
     // copy assets, html, and css
-    copyDirectory('assets','dist');
-    fs.copyFileSync('src/index.html','dist/index.html');
-    fs.copyFileSync('src/styles.css','dist/styles.css');
+    copyDirectory('assets',dest);
+    fs.copyFileSync('src/index.html',dest+'index.html');
+    fs.copyFileSync('src/styles.css',dest+'styles.css');
 
     // finish build
     console.log('build successful');
