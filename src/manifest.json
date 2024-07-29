@@ -40,7 +40,7 @@
   },
   "Permissions": "ReadWriteDocument",
   "VersionOverrides": {
-    "xlmns": {"ATT": true, "VAL": "http://schemas.microsoft.com/office/taskpaneappversionoverrides"},
+    "xmlns": {"ATT": true, "VAL": "http://schemas.microsoft.com/office/taskpaneappversionoverrides"},
     "xsi:type": {"ATT": true, "VAL": "VersionOverridesV1_0"},
     "Hosts": {
       "Host": {

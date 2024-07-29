@@ -14,13 +14,22 @@
 
   "scripts": {
     "build": "node ./scripts/build.js",
-    "test": "echo placeholder" 
+    "signin": "office-addin-dev-settings m365-account login",
+    "signout": "office-addin-dev-settings m365-account logout",
+    "test": "office-addin-debugging dist/manifest.xml",
+    "test:desktop": "office-addin-debugging dist/manifest.xml desktop",
+    "test:web": "office-addin-debugging dist/manifest.xml web",
+    "validate": "office-addin-manifest validate dist/manifest.xml"
   },
 
   "devDependencies": {
-    "@types/office-js": "latest",
     "typescript": "latest",
+    "@types/node": "latest",
+    "@types/office-js": "latest",
+    "office-addin-cli": "latest",
+    "office-addin-manifest": "latest",
+    "office-addin-debugging": "latest",
     "office-addin-dev-certs": "latest",
-    "office-addin-manifest": "latest"
+    "office-addin-dev-settings": "latest"
   }
 }

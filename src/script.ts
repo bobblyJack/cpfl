@@ -1,5 +1,3 @@
-const { attempt } = require('../lib/utils')
-
 // define variables
 const runButton = document.getElementById("run-button");
 
@@ -7,7 +5,7 @@ const runButton = document.getElementById("run-button");
 Office.onReady((info) => {
     if (info.host === Office.HostType.Word) {
         if (runButton) {
-            runButton.addEventListener("click", () => Word.run((context) => attempt(() => main(context))));
+            runButton.addEventListener("click", () => Word.run((context) => main(context)));
         }
     }
 });
