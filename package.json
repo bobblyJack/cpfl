@@ -14,8 +14,7 @@
 
   "scripts": {
     "build": "node ./scripts/build.js",
-    "test": "echo placeholder",
-    "tsc": "tsc -p ./src/tsconfig.json && tsc -p ./scripts/mods/tsconfig.json" 
+    "test": "echo placeholder" 
   },
 
   "devDependencies": {

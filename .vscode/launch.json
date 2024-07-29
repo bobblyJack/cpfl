@@ -1,0 +1,15 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        // debug taskpane using edge
+        {
+            "type": "msedge",
+            "request": "launch",
+            "name": "Debug Taskpane",
+            "url": "http://localhost:3000/index.html",
+            "webRoot": "${workspaceFolder}/dist",
+            "trace": true,
+            "timeout": 10000,
+        }
+    ]
+}

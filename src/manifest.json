@@ -12,15 +12,15 @@
     "SCT": {"ATT":true, "VAL":true}
   },
   "IconUrl": {
-    "DefaultValue": {"ATT": true, "VAL": "%APPDOMAIN%/assets/images/icon-32.png"},
+    "DefaultValue": {"ATT": true, "VAL": "%APPDOMAIN%/images/icon-32.png"},
     "SCT": {"ATT":true, "VAL":true}
   },
   "HighResolutionIconUrl": {
-    "DefaultValue": {"ATT": true, "VAL": "%APPDOMAIN%/assets/images/icon-64.png"},
+    "DefaultValue": {"ATT": true, "VAL": "%APPDOMAIN%/images/icon-128.png"},
     "SCT": {"ATT":true, "VAL":true}
   },
   "SupportUrl": {
-    "DefaultValue": {"ATT": true, "VAL": "%APPDOMAIN%/README.md"},
+    "DefaultValue": {"ATT": true, "VAL": "https://clarkpanagakos.com.au"},
     "SCT": {"ATT":true, "VAL":true}
   },
   "AppDomains": {
@@ -34,7 +34,7 @@
   },
   "DefaultSettings": {
     "SourceLocation": {
-      "DefaultValue": {"ATT": true, "VAL": "%APPDOMAIN%/dist/index.html"},
+      "DefaultValue": {"ATT": true, "VAL": "%APPDOMAIN%/index.html"},
       "SCT": {"ATT": true, "VAL": true}
     }
   },
@@ -82,8 +82,13 @@
                     "SCT": {"ATT": true, "VAL": true}
                   },
                   "bt:Image|3": {
-                    "size": {"ATT": true, "VAL": "80"},
-                    "resid": {"ATT": true, "VAL": "Icon.80x80"},
+                    "size": {"ATT": true, "VAL": "64"},
+                    "resid": {"ATT": true, "VAL": "Icon.64x64"},
+                    "SCT": {"ATT": true, "VAL": true}
+                  },
+                  "bt:Image|4": {
+                    "size": {"ATT": true, "VAL": "128"},
+                    "resid": {"ATT": true, "VAL": "Icon.128x128"},
                     "SCT": {"ATT": true, "VAL": true}
                   }
                 },
@@ -116,8 +121,13 @@
                       "SCT": {"ATT": true, "VAL": true}
                     },
                     "bt:Image|3": {
-                      "size": {"ATT": true, "VAL": "80"},
-                      "resid": {"ATT": true, "VAL": "Icon.80x80"},
+                      "size": {"ATT": true, "VAL": "64"},
+                      "resid": {"ATT": true, "VAL": "Icon.64x64"},
+                      "SCT": {"ATT": true, "VAL": true}
+                    },
+                    "bt:Image|4": {
+                      "size": {"ATT": true, "VAL": "128"},
+                      "resid": {"ATT": true, "VAL": "Icon.128x128"},
                       "SCT": {"ATT": true, "VAL": true}
                     }
                   },
@@ -139,29 +149,34 @@
       "bt:Images": {
         "bt:Image|1": {
           "id": {"ATT": true, "VAL": "Icon.16x16"},
-          "DefaultValue": {"ATT": true, "VAL": "%APPDOMAIN%/assets/images/icon-16.png"},
+          "DefaultValue": {"ATT": true, "VAL": "%APPDOMAIN%/images/icon-16.png"},
           "SCT": {"ATT": true, "VAL": true}
         },
         "bt:Image|2": {
           "id": {"ATT": true, "VAL": "Icon.32x32"},
-          "DefaultValue": {"ATT": true, "VAL": "%APPDOMAIN%/assets/images/icon-32.png"},
+          "DefaultValue": {"ATT": true, "VAL": "%APPDOMAIN%/images/icon-32.png"},
           "SCT": {"ATT": true, "VAL": true}
         },
         "bt:Image|3": {
-          "id": {"ATT": true, "VAL": "Icon.80x80"},
-          "DefaultValue": {"ATT": true, "VAL": "%APPDOMAIN%/assets/images/icon-80.png"},
+          "id": {"ATT": true, "VAL": "Icon.64x64"},
+          "DefaultValue": {"ATT": true, "VAL": "%APPDOMAIN%/images/icon-64.png"},
+          "SCT": {"ATT": true, "VAL": true}
+        },
+        "bt:Image|4": {
+          "id": {"ATT": true, "VAL": "Icon.128x128"},
+          "DefaultValue": {"ATT": true, "VAL": "%APPDOMAIN%/images/icon-128.png"},
           "SCT": {"ATT": true, "VAL": true}
         }
       },
       "bt:Urls": {
         "bt:Url|1": {
           "id": {"ATT": true, "VAL": "GetStarted.LearnMoreUrl"},
-          "DefaultValue": {"ATT": true, "VAL": "%APPDOMAIN%/README.me"},
+          "DefaultValue": {"ATT": true, "VAL": "https://clarkpanagakos.com.au"},
           "SCT": {"ATT": true, "VAL": true}
         },
         "bt:Url|2": {
           "id": {"ATT": true, "VAL": "Taskpane.Url"},
-          "DefaultValue": {"ATT": true, "VAL": "%APPDOMAIN%/dist/index.html"},
+          "DefaultValue": {"ATT": true, "VAL": "%APPDOMAIN%/index.html"},
           "SCT": {"ATT": true, "VAL": true}
         }
       },
