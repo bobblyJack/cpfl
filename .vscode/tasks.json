@@ -2,26 +2,73 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
+			"label": "Build",
 			"type": "npm",
 			"script": "build",
+			"detail": "Build for Dev Env",
 			"group": {
 				"kind": "build",
 				"isDefault": true
 			},
 			"problemMatcher": [],
-			"label": "build",
-			"detail": "run the npm build script"
+			"presentation": {
+				"panel": "dedicated",
+				"showReuseMessage": false,
+				"clear": true,
+				"close": true
+			},
 		},
 		{
-			"type": "npm",
-			"script": "test",
+			"label": "Start",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run", "start", 
+				"--",
+				"desktop"
+			],
+			"detail": "Sideload Office Add-In",
 			"group": {
 				"kind":"test",
 				"isDefault": true
 			},
 			"problemMatcher": [],
-			"label": "test",
-			"detail": "run the npm test script",
+			"presentation": {
+				"panel": "shared",
+				"group": "test",
+				"showReuseMessage": false,
+				"clear": true
+			}
+		},
+		{
+			"label": "Stop",
+			"type": "npm",
+			"script": "stop",
+			"detail": "Stop Debugging",
+			"group": {
+				"kind": "test",
+				"isDefault": false
+			},
+			"problemMatcher":[],
+			"presentation": {
+				"panel": "shared",
+				"group": "test",
+				"showReuseMessage": false,
+				"close": true
+			}
+		},
+		{
+			"label": "Serve",
+			"type": "npm",
+			"script": "serve",
+			"detail": "Start Localhost Server",
+			"problemMatcher": [],
+			"presentation": {
+				"reveal": "silent",
+				"panel": "new",
+				"showReuseMessage": false,
+				"close": true
+			}
 		}
 	]
 }

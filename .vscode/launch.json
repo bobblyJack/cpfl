@@ -4,12 +4,13 @@
         // debug taskpane using edge
         {
             "type": "msedge",
-            "request": "launch",
-            "name": "Debug Taskpane",
-            "url": "http://localhost:3000/index.html",
-            "webRoot": "${workspaceFolder}/dist",
-            "trace": true,
+            "request": "attach",
+            "name": "sideload",
+            "port": 9229,
             "timeout": 10000,
+            "webRoot": "${workspaceRoot}/dist/",
+            "preLaunchTask": "Start",
+            "postDebugTask": "Stop"
         }
     ]
 }

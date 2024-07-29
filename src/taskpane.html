@@ -4,7 +4,7 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LocalHost Index</title>
+    <title>Taskpane Add-In</title>
 
     <!-- Open Sans Font-->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,20 +14,18 @@
     <!-- CSS Stylesheet-->
     <link rel="stylesheet" href="styles.css">
 
+    <!-- Office JavaScript API -->
+    <script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+
 </head>
 
 <body>
 
-    <h1>directory index</h1>
-
-    <ul id="index-list">
-        <li href="manifest.json">manifest</li>
-        <li href="taskpane.html">taskpane</li>
-        <li href="script.js">script</li>
-        <li href="script.d.ts">types</li>
-        <li href="styles.css">styles</li>
-    </ul>
+    <p>This add-in will insert the text 'Hello world!'.</p>
+    <button id="run-button">Say hello</button>
 
 </body>
+
+<script src="script.js"></script>
 
 </html>

@@ -14,11 +14,9 @@
 
   "scripts": {
     "build": "node ./scripts/build.js",
-    "signin": "office-addin-dev-settings m365-account login",
-    "signout": "office-addin-dev-settings m365-account logout",
-    "test": "office-addin-debugging dist/manifest.xml",
-    "test:desktop": "office-addin-debugging dist/manifest.xml desktop",
-    "test:web": "office-addin-debugging dist/manifest.xml web"
+    "serve": "http-server dist -p 3000",
+    "start": "office-addin-debugging start dist/manifest.xml",
+    "stop": "office-addin-debugging stop dist/manifest.xml"
   },
 
   "devDependencies": {
@@ -27,8 +25,10 @@
     "@types/office-js": "latest",
     "office-addin-cli": "latest",
     "office-addin-manifest": "latest",
+    "office-addin-node-debugger": "latest",
     "office-addin-debugging": "latest",
     "office-addin-dev-certs": "latest",
-    "office-addin-dev-settings": "latest"
+    "office-addin-dev-settings": "latest",
+    "http-server": "latest"
   }
 }

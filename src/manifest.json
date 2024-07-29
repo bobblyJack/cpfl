@@ -34,7 +34,7 @@
   },
   "DefaultSettings": {
     "SourceLocation": {
-      "DefaultValue": {"ATT": true, "VAL": "%APPDOMAIN%/index.html"},
+      "DefaultValue": {"ATT": true, "VAL": "%APPDOMAIN%/taskpane.html"},
       "SCT": {"ATT": true, "VAL": true}
     }
   },
@@ -176,7 +176,7 @@
         },
         "bt:Url|2": {
           "id": {"ATT": true, "VAL": "Taskpane.Url"},
-          "DefaultValue": {"ATT": true, "VAL": "%APPDOMAIN%/index.html"},
+          "DefaultValue": {"ATT": true, "VAL": "%APPDOMAIN%/taskpane.html"},
           "SCT": {"ATT": true, "VAL": true}
         }
       },

@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { exec } = require('node:child_process');
+const { exec } = require('child_process');
 
 try {
     // set build location
@@ -8,7 +8,7 @@ try {
 
     // get app domain (default local)
     let domain = "https://localhost:3000"
-    if (process.argv.slice(2) === "hosted") {
+    if (process.argv.slice(2) === "prod") {
         domain = "https://clarkpanagakos.sharepoint.com/taskpane";
     }
 
