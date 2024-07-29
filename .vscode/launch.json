@@ -6,8 +6,9 @@
             "type": "msedge",
             "request": "attach",
             "name": "sideload",
+            "useWebView": true,
             "port": 9229,
-            "timeout": 10000,
+            "timeout": 600000,
             "webRoot": "${workspaceRoot}/dist/",
             "preLaunchTask": "Start",
             "postDebugTask": "Stop"

@@ -4,6 +4,7 @@ ok i think i am getting the hang of the whole thing.
 https://github.com/OfficeDev/generator-office
 https://github.com/OfficeDev/Office-Addin-TaskPane-SSO
 https://github.com/OfficeDev/Office-Addin-Scripts
+https://learn.microsoft.com/en-au/office/dev/add-ins/publish/publish-task-pane-and-content-add-ins-to-an-add-in-catalog
 
 # manifest json logic
 mark attributes with <key>: "attribute": {"ATT"=true, "VAL"=<value>}

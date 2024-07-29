@@ -20,13 +20,8 @@
 		},
 		{
 			"label": "Start",
-			"type": "shell",
-			"command": "npm",
-			"args": [
-				"run", "start", 
-				"--",
-				"desktop"
-			],
+			"type": "npm",
+			"script": "start",
 			"detail": "Sideload Office Add-In",
 			"group": {
 				"kind":"test",
@@ -60,7 +55,7 @@
 		{
 			"label": "Serve",
 			"type": "npm",
-			"script": "serve",
+			"script": "dev-server",
 			"detail": "Start Localhost Server",
 			"problemMatcher": [],
 			"presentation": {
