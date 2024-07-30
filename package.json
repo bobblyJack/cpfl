@@ -11,8 +11,11 @@
   },
   "scripts": {
     "build": "node scripts/build.js",
-    "start": "office-addin-debugging start dist/manifest.xml --packager-port 3000",
-    "dev-server": "node scripts/server.js"
+    "convert": "node scripts/manifest.js",
+    "start": "office-addin-debugging start dist/manifest.xml desktop --packager build --no-debug",
+    "stop": "office-addin-debugging stop dist/manifest.xml",
+    "dev-server": "node scripts/server.js",
+    "dev-verify": "office-addin-dev-certs install --machine"
   },
   "devDependencies": {
     "office-addin-cli": "*",
