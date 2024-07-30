@@ -16,3 +16,5 @@ keep the initial OfficeApp k:v in the js script itself
 # considerations
 - @microsoft/office-js is the office-js package if i need static files for some reason instead of the html CDN
 - i could look into using jquery (and @types/jquery) for potentially easier html traversal
+
+THERE IS AN OLD THING REGISTERED THAT IS WAHT NEEDS TO GET FIXED!!

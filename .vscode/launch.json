@@ -2,7 +2,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debugger",
+            "name": "Sideload Taskpane",
             "type": "msedge",
             "request": "attach",
             "webRoot": "${workspaceFolder}/dist",

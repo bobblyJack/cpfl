@@ -20,11 +20,11 @@
     "SCT": {"ATT":true, "VAL":true}
   },
   "SupportUrl": {
-    "DefaultValue": {"ATT": true, "VAL": "%APPDOMAIN%/index.html"},
+    "DefaultValue": {"ATT": true, "VAL": "https://clarkpanagakos.com.au"},
     "SCT": {"ATT":true, "VAL":true}
   },
   "AppDomains": {
-    "AppDomain": "%APPDOMAIN%"
+    "AppDomain": "https://clarkpanagakos.com.au"
   },
   "Hosts": {
     "Host": {
@@ -171,7 +171,7 @@
       "bt:Urls": {
         "bt:Url|1": {
           "id": {"ATT": true, "VAL": "GetStarted.LearnMoreUrl"},
-          "DefaultValue": {"ATT": true, "VAL": "%APPDOMAIN%/index.html"},
+          "DefaultValue": {"ATT": true, "VAL": "https://clarkpanagakos.com.au"},
           "SCT": {"ATT": true, "VAL": true}
         },
         "bt:Url|2": {

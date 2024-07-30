@@ -2,7 +2,7 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "Build",
+			"label": "Build: Taskpane",
 			"type": "npm",
 			"script": "build",
 			"detail": "Build for Dev Env",
@@ -16,7 +16,7 @@
 				"showReuseMessage": false,
 				"clear": true,
 				"close": true
-			},
+			}
 		},
 		{
 			"label": "Start",
@@ -26,25 +26,19 @@
 			"detail": "Sideload Office Add-In",
 			"group": {
 				"kind":"test",
-				"isDefault": true
+				"isDefault": false
 			},
 			"problemMatcher": [],
 			"presentation": {
-				"panel": "shared",
-				"group": "test",
+				"panel": "dedicated",
 				"showReuseMessage": false,
 				"clear": true
 			}
 		},
 		{
 			"label": "Stop",
-			"type": "shell",
-			"command": "npx",
-			"args": [
-				"office-addin-debugging",
-				"stop",
-				"dist/manifest.xml"
-			],
+			"type": "npm",
+			"script": "stop",
 			"detail": "Stop Debugging",
 			"group": {
 				"kind": "test",
@@ -53,9 +47,42 @@
 			"problemMatcher":[],
 			"presentation": {
 				"panel": "shared",
-				"group": "test",
 				"showReuseMessage": false,
 				"close": true
+			}
+		},
+		{
+			"label": "Build: Manifest",
+			"type": "npm",
+			"script": "manifest",
+			"detail": "Convert JSON Manifest",
+			"group": {
+				"kind": "build",
+				"isDefault": false
+			},
+			"problemMatcher":[],
+			"presentation": {
+				"panel": "dedicated",
+				"showReuseMessage": false,
+				"clear": true,
+				"close": true
+			}
+		},
+		{
+			"label": "Test",
+			"dependsOn":["Build:Manifest", "Build:Taskpane"],
+			"dependsOrder": "sequence",
+			"type": "npm",
+			"script": "test",
+			"detail": "Test Build",
+			"group": {
+				"kind": "test",
+				"isDefault": true
+			},
+			"problemMatcher":[],
+			"presentation": {
+				"panel": "shared",
+				"showReuseMessage": false
 			}
 		}
 	]
