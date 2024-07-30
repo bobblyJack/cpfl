@@ -15,12 +15,12 @@ try {
     // get manifest template
     const template = require('../src/manifest.json');
 
-    // clean up old build
-    fs.rmSync(dest,{recursive: true});
-
-    // start new build
-    console.log('building @ ' + domain);
-    fs.mkdirSync(dest);
+    // fresh build removes old files first
+    if (process.argv.slice(2) !== "debug") {
+        fs.rmSync(dest,{recursive: true});
+        console.log('building fresh @ ' + domain);
+        fs.mkdirSync(dest);
+    }
 
     // compile typescript
     exec('npx tsc');
@@ -126,6 +126,7 @@ try {
     // copy assets, html, and css
     copyDirectory('assets',dest);
     fs.copyFileSync('src/index.html',dest+'index.html');
+    fs.copyFileSync('src/taskpane.html',dest+'taskpane.html')
     fs.copyFileSync('src/styles.css',dest+'styles.css');
 
     // finish build

@@ -51,19 +51,6 @@
 				"showReuseMessage": false,
 				"close": true
 			}
-		},
-		{
-			"label": "Serve",
-			"type": "npm",
-			"script": "dev-server",
-			"detail": "Start Localhost Server",
-			"problemMatcher": [],
-			"presentation": {
-				"reveal": "silent",
-				"panel": "new",
-				"showReuseMessage": false,
-				"close": true
-			}
 		}
 	]
 }

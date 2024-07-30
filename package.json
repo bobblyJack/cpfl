@@ -2,7 +2,7 @@
   "name": "@cpfl/office-addin",
   "description": "an office add-in designed for clark panagakos family law",
   "author": "LG-CPFL",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "private": true,
   "license": "UNLICENSED",
   "repository": {
@@ -10,21 +10,20 @@
     "url": "https://lg-cpfl@dev.azure.com/lg-cpfl/office-addin/_git/office-addin"
   },
   "scripts": {
-    "build": "node ./scripts/build.js",
-    "dev-server": "http-server dist -p 3000",
+    "build": "node scripts/build.js",
+    "dev-server": "node scripts/server.js",
     "start": "office-addin-debugging start dist/manifest.xml",
     "stop": "office-addin-debugging stop dist/manifest.xml"
   },
   "devDependencies": {
-    "@types/node": "latest",
-    "@types/office-js": "latest",
-    "express": "latest",
-    "office-addin-cli": "latest",
-    "office-addin-debugging": "latest",
-    "office-addin-dev-certs": "latest",
-    "office-addin-dev-settings": "latest",
-    "office-addin-manifest": "latest",
-    "office-addin-node-debugger": "latest",
-    "typescript": "latest"
+    "office-addin-cli": "*",
+    "office-addin-debugging": "*",
+    "office-addin-dev-certs": "*",
+    "office-addin-dev-settings": "*",
+    "office-addin-manifest": "*",
+    "office-addin-node-debugger": "*",
+    "typescript": "*",
+    "@types/node": "*",
+    "@types/office-js": "*"
   }
 }
