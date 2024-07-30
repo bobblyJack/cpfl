@@ -20,6 +20,7 @@
 		},
 		{
 			"label": "Start",
+			"dependsOn": "Build",
 			"type": "npm",
 			"script": "start",
 			"detail": "Sideload Office Add-In",
@@ -37,8 +38,13 @@
 		},
 		{
 			"label": "Stop",
-			"type": "npm",
-			"script": "stop",
+			"type": "shell",
+			"command": "npx",
+			"args": [
+				"office-addin-debugging",
+				"stop",
+				"dist/manifest.xml"
+			],
 			"detail": "Stop Debugging",
 			"group": {
 				"kind": "test",

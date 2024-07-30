@@ -1,7 +1,6 @@
 {
     "version": "0.2.0",
     "configurations": [
-        // debug taskpane using edge
         {
             "type": "msedge",
             "request": "attach",
