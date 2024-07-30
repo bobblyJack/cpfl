@@ -7,46 +7,6 @@
             "request": "attach",
             "webRoot": "${workspaceFolder}/dist",
             "port": 9229,
-            "timeout": 600000,
-            "preLaunchTask": "Start",
-            "postDebugTask": "Stop"
-        },
-        {
-            "name": "Debugger Root",
-            "type": "msedge",
-            "request": "attach",
-            "webRoot": "${workspaceRoot}",
-            "port": 9229,
-            "timeout": 600000,
-            "preLaunchTask": "Start",
-            "postDebugTask": "Stop"
-        },
-        {
-            "name": "Debugger Legacy",
-            "type": "office-addin",
-            "request": "attach",
-            "url": "https://localhost:3000/taskpane.html?_host_Info=Word$Win32$16.01$en-US$$$$0",
-            "webRoot": "${workspaceRoot}",
-            "port": 9222,
-            "timeout": 600000,
-            "preLaunchTask": "Start",
-            "postDebugTask": "Stop"
-        },
-        {
-            "name": "Debugger Node 8080",
-            "type": "node",
-            "request": "attach",
-            "port": 8080,
-            "timeout": 600000,
-            "preLaunchTask": "Start",
-            "postDebugTask": "Stop"
-        },
-        {
-            "name": "Debugger Node 3000",
-            "type": "node",
-            "request": "attach",
-            "port": 3000,
-            "timeout": 600000,
             "preLaunchTask": "Start",
             "postDebugTask": "Stop"
         },
