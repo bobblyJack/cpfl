@@ -2,12 +2,16 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Sideload Taskpane",
+            "name": "Attach: Edge",
             "type": "msedge",
             "request": "attach",
-            "webRoot": "${workspaceFolder}/dist",
+            "webRoot": "${workspaceFolder}/dist/",
+            "useWebView": {
+                "pipeName": "TaskpanePipeline"
+            },
             "port": 9229,
-            "preLaunchTask": "Start",
+            "timeout": 600000,
+            "preLaunchTask": "PreLaunch",
             "postDebugTask": "Stop"
         },
     ]

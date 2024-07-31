@@ -2,36 +2,61 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
+			"label": "Build: Manifest",
+			"type": "npm",
+			"script": "manifest",
+			"detail": "Converts JSON Manifest",
+			"group": {
+				"kind": "build",
+				"isDefault": false
+			},
+			"problemMatcher":[]
+		},
+		{
 			"label": "Build: Taskpane",
 			"type": "npm",
 			"script": "build",
-			"detail": "Build for Dev Env",
+			"detail": "Builds for Dev Env",
 			"group": {
 				"kind": "build",
 				"isDefault": true
 			},
-			"problemMatcher": [],
+			"problemMatcher": []
+		},
+		{
+			"label": "Test",
+			"dependsOn": ["Build: Manifest", "Build: Taskpane"],
+			"dependsOrder": "sequence",
+			"type": "npm",
+			"script": "test",
+			"detail": "Sideload Office Add-In",
+			"group": {
+				"kind": "test",
+				"isDefault": true
+			},
+			"problemMatcher":[],
 			"presentation": {
 				"panel": "dedicated",
-				"showReuseMessage": false,
-				"clear": true,
-				"close": true
+				"clear": true
 			}
 		},
 		{
-			"label": "Start",
-			"dependsOn": "Build",
-			"type": "npm",
-			"script": "start",
-			"detail": "Sideload Office Add-In",
+			"label": "PreLaunch",
+			"dependsOn": ["Build: Manifest", "Build: Taskpane"],
+			"dependsOrder": "sequence",
+			"type": "shell",
+			"args": [
+				"run", "test", "--",
+				"--app", "Word",
+			],
+			"detail": "Sideload Office Add-In for Debugging",
 			"group": {
-				"kind":"test",
+				"kind": "test",
 				"isDefault": false
 			},
-			"problemMatcher": [],
+			"problemMatcher":[],
 			"presentation": {
 				"panel": "dedicated",
-				"showReuseMessage": false,
 				"clear": true
 			}
 		},
@@ -39,48 +64,16 @@
 			"label": "Stop",
 			"type": "npm",
 			"script": "stop",
-			"detail": "Stop Debugging",
+			"detail": "Stops Debugging",
 			"group": {
 				"kind": "test",
 				"isDefault": false
 			},
 			"problemMatcher":[],
 			"presentation": {
-				"panel": "shared",
-				"showReuseMessage": false,
-				"close": true
-			}
-		},
-		{
-			"label": "Build: Manifest",
-			"type": "npm",
-			"script": "manifest",
-			"detail": "Convert JSON Manifest",
-			"group": {
-				"kind": "build",
-				"isDefault": false
-			},
-			"problemMatcher":[],
-			"presentation": {
-				"panel": "dedicated",
-				"showReuseMessage": false,
 				"clear": true,
-				"close": true
-			}
-		},
-		{
-			"label": "Test",
-			"type": "npm",
-			"script": "test",
-			"detail": "Run Test Script",
-			"group": {
-				"kind": "test",
-				"isDefault": true
-			},
-			"problemMatcher":[],
-			"presentation": {
 				"panel": "shared",
-				"showReuseMessage": false
+				"close": true
 			}
 		}
 	]
