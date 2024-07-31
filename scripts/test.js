@@ -1,21 +1,24 @@
-const {exec} = require('child_process');
-const command = 'npx office-addin-dev-settings';
-const manifest = "dist/manifest.xml";
+const OADS = require('office-addin-dev-settings');
+const OAM = require('office-addin-manifest');
 
-function output(exr,std,err) {
-    if (exr) {
-        console.error(exr.message);
-        throw exr;
-    } else {
-        console.log(std);
-        if (err) {
-            console.error(err);
-        }   
+(async () => {
+    try {
+        const manifests = await OADS.getRegisterAddIns()
+        for (const manifest of manifests) {
+            const manifestStatus = await OAM.validateManifest(manifest.manifestPath);
+            if (manifestStatus.isValid) {
+                console.log('manifest valid');
+                const container = await OADS.getAppcontainerNameFromManifest(manifest.manifestPath);
+                if (OADS.isAppcontainerSupported()) {
+                    console.log(`app container supported\n > ${container}`);
+                } else {
+                    throw new Error('app container unsupported')
+                }
+            } else {
+                throw new Error(`manifest ${manifest.id} invalid`)
+            }
+        }
+    } catch (e) {
+        console.error(e.message);
     }
-}
-
-exec(`${command} registered`, output);
-exec(`${command} appcontainer ${manifest}`, output);
-exec(`${command} debugging ${manifest}`, output);
-exec(`${command} live-reload ${manifest}`, output);
-exec(`${command} source-bundle-url ${manifest}`, output);
+})();

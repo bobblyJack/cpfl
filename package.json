@@ -15,11 +15,10 @@
     "start": "office-addin-debugging start dist/manifest.xml",
     "stop": "office-addin-debugging stop dist/manifest.xml",
     "dev-server": "node scripts/server.js",
-    "dev-verify": "office-addin-dev-certs install --machine",
+    "dev-certs": "office-addin-dev-certs install --machine",
     "test": "node scripts/test.js",
     "login": "office-addin-dev-settings m365-account login",
-    "logout": "office-addin-dev-settings m365-account logout",
-    "repair": "node scripts/fixit.js"
+    "logout": "office-addin-dev-settings m365-account logout"
   },
   "devDependencies": {
     "office-addin-cli": "*",
@@ -27,7 +26,6 @@
     "office-addin-dev-certs": "*",
     "office-addin-dev-settings": "*",
     "office-addin-manifest": "*",
-    "office-addin-node-debugger": "*",
     "typescript": "*",
     "@types/node": "*",
     "@types/office-js": "*"

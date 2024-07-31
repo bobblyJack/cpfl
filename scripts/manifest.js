@@ -69,4 +69,4 @@ function jsonConverter(obj, xml = "", indent = 1) {
 }
 
 fs.writeFileSync('dist/manifest.xml',jsonConverter(template) + "</OfficeApp>");
-console.log('manifest created');
+console.log(`manifest created @ ${domain}`);
