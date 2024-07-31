@@ -1,4 +1,6 @@
 const fs = require('fs');
+const path = require('path');
+const OAM = require('office-addin-manifest');
 
 // get app domain (default local)
 let domain = "https://localhost:3000"
@@ -69,4 +71,12 @@ function jsonConverter(obj, xml = "", indent = 1) {
 }
 
 fs.writeFileSync('dist/manifest.xml',jsonConverter(template) + "</OfficeApp>");
-console.log(`manifest created @ ${domain}`);
+(async () => {
+    const status = await OAM.validateManifest(path.resolve('dist/manifest.xml'));
+    if (status.isValid) {
+        console.log(`valid manifest created @ ${domain}`);
+    } else {
+        throw new Error('manifest invalid!')
+    }
+})();
+

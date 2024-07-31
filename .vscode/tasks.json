@@ -70,11 +70,9 @@
 		},
 		{
 			"label": "Test",
-			"dependsOn":["Build:Manifest", "Build:Taskpane"],
-			"dependsOrder": "sequence",
 			"type": "npm",
 			"script": "test",
-			"detail": "Test Build",
+			"detail": "Run Test Script",
 			"group": {
 				"kind": "test",
 				"isDefault": true
