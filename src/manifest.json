@@ -135,7 +135,8 @@
                     "xsi:type": {"ATT":true, "VAL":"ShowTaskpane"},
                     "TaskpaneId": "ButtonId1",
                     "SourceLocation": {
-                      "resid": {"ATT":true, "VAL": "Taskpane.Url"}
+                      "resid": {"ATT":true, "VAL": "Taskpane.Url"},
+                      "SCT": {"ATT":true, "VAL": true}
                     }
                   }
                 }
