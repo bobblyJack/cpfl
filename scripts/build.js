@@ -78,45 +78,48 @@ function jsonConverter(obj, xml = "", indent = 1) {
 fs.rmSync('dist', {recursive: true, force: true});
 fs.mkdirSync('dist');
 
-// convert manifest to xml and validate new file
+// convert manifest to xml and create file
 fs.writeFileSync('dist/manifest.xml',jsonConverter(template) + "</OfficeApp>");
+
+// validate manifest before continuing
 (async () => {
     const status = await OAM.validateManifest(path.resolve('dist/manifest.xml'));
     if (status.isValid) {
         console.log(`valid manifest created`);
+        
+        // compile typescript
+        exec('npx tsc');
+
+        // define recursive asset copying function
+        function copyDirectory(src,dest) {
+            // make sure destination exists
+            if (!fs.existsSync(dest)) {
+                fs.mkdirSync(dest,{recursive: true});
+            }
+            // read the source directory
+            fs.readdirSync(src).forEach(thing => { 
+                let orig = path.join(src,thing);
+                let copy = path.join(dest,thing);
+                // recursively copies directories
+                if (fs.statSync(orig).isDirectory()) {
+                    copyDirectory(orig,copy);
+                // copies files
+                } else {
+                    fs.copyFileSync(orig,copy);
+                }
+            });
+        }
+
+        // copy assets, html, and css
+        copyDirectory('assets','dist');
+        fs.copyFileSync('src/index.html','dist/index.html');
+        fs.copyFileSync('src/taskpane.html','dist/taskpane.html')
+        fs.copyFileSync('src/styles.css','dist/styles.css');
+
+        // finish build
+        console.log('build successful');
     } else {
         throw new Error('manifest invalid!')
     }
 })();
 
-// compile typescript
-exec('npx tsc');
-
-// define recursive asset copying function
-function copyDirectory(src,dest) {
-    // make sure destination exists
-    if (!fs.existsSync(dest)) {
-        fs.mkdirSync(dest,{recursive: true});
-    }
-    // read the source directory
-    fs.readdirSync(src).forEach(thing => { 
-        let orig = path.join(src,thing);
-        let copy = path.join(dest,thing);
-        // recursively copies directories
-        if (fs.statSync(orig).isDirectory()) {
-            copyDirectory(orig,copy);
-        // copies files
-        } else {
-            fs.copyFileSync(orig,copy);
-        }
-    });
-}
-
-// copy assets, html, and css
-copyDirectory('assets','dist');
-fs.copyFileSync('src/index.html','dist/index.html');
-fs.copyFileSync('src/taskpane.html','dist/taskpane.html')
-fs.copyFileSync('src/styles.css','dist/styles.css');
-
-// finish build
-console.log('build successful');

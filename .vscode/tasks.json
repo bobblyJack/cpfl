@@ -46,8 +46,6 @@
 				"desktop",
 				"--app", "word",
 				"--debug-method", "direct",
-				"--dev-server", "host",
-				"--dev-server-port", "3000",
 				"--no-live-reload"
 			],
 			"detail": "Sideload Office Add-In for Debugging",

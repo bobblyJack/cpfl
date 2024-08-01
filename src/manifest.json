@@ -82,13 +82,8 @@
                     "SCT": {"ATT": true, "VAL": true}
                   },
                   "bt:Image|3": {
-                    "size": {"ATT": true, "VAL": "64"},
-                    "resid": {"ATT": true, "VAL": "Icon.64x64"},
-                    "SCT": {"ATT": true, "VAL": true}
-                  },
-                  "bt:Image|4": {
-                    "size": {"ATT": true, "VAL": "128"},
-                    "resid": {"ATT": true, "VAL": "Icon.128x128"},
+                    "size": {"ATT": true, "VAL": "80"},
+                    "resid": {"ATT": true, "VAL": "Icon.80x80"},
                     "SCT": {"ATT": true, "VAL": true}
                   }
                 },
@@ -121,13 +116,8 @@
                       "SCT": {"ATT": true, "VAL": true}
                     },
                     "bt:Image|3": {
-                      "size": {"ATT": true, "VAL": "64"},
-                      "resid": {"ATT": true, "VAL": "Icon.64x64"},
-                      "SCT": {"ATT": true, "VAL": true}
-                    },
-                    "bt:Image|4": {
-                      "size": {"ATT": true, "VAL": "128"},
-                      "resid": {"ATT": true, "VAL": "Icon.128x128"},
+                      "size": {"ATT": true, "VAL": "80"},
+                      "resid": {"ATT": true, "VAL": "Icon.80x80"},
                       "SCT": {"ATT": true, "VAL": true}
                     }
                   },
@@ -159,13 +149,8 @@
           "SCT": {"ATT": true, "VAL": true}
         },
         "bt:Image|3": {
-          "id": {"ATT": true, "VAL": "Icon.64x64"},
-          "DefaultValue": {"ATT": true, "VAL": "%APPDOMAIN%/images/icon-64.png"},
-          "SCT": {"ATT": true, "VAL": true}
-        },
-        "bt:Image|4": {
-          "id": {"ATT": true, "VAL": "Icon.128x128"},
-          "DefaultValue": {"ATT": true, "VAL": "%APPDOMAIN%/images/icon-128.png"},
+          "id": {"ATT": true, "VAL": "Icon.80x80"},
+          "DefaultValue": {"ATT": true, "VAL": "%APPDOMAIN%/images/icon-80.png"},
           "SCT": {"ATT": true, "VAL": true}
         }
       },
@@ -212,6 +197,11 @@
         "bt:String|2": {
           "id": {"ATT": true, "VAL": "TaskpaneButton.Description"},
           "DefaultValue": {"ATT": true, "VAL": "Open the CPFL App"},
+          "SCT": {"ATT": true, "VAL": true}
+        },
+        "bt:String|3": {
+          "id": {"ATT": true, "VAL": "TaskpaneButton.SupertipText"},
+          "DefaultValue": {"ATT": true, "VAL": "Here is some more text I was missing!"},
           "SCT": {"ATT": true, "VAL": true}
         }
       }

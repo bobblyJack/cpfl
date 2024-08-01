@@ -11,9 +11,10 @@
   },
   "scripts": {
     "build": "node scripts/build.js",
-    "host": "node scripts/server.js",
+    "dev-log": "office-addin-dev-settings runtime-log --enable",
+    "dev-server": "node scripts/server.js",
     "start": "office-addin-debugging start dist/manifest.xml --no-debug",
-    "stop": "office-addin-debugging stop dist/manifest.xml"
+    "stop": "office-addin-debugging stop dist/manifest.xml && office-addin-dev-settings runtime-log --disable"
   },
   "devDependencies": {
     "office-addin-cli": "*",
