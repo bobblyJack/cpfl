@@ -2,17 +2,14 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Attach: Edge",
+            "name": "Launch Office",
             "type": "msedge",
             "request": "attach",
             "webRoot": "${workspaceFolder}/dist/",
-            "useWebView": {
-                "pipeName": "TaskpanePipeline"
-            },
             "port": 9229,
             "timeout": 600000,
-            "preLaunchTask": "PreLaunch",
-            "postDebugTask": "Stop"
-        },
+            "preLaunchTask": "Ignition",
+            "postDebugTask": "Landing"
+        }
     ]
 }

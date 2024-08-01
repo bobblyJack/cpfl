@@ -2,18 +2,7 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "Build: Manifest",
-			"type": "npm",
-			"script": "manifest",
-			"detail": "Converts JSON Manifest",
-			"group": {
-				"kind": "build",
-				"isDefault": false
-			},
-			"problemMatcher":[]
-		},
-		{
-			"label": "Build: Taskpane",
+			"label": "Build: Development",
 			"type": "npm",
 			"script": "build",
 			"detail": "Builds for Dev Env",
@@ -21,47 +10,55 @@
 				"kind": "build",
 				"isDefault": true
 			},
-			"problemMatcher": []
-		},
-		{
-			"label": "Test",
-			"dependsOn": ["Build: Manifest", "Build: Taskpane"],
-			"dependsOrder": "sequence",
-			"type": "npm",
-			"script": "test",
-			"detail": "Sideload Office Add-In",
-			"group": {
-				"kind": "test",
-				"isDefault": true
-			},
-			"problemMatcher":[],
+			"problemMatcher": [],
 			"presentation": {
-				"panel": "dedicated",
-				"clear": true
+				"showReuseMessage": false
 			}
 		},
 		{
-			"label": "PreLaunch",
-			"dependsOn": ["Build: Manifest", "Build: Taskpane"],
-			"dependsOrder": "sequence",
+			"label": "Build: Production",
 			"type": "shell",
+			"command": "npm",
 			"args": [
-				"run", "test", "--",
-				"--app", "Word",
+				"run", "build",
+				"--",
+				"prod"
+			],
+			"detail": "Builds for Dev Env",
+			"group": {
+				"kind": "build",
+				"isDefault": false
+			},
+			"problemMatcher": [],
+			"presentation": {
+				"showReuseMessage": false
+			}
+		},
+
+		{
+			"label": "Ignition",
+			"dependsOn": "Build: Development",
+			"type": "shell",
+			"command": "npx",
+			"args": [
+				"office-addin-debugging",
+				"start", "dist/manifest.xml",
+				"desktop",
+				"--app", "word",
+				"--debug-method", "direct",
+				"--dev-server", "host",
+				"--dev-server-port", "3000",
+				"--no-live-reload"
 			],
 			"detail": "Sideload Office Add-In for Debugging",
 			"group": {
 				"kind": "test",
-				"isDefault": false
+				"isDefault": true
 			},
-			"problemMatcher":[],
-			"presentation": {
-				"panel": "dedicated",
-				"clear": true
-			}
+			"problemMatcher":[]
 		},
 		{
-			"label": "Stop",
+			"label": "Landing",
 			"type": "npm",
 			"script": "stop",
 			"detail": "Stops Debugging",
@@ -71,8 +68,7 @@
 			},
 			"problemMatcher":[],
 			"presentation": {
-				"clear": true,
-				"panel": "shared",
+				"showReuseMessage": false,
 				"close": true
 			}
 		}

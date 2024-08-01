@@ -3,28 +3,11 @@ const fs = require('fs');
 const path = require('path');
 const devCerts = require('office-addin-dev-certs');
 const mime = require('../lib/mimes');
-const { exec } = require('child_process');
 
+// define variables
 const port = 3000;
-const src = path.resolve('src');
-const dist = path.resolve('dist');
+const dir = path.resolve('dist');
 const home = "index.html";
-
-// build helper (for live rebuilding)
-async function rebuild() {
-    try {
-        exec('npm run build -- debug');
-        console.log('directory rebuilt')
-        return;
-    } catch (e) {
-        if (e instanceof Error) {
-            console.error(e.message);
-        } else {
-            console.error('unknown error caught');
-        }
-        throw e;
-    }
-};
 
 // start server function
 (async () => {
@@ -33,7 +16,7 @@ async function rebuild() {
 
     // define server behaviour
     const server = https.createServer(certs, (req, res) => {
-        const url = path.join(dist, req.url === '/' ? home : req.url);
+        const url = path.join(dir, req.url === '/' ? home : req.url);
         const ext = mime.types[(path.extname(url))];
 
         // set headers
@@ -79,10 +62,5 @@ async function rebuild() {
     // start server on port
     server.listen(port, () => {
         console.log(`https server is running at https://localhost:${port}`);
-    });
-    // watch for changes in the src directory
-    fs.watch(src, { recursive: true }, (eventType, filename) => {
-        console.log(`${eventType} detected on ${filename}`);
-        rebuild(); // Run build task on file change
     });
 })();

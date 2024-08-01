@@ -10,15 +10,10 @@
     "url": "https://lg-cpfl@dev.azure.com/lg-cpfl/office-addin/_git/office-addin"
   },
   "scripts": {
-    "manifest": "node scripts/manifest.js",
     "build": "node scripts/build.js",
+    "host": "node scripts/server.js",
     "start": "office-addin-debugging start dist/manifest.xml --no-debug",
-    "stop": "office-addin-debugging stop dist/manifest.xml",
-    "dev-server": "node scripts/server.js",
-    "dev-certs": "office-addin-dev-certs install --machine",
-    "test": "office-addin-debugging start dist/manifest.xml",
-    "login": "office-addin-dev-settings m365-account login",
-    "logout": "office-addin-dev-settings m365-account logout"
+    "stop": "office-addin-debugging stop dist/manifest.xml"
   },
   "devDependencies": {
     "office-addin-cli": "*",
