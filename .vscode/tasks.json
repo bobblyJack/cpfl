@@ -1,59 +1,85 @@
 {
 	"version": "2.0.0",
 	"tasks": [
+		// build group
 		{
-			"label": "Build: Development",
-			"type": "npm",
-			"script": "build",
-			"detail": "Builds for Dev Env",
+			"label": "Build",
+			"detail": "Default Build Task",
+			"dependsOn": [
+				"Compile",
+				"Convert",
+				"Copy"
+			],
+			"dependsOrder": "sequence",
+			"type": "shell",
+			"command": "echo 'build complete'",
 			"group": {
 				"kind": "build",
 				"isDefault": true
 			},
-			"problemMatcher": [],
 			"presentation": {
-				"showReuseMessage": false
+				"echo": false,
+				"reveal": "silent",
+				"showReuseMessage": false,
+				"group": "${defaultBuildTask}"
 			}
 		},
 		{
-			"label": "Build: Production",
-			"type": "shell",
-			"command": "npm",
-			"args": [
-				"run", "build",
-				"--",
-				"prod"
-			],
-			"detail": "Builds for Dev Env",
-			"group": {
-				"kind": "build",
-				"isDefault": false
-			},
-			"problemMatcher": [],
+			"label": "Compile",
+			"detail": "Build Typescript Library",
+			"type": "typescript",
+			"tsconfig": "tsconfig.json",
+			"group": "build",
+			"problemMatcher": "$tsc",
 			"presentation": {
-				"showReuseMessage": false
+				"echo": false,
+				"reveal": "silent",
+				"showReuseMessage": false,
+				"group": "${defaultBuildTask}"
 			}
 		},
-
+		{
+			"label": "Convert",
+			"detail": "Build XML Manifest",
+			"type": "shell",
+			"command": "node lib/manifest.js",
+			"group": "build",
+			"presentation": {
+				"echo": false,
+				"reveal": "silent",
+				"showReuseMessage": false,
+				"group": "${defaultBuildTask}"
+			}
+		},
+		{
+			"label": "Copy",
+			"detail": "Transfer Distribution Assets",
+			"type": "shell",
+			"command": "node tasks/build.js",
+			"group": "build",
+			"presentation": {
+				"echo": false,
+				"reveal": "silent",
+				"showReuseMessage": false,
+				"group": "${defaultBuildTask}"
+			}
+		},
 		{
 			"label": "Ignition",
-			"dependsOn": "Build: Development",
+			"dependsOn": "${defaultBuildTask}",
 			"type": "shell",
 			"command": "npx",
 			"args": [
 				"office-addin-debugging",
 				"start", "dist/manifest.xml",
 				"desktop",
-				"--app", "word",
-				"--debug-method", "direct",
-				"--no-live-reload"
+				"--app", "word"
 			],
 			"detail": "Sideload Office Add-In for Debugging",
 			"group": {
 				"kind": "test",
 				"isDefault": true
-			},
-			"problemMatcher":[]
+			}
 		},
 		{
 			"label": "Landing",
@@ -64,7 +90,6 @@
 				"kind": "test",
 				"isDefault": false
 			},
-			"problemMatcher":[],
 			"presentation": {
 				"showReuseMessage": false,
 				"close": true

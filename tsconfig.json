@@ -1,17 +1,21 @@
 {
   "compilerOptions": {
-    "esModuleInterop": true,
-    "lib": [
-      "es7",
-      "dom"
-    ],
+    "target": "ES2016",
     "module": "CommonJS",
     "moduleResolution": "node",
-    "outDir": "dist",
-    "removeComments": true,
-    "declaration": true,
+    "resolveJsonModule": true,
+    "lib": [
+      "DOM"
+    ],
     "strict": true,
-    "noEmitOnError": true
+    "declaration": true,
+    "esModuleInterop": true,
+    "noEmitOnError": true,
+    "removeComments": true,
+    "sourceMap": true,
+    "skipLibCheck": true,
+    "allowJs": false,
+    "outDir": "./lib/"
   },
   "include": [
     "./src/**/*"
