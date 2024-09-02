@@ -6,6 +6,7 @@
 			"label": "Build",
 			"detail": "Default Build Task",
 			"dependsOn": [
+				"Clean",
 				"Compile",
 				"Convert",
 				"Copy"
@@ -19,6 +20,20 @@
 			},
 			"presentation": {
 				"echo": false,
+				"reveal": "silent",
+				"showReuseMessage": false,
+				"group": "${defaultBuildTask}"
+			}
+		},
+		{
+			"label": "Clean",
+			"detail": "Empty Build Directories",
+			"type": "shell",
+			"command": "tasks/clean.ps1",
+			"group": "build",
+			"presentation": {
+				"echo": false,
+				"clear": true,
 				"reveal": "silent",
 				"showReuseMessage": false,
 				"group": "${defaultBuildTask}"
@@ -64,9 +79,11 @@
 				"group": "${defaultBuildTask}"
 			}
 		},
+		// test group
 		{
 			"label": "Ignition",
 			"dependsOn": "${defaultBuildTask}",
+			"dependsOrder": "sequence",
 			"type": "shell",
 			"command": "npx",
 			"args": [
@@ -79,17 +96,20 @@
 			"group": {
 				"kind": "test",
 				"isDefault": true
+			},
+			"presentation": {
+				"echo": false,
+				"focus": true,
+				"panel": "dedicated",
+				"showReuseMessage": false
 			}
 		},
 		{
 			"label": "Landing",
 			"type": "npm",
-			"script": "stop",
+			"script": "sideload-stop",
 			"detail": "Stops Debugging",
-			"group": {
-				"kind": "test",
-				"isDefault": false
-			},
+			"group": "test",
 			"presentation": {
 				"showReuseMessage": false,
 				"close": true

@@ -1,4 +1,4 @@
-ok i think i am getting the hang of the whole thing.
+i should add another launch task that opens it in a browser instead of word
 
 # references
 https://github.com/OfficeDev/generator-office

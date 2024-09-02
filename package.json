@@ -11,7 +11,7 @@
   },
   "scripts": {
     "dev-log": "office-addin-dev-settings runtime-log --enable",
-    "dev-server": "node scripts/server.js",
+    "dev-server": "node lib/server.js",
     "sideload-start": "office-addin-debugging start dist/manifest.xml --no-debug",
     "sideload-stop": "office-addin-debugging stop dist/manifest.xml && office-addin-dev-settings runtime-log --disable"
   },
