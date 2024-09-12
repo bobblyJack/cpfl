@@ -1,4 +1,5 @@
 const fs = require('fs/promises');
+const {exec} = require('child_process');
 const OAM = require('office-addin-manifest');
 
 const prod = false; // production toggle
@@ -12,6 +13,7 @@ const prod = false; // production toggle
         recursive: true,
         force: true
     });
+    exec('npx webpack');
     const data = await fs.readFile('manifest.xml', 'utf-8');
     const manifest = data.replace(/%APPDOMAIN%/g, domain);
     await fs.writeFile('dist/manifest.xml', manifest, 'utf-8');

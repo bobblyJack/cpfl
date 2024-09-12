@@ -1,11 +1,17 @@
 {
   "compilerOptions": {
-    "target": "ES6",
+    "target": "ES5",
+    "module": "ES6",
+    "lib": [
+      "ES6",
+      "DOM"
+    ],
     "strict": true,
     "declaration": true,
     "noEmitOnError": true,
     "removeComments": true,
     "sourceMap": true,
+    "skipLibCheck": true,
     "outDir": "./dist/"
   },
   "include": [

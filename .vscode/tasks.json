@@ -5,43 +5,12 @@
 		{
 			"label": "Build",
 			"detail": "Default Build Task",
-			"dependsOn": [
-				"CleanUp",
-				"Compile"
-			],
-			"dependsOrder": "sequence",
 			"type": "shell",
 			"command": "node tasks/build.js",
 			"group": {
 				"kind": "build",
 				"isDefault": true
 			},
-			"presentation": {
-				"echo": false,
-				"reveal": "silent",
-				"showReuseMessage": false
-			}
-		},
-		{
-			"label": "CleanUp",
-			"detail": "Empty Build Directories",
-			"type": "shell",
-			"command": "tasks/clean.ps1",
-			"group": "build",
-			"presentation": {
-				"clear": true,
-				"echo": false,
-				"reveal": "silent",
-				"showReuseMessage": false
-			}
-		},
-		{
-			"label": "Compile",
-			"detail": "Build Typescript Library",
-			"type": "typescript",
-			"tsconfig": "tsconfig.json",
-			"group": "build",
-			"problemMatcher": "$tsc",
 			"presentation": {
 				"echo": false,
 				"reveal": "silent",
