@@ -2,10 +2,11 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch Office",
+            "name": "Launch Word",
             "type": "msedge",
             "request": "attach",
             "webRoot": "${workspaceFolder}/dist/",
+            "internalConsoleOptions": "openOnSessionStart",
             "port": 9229,
             "timeout": 600000,
             "preLaunchTask": "Ignition",

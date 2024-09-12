@@ -1,26 +1,24 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require('fs/promises');
+const OAM = require('office-addin-manifest');
 
-// define recursive asset copying function
-function copyDirectory(src,dest) {
-    // make sure destination exists
-    if (!fs.existsSync(dest)) {
-        fs.mkdirSync(dest,{recursive: true});
+const prod = false; // production toggle
+
+(async () => {
+    let domain = "https://localhost:3000";
+    if (prod) {
+        domain = "https://clarkpanagakos.sharepoint.com/taskpane";
     }
-    // read the source directory
-    fs.readdirSync(src).forEach(thing => { 
-        let orig = path.join(src,thing);
-        let copy = path.join(dest,thing);
-        // recursively copies directories
-        if (fs.statSync(orig).isDirectory()) {
-            copyDirectory(orig,copy);
-        // copies files
-        } else {
-            fs.copyFileSync(orig,copy);
-        }
+    fs.cp('assets', 'dist', {
+        recursive: true,
+        force: true
     });
-}
-
-// copy assets and script
-copyDirectory('assets','dist');
-fs.copyFileSync('lib/taskpane.js','dist/script.js');
+    const data = await fs.readFile('manifest.xml', 'utf-8');
+    const manifest = data.replace(/%APPDOMAIN%/g, domain);
+    await fs.writeFile('dist/manifest.xml', manifest, 'utf-8');
+    return OAM.validateManifest('dist/manifest.xml');
+})().then(status => {
+    if (!status.isValid) {
+        throw new Error('manifest invalid');
+    }
+    console.log(`${prod ? 'production' : 'development'} build complete.`);
+});

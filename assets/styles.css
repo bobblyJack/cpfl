@@ -16,17 +16,20 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
     font-family: "Saudagar", "Open Sans", Arial, Helvetica, sans-serif;
-    font-weight: normal;
 }
 
-.color-dk-green {
+.stdout {
     color: #2f4534;
+    display: none;
 }
 
-.color-lt-green {
+.stdin {
     color: #6a7a6a;
+    font-weight: 300;
 }
 
-.color-peach {
+.stderr {
+    display: flex;
     color: #dfb691;
+    font-weight: 700;
 }

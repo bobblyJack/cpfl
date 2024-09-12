@@ -1,32 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="images/favicon.ico" type="image/x-icon"/>
     <title>Taskpane Add-In</title>
 
     <!-- Open Sans Font-->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet">
-    
+
     <!-- CSS Stylesheet-->
     <link rel="stylesheet" href="styles.css">
 
     <!-- Office JavaScript API -->
     <script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js"></script>
-
 </head>
-
 <body>
+    <main class="stdout">
+        <h1>welcome to the office add-in.</h1>
+        <button id="run-button" class="stdin">say hello</button>
+        <br> <!-- Console Log -->
+        <h2 id="console-header"></h2>
+        <p id="console-log"></p>
+    </main>
 
-    <p>welcome to the office add-in.</p>
-    <button id="run-button">say hello</button>
+    <!-- Error Log -->
+    <p class="stderr">load error</p>
 
-    <!-- run taskpane scripting -->
-    <script type="text/javascript" src="script.js"></script>
-
+    <!-- Taskpane Script -->
+    <script type="module" src="index.js"></script>
 </body>
 
 </html>

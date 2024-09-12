@@ -6,14 +6,12 @@
 			"label": "Build",
 			"detail": "Default Build Task",
 			"dependsOn": [
-				"Clean",
-				"Compile",
-				"Convert",
-				"Copy"
+				"CleanUp",
+				"Compile"
 			],
 			"dependsOrder": "sequence",
 			"type": "shell",
-			"command": "echo 'build complete'",
+			"command": "node tasks/build.js",
 			"group": {
 				"kind": "build",
 				"isDefault": true
@@ -21,22 +19,20 @@
 			"presentation": {
 				"echo": false,
 				"reveal": "silent",
-				"showReuseMessage": false,
-				"group": "${defaultBuildTask}"
+				"showReuseMessage": false
 			}
 		},
 		{
-			"label": "Clean",
+			"label": "CleanUp",
 			"detail": "Empty Build Directories",
 			"type": "shell",
 			"command": "tasks/clean.ps1",
 			"group": "build",
 			"presentation": {
-				"echo": false,
 				"clear": true,
+				"echo": false,
 				"reveal": "silent",
-				"showReuseMessage": false,
-				"group": "${defaultBuildTask}"
+				"showReuseMessage": false
 			}
 		},
 		{
@@ -49,41 +45,15 @@
 			"presentation": {
 				"echo": false,
 				"reveal": "silent",
-				"showReuseMessage": false,
-				"group": "${defaultBuildTask}"
-			}
-		},
-		{
-			"label": "Convert",
-			"detail": "Build XML Manifest",
-			"type": "shell",
-			"command": "node lib/manifest.js",
-			"group": "build",
-			"presentation": {
-				"echo": false,
-				"reveal": "silent",
-				"showReuseMessage": false,
-				"group": "${defaultBuildTask}"
-			}
-		},
-		{
-			"label": "Copy",
-			"detail": "Transfer Distribution Assets",
-			"type": "shell",
-			"command": "node tasks/build.js",
-			"group": "build",
-			"presentation": {
-				"echo": false,
-				"reveal": "silent",
-				"showReuseMessage": false,
-				"group": "${defaultBuildTask}"
+				"showReuseMessage": false
 			}
 		},
 		// test group
 		{
 			"label": "Ignition",
-			"dependsOn": "${defaultBuildTask}",
-			"dependsOrder": "sequence",
+			"dependsOn": [
+				"Build"
+			],
 			"type": "shell",
 			"command": "npx",
 			"args": [
@@ -99,8 +69,6 @@
 			},
 			"presentation": {
 				"echo": false,
-				"focus": true,
-				"panel": "dedicated",
 				"showReuseMessage": false
 			}
 		},
@@ -111,8 +79,8 @@
 			"detail": "Stops Debugging",
 			"group": "test",
 			"presentation": {
-				"showReuseMessage": false,
-				"close": true
+				"echo": false,
+				"showReuseMessage": false
 			}
 		}
 	]

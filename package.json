@@ -11,9 +11,21 @@
   },
   "scripts": {
     "dev-log": "office-addin-dev-settings runtime-log --enable",
-    "dev-server": "node lib/server.js",
+    "dev-server": "node tasks/server.js",
     "sideload-start": "office-addin-debugging start dist/manifest.xml --no-debug",
-    "sideload-stop": "office-addin-debugging stop dist/manifest.xml && office-addin-dev-settings runtime-log --disable"
+    "sideload-stop": "office-addin-debugging stop dist/manifest.xml && office-addin-dev-settings runtime-log --disable",
+    "signin": "office-addin-dev-settings m365-account login",
+    "signout": "office-addin-dev-settings m365-account logout",
+    "configure-sso": "office-addin-sso configure manifest.xml"
+  },
+  "config": {
+    "app_to_debug": "word",
+    "app_type_to_debug": "desktop",
+    "dev_server_port": 3000
+  },
+  "dependencies": {
+    "@azure/msal-browser": "*",
+    "office-addin-sso": "*"
   },
   "devDependencies": {
     "@types/node": "*",
