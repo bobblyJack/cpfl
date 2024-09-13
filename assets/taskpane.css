@@ -1,6 +1,6 @@
 @font-face {
     font-family: "Saudagar";
-    src: url('fonts/Saudagar.ttf') format('truetype');
+    src: url('./fonts/Saudagar.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
@@ -12,24 +12,23 @@ body {
     font-style: normal;
     font-variation-settings: "wdth" 100;
     font-size: 16px;
+    color: #2f4534;
 }
 
 h1, h2, h3, h4, h5, h6 {
     font-family: "Saudagar", "Open Sans", Arial, Helvetica, sans-serif;
 }
 
-.stdout {
-    color: #2f4534;
-    display: none;
+.hidden {
+    display: none
 }
 
-.stdin {
+.light {
     color: #6a7a6a;
     font-weight: 300;
 }
 
-.stderr {
-    display: flex;
+.contrast {
     color: #dfb691;
     font-weight: 700;
 }

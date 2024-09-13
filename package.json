@@ -18,12 +18,8 @@
     "sideload-stop": "office-addin-debugging stop dist/manifest.xml && office-addin-dev-settings runtime-log --disable",
     "signin": "office-addin-dev-settings m365-account login",
     "signout": "office-addin-dev-settings m365-account logout",
-    "configure-sso": "office-addin-sso configure manifest.xml"
-  },
-  "config": {
-    "app_to_debug": "word",
-    "app_type_to_debug": "desktop",
-    "dev_server_port": 3000
+    "configure-sso": "office-addin-sso configure manifest.xml",
+    "validate": "office-addin-manifest validate dist/manifext.xml"
   },
   "dependencies": {
     "@azure/msal-browser": "*",
@@ -32,7 +28,9 @@
   "devDependencies": {
     "@types/node": "*",
     "@types/office-js": "*",
+    "@types/webpack": "^5.28.5",
     "copy-webpack-plugin": "^12.0.2",
+    "css-loader": "^7.1.2",
     "html-loader": "^5.1.0",
     "html-webpack-plugin": "^5.6.0",
     "office-addin-cli": "*",
@@ -40,7 +38,9 @@
     "office-addin-dev-certs": "*",
     "office-addin-dev-settings": "*",
     "office-addin-manifest": "*",
+    "style-loader": "^4.0.0",
     "ts-loader": "*",
+    "ts-node": "^10.9.2",
     "typescript": "*",
     "webpack": "*",
     "webpack-cli": "*"

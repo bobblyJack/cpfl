@@ -1,23 +1,19 @@
 {
 	"version": "2.0.0",
 	"tasks": [
-		// build group
 		{
 			"label": "Build",
-			"detail": "Default Build Task",
-			"type": "shell",
-			"command": "node tasks/build.js",
+			"detail": "Build Project for Testing",
+			"type": "npm",
+			"script": "build-dev",
 			"group": {
 				"kind": "build",
 				"isDefault": true
 			},
 			"presentation": {
-				"echo": false,
-				"reveal": "silent",
 				"showReuseMessage": false
 			}
 		},
-		// test group
 		{
 			"label": "Ignition",
 			"dependsOn": [
@@ -37,7 +33,6 @@
 				"isDefault": true
 			},
 			"presentation": {
-				"echo": false,
 				"showReuseMessage": false
 			}
 		},
@@ -48,7 +43,6 @@
 			"detail": "Stops Debugging",
 			"group": "test",
 			"presentation": {
-				"echo": false,
 				"showReuseMessage": false
 			}
 		}
