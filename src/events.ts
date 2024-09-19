@@ -1,4 +1,4 @@
-import html from './html/elements';
+import html from './html';
 import {main} from './main';
 
 export function listen() {

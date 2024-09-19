@@ -1,4 +1,4 @@
-import { getElement } from "./elements";
+import { getElement } from "..";
 
 const stdout = getElement('stdout');
 const stderr = getElement('stderr');
@@ -8,4 +8,3 @@ export function toggle() {
         element.classList.toggle('hidden');
     });
 }
-

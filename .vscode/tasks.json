@@ -3,9 +3,9 @@
 	"tasks": [
 		{
 			"label": "Build",
-			"detail": "Build Project for Testing",
+			"detail": "Run Webpack through .ENV Config",
 			"type": "npm",
-			"script": "build-dev",
+			"script": "build",
 			"group": {
 				"kind": "build",
 				"isDefault": true
@@ -39,8 +39,8 @@
 		{
 			"label": "Landing",
 			"type": "npm",
-			"script": "sideload-stop",
-			"detail": "Stops Debugging",
+			"script": "stop",
+			"detail": "End Dev-Server and Runtime Logging",
 			"group": "test",
 			"presentation": {
 				"showReuseMessage": false

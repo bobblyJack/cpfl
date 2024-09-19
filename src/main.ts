@@ -1,14 +1,13 @@
-import {auth} from './auth/auth';
+import * as auth from './auth';
 
 export async function main() { 
-    const data = await auth();
-    writetoDoc(data);
+    const user = await auth.getUser();
+    writetoDoc(user.name);
 }
 
-async function writetoDoc(data: any) {
+async function writetoDoc(data: string) {
     return Word.run((context) => {
-        const userInfo: string = data["displayName"];
-        context.document.body.insertParagraph("hi there " + userInfo, Word.InsertLocation.start);
+        context.document.body.insertParagraph("hi there " + data, Word.InsertLocation.end);
         return context.sync();
-    })
+    });
 }

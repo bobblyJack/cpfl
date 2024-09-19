@@ -1,4 +1,4 @@
-import { getElement } from "./elements";
+import { getElement } from "..";
 
 class Button {
     constructor(id: string) {
