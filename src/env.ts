@@ -8,8 +8,6 @@ class Env {
     private _host = "clarkpanagakos.sharepoint.com/taskpane";
     private _client = "8ca8fd63-8fd6-4414-92e4-21584ed8df0f";
     private _tenant = "e72b34cf-ef52-473c-816a-e1d7d416dcc4";
-    private _keys = "https://login.microsoftonline.com/common/discovery/v2.0/keys";
-    private _scope = '/access_as_user';
     private _drive = 'b!sZigh2uhLkm81En6bkEH0c-dYK-8B61EljQC5ygtekif7QwnUqswTLKnsBFEkAKV';
 
     /*
@@ -49,17 +47,9 @@ class Env {
     public get tenant(): string {
         return this._tenant;
     }
-    
-    public get keys(): string {
-        return this._keys;
-    }
 
     public get api(): string {
         return `api://${this._domain}/${this.client}`;
-    }
-
-    public get scope(): string {
-        return this.api + this._scope;
     }
 
     public get drive(): string {

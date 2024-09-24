@@ -2,8 +2,9 @@ import env from '../env';
 import jwt from 'jsonwebtoken';
 import { JwksClient } from "jwks-rsa";
 
+const tenancy = `https://login.microsoftonline.com/${env.tenant}`;
 const keyFetcher = new JwksClient({
-    jwksUri: env.keys
+    jwksUri: `${tenancy}/discovery/v2.0/keys`
 });
 
 /**
@@ -30,7 +31,8 @@ export async function verifyToken(token: string) {
     return new Promise<jwt.JwtPayload>((resolve, reject) => {
 
         jwt.verify(token, passSigKey, {
-            audience: env.client
+            audience: env.client,
+            issuer: `${tenancy}/v2.0`
         }, (err, result) => {
             if (err) {
                 return reject(err);
