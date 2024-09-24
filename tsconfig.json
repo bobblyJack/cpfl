@@ -6,13 +6,12 @@
       "DOM"
     ],
     "strict": true,
-    "declaration": true,
     "noEmitOnError": true,
     "removeComments": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "sourceMap": true,
-    "outDir": "./lib/"
+    "outDir": "./dist/"
   },
   "include": [
     "./src/**/*"

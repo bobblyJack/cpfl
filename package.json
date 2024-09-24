@@ -10,11 +10,11 @@
     "url": "https://lg-cpfl@dev.azure.com/lg-cpfl/office-addin/_git/office-addin"
   },
   "scripts": {
-    "build": "webpack",
+    "build": "webpack --config webpack.config.ts",
     "dev-log": "office-addin-dev-settings runtime-log --enable",
     "dev-server": "ts-node src/server/app.ts",
-    "start": "office-addin-debugging start dist/manifest.xml --no-debug",
-    "stop": "office-addin-debugging stop dist/manifest.xml && office-addin-dev-settings runtime-log --disable",
+    "sideload-start": "office-addin-debugging start dist/manifest.xml --no-debug",
+    "sideload-stop": "office-addin-debugging stop dist/manifest.xml && office-addin-dev-settings runtime-log --disable",
     "validate": "office-addin-manifest validate dist/manifest.xml"
   },
   "dependencies": {
@@ -23,31 +23,23 @@
     "jwks-rsa": "*"
   },
   "devDependencies": {
-    "@dotenvx/dotenvx": "*",
     "@types/jsonwebtoken": "*",
     "@types/node": "*",
     "@types/office-js": "*",
     "@types/webpack": "*",
-    "buffer": "*",
     "copy-webpack-plugin": "*",
-    "crypto-browserify": "*",
     "css-loader": "*",
     "html-loader": "*",
     "html-webpack-plugin": "*",
-    "https-browserify": "*",
     "mini-css-extract-plugin": "*",
     "office-addin-cli": "*",
     "office-addin-debugging": "*",
     "office-addin-dev-certs": "*",
     "office-addin-dev-settings": "*",
     "office-addin-manifest": "*",
-    "stream-browserify": "*",
     "ts-loader": "*",
     "ts-node": "*",
     "typescript": "*",
-    "url": "*",
-    "util": "*",
-    "vm-browserify": "*",
     "webpack": "*",
     "webpack-cli": "*"
   }

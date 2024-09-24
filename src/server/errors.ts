@@ -13,6 +13,7 @@ export function httpError(err: unknown) {
     let code = 500;
     let msg = 'unknown server error';
     if (err instanceof Error) {
+        msg = err.message;
         for (const [key, value] of Object.entries(nodeErrors)) {
             if (err.message.includes(key)) {
                 code = value.code;

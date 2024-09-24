@@ -3,20 +3,23 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import * as OADC from 'office-addin-dev-certs';
 import env from '../env';
+import {verifyToken} from './token';
 import {getMime} from './mime';
 import {httpError} from './errors';
+
+const dir = 'dist'; // define dev build directory
 
 OADC.getHttpsServerOptions().then((certs) => { // get dev certs
     https.createServer(certs, async (req, res) => { // define server behaviour
 
-        let responseBody: any;
+        let responseBody: string | Buffer;
         let filePath: string = "";
 
         try { // parse requested url and define response
-            const url = new URL(`https://${env.domain}${req.url || '/'}`);
+            const url = new URL(`${env.domain}${req.url || '/'}`);
 
             res.setHeader('Content-Type', 'text/plain'); // set header defaults
-            if (env.dev || url.pathname === "/auth") {
+            if (env.dev || url.pathname.includes('auth')) {
                 res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
                 res.setHeader('Expires', -1);
                 res.setHeader('Pragma', 'no-cache');
@@ -25,33 +28,44 @@ OADC.getHttpsServerOptions().then((certs) => { // get dev certs
             }
 
             switch (url.pathname) { // switch for specific urls
-                case '/status': {
-                    responseBody = 'cpfl office add-in server running ok';
+
+                case '/console': { // console & status
+                    responseBody = 'tweet tweet';
+                    console.log(url.searchParams.get('log'));
                     break;
                 }
 
-                /* figure out how to do auth stuff.
-                case '/auth': {
+                case '/auth': { // authorisation
+                    // split method of get / post rather than using queried login ?
+                    if (!req.headers.authorization) {
+                        throw new Error('authorisation header missing')
+                    }
                     res.setHeader('Content-Type', 'application/json');
-                    res.setHeader('Accept', 'application/json');
+                    const token = req.headers.authorization.split(" ")[1];
                     
-                    get accessToken, then
-                    res.setHeader('Authorization', `Bearer ${accessToken}`);
-                    responseBody = json; <- use fetch to get this (might need to install node-fetch)
-                    it's middle-tier because the server works as an intermediary
-                    the req needs to go through validateJWT
-                    the res needs to go through getuserdata
-                    
+                    const payload = await verifyToken(token);
+                    responseBody = JSON.stringify(payload);
+
+                    /*const queries = url.searchParams;
+                    if (queries.has('login')) { // simple id
+
+                        // store some amount of profile data somewhere? 
+
+                    } else { // parse queries
+
+                        const scopes = payload.scp.split(" ")
+                        res.setHeader('Accept', 'application/json');
+                        
+                    }*/
                     break;
                 }
-                */
 
-                case '/': { // default to static files
-                    filePath = path.join(env.dir, 'taskpane.html');
+                case '/': { // set home to app page
+                    filePath = path.join(dir, 'taskpane.html');
                 }
-                default: { 
+                default: { // default to static files
                     if (!filePath) {
-                        filePath = path.join(env.dir, url.pathname);
+                        filePath = path.join(dir, url.pathname);
                     }
                     res.setHeader('Content-Type', getMime(path.extname(filePath)));
                     responseBody = await fs.readFile(filePath);

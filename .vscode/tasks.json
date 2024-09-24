@@ -39,11 +39,12 @@
 		{
 			"label": "Landing",
 			"type": "npm",
-			"script": "stop",
+			"script": "sideload-stop",
 			"detail": "End Dev-Server and Runtime Logging",
 			"group": "test",
 			"presentation": {
-				"showReuseMessage": false
+				"showReuseMessage": false,
+				"close": true
 			}
 		}
 	]

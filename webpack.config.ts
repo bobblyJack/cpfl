@@ -7,49 +7,42 @@ import env from './src/env';
 
 const config: Configuration = {
     mode: env.mode,
-    entry: {
-        taskpane: './src/init.ts',
-    },
+    entry: './src/init.ts',
     output: {
-        filename: '[name].js',
-        path: path.resolve(env.dir),
+        filename: 'taskpane.js',
+        path: path.resolve(__dirname, 'dist'),
         assetModuleFilename: './assets/[name][ext]',
         clean: true
     },
     module: {
+        defaultRules: [
+            {
+                exclude: /node_modules/i
+            }
+        ],
         rules: [
             {
                 test: /\.ts$/i,
-                exclude: /node_modules/i,
                 use: 'ts-loader' 
             },
             {
                 test: /\.html$/i,
-                exclude: /node_modules/i,
                 use: 'html-loader'
             },
             {
                 test: /\.css$/i,
-                exclude: /node_modules/i,
                 use: [MiniCSSExtractPlugin.loader, 'css-loader']
+            },
+            {
+                test: /\.(ico|ttf)$/i,
+                type: 'asset/resource'
             }
         ]
     },
     resolve: {
-        extensions: [
-            '.js', 
-            '.json', 
+        extensions: [ 
             '.ts'
-        ],
-        fallback: {
-            buffer: require.resolve('buffer'),
-            crypto: require.resolve('crypto-browserify'),
-            https: require.resolve('https-browserify'),
-            stream: require.resolve('stream-browserify'),
-            url: require.resolve('url'),
-            util: require.resolve('util'),
-            vm: require.resolve('vm-browserify')
-        }
+        ]
     },
     optimization: {
         splitChunks: {
@@ -66,7 +59,7 @@ const config: Configuration = {
     plugins: [
         new HtmlWebpackPlugin({
             filename: 'taskpane.html',
-            template: './src/html/app.html'
+            template: './src/html/taskpane.html'
         }),
         new MiniCSSExtractPlugin({
             filename: 'taskpane.css'
@@ -82,8 +75,9 @@ const config: Configuration = {
                     to: "./[path][name][ext]",
                     transform(content) {
                         let output = content.toString();
-                        output = output.replace(/%APPID%/g, env.clientID);
+                        output = output.replace(/%APPID%/g, env.client);
                         output = output.replace(/%APPDOMAIN%/g, env.domain);
+                        output = output.replace(/%APPAPI%/g, env.api);
                         return output;
                     }
                 }

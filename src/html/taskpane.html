@@ -1,27 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
+    <!-- Meta Content -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Taskpane Add-In</title>
+    <title>CPFL Taskpane</title>
     <link rel="icon" href="./images/favicon.ico">
 
-    <!-- Open Sans Font-->
+    <!-- Open Sans Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet">
 
     <!-- Office JavaScript API -->
     <script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js"></script>
+
 </head>
 <body>
-    <p id="stderr" class="contrast">load error</p>
+
     <!-- Taskpane Body -->
-    <main id="stdout" class="hidden">
-        <h1>welcome to the office add-in.</h1>
-        <button id="run-button" class="light">say hello</button>
-    </main>
+    <main id="stdout"></main>
+
+    <!-- Error Console -->
+    <div id="stderr" style="font-size: 12px;">
+        <p class="light">
+            Loading CPFL App...
+        </p>
+    </div>
     
 </body>
-
 </html>

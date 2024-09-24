@@ -1,16 +1,23 @@
-import * as dotenv from '@dotenvx/dotenvx';
-import * as path from 'path';
-
 class Env {
-  
-    public constructor() {
-        dotenv.config({
-            quiet: true
-        });
-    }
 
+    /*
+     * environment variables 
+     */
+    private _mode = 'development';
+    private _port = 3000;
+    private _host = "clarkpanagakos.sharepoint.com/taskpane";
+    private _client = "8ca8fd63-8fd6-4414-92e4-21584ed8df0f";
+    private _tenant = "e72b34cf-ef52-473c-816a-e1d7d416dcc4";
+    private _keys = "https://login.microsoftonline.com/common/discovery/v2.0/keys";
+    private _scope = '/access_as_user';
+    private _drive = 'b!sZigh2uhLkm81En6bkEH0c-dYK-8B61EljQC5ygtekif7QwnUqswTLKnsBFEkAKV';
+
+    /*
+     * environment parsing methods
+     */
+    
     public get mode(): 'production' | 'development' {
-        if (process.env.NODE_ENV === 'production') {
+        if (this._mode === 'production') {
             return 'production';
         }
         return 'development';
@@ -21,43 +28,42 @@ class Env {
     }
 
     public get port(): number {
-        if (!process.env.DEV_PORT) {
-            return 3000;
-        }
-        return Number(process.env.DEV_PORT);
+        return this._port;
     }
 
-    public get domain(): string {
+    private get _domain(): string {
         if (this.dev) {
             return `localhost:${this.port}`;
         }
-        if (!process.env.PROD_HOST) {
-            throw new Error('no production host path');
-        }
-        return process.env.PROD_HOST;
+        return this._host;
     }
 
-    public get dir(): string {
-        return path.join(__dirname, process.env.DEV_DIR || 'dist');
+    public get domain(): string {
+        return `https://${this._domain}`;
     }
 
-    public get clientID(): string {
-        if (!process.env.CLIENT_ID) {
-            throw new Error('client id missing');
-        }
-        return process.env.CLIENT_ID;
+    public get client(): string {
+        return this._client;
     }
-    public get tenantID(): string {
-        if (!process.env.TENANT_ID) {
-            throw new Error('tenant id missing');
-        }
-        return process.env.TENANT_ID;
+
+    public get tenant(): string {
+        return this._tenant;
     }
-    public get clientSecret(): string {
-        if (!process.env.CLIENT_SECRET) {
-            throw new Error('client secret missing');
-        }
-        return process.env.CLIENT_SECRET;
+    
+    public get keys(): string {
+        return this._keys;
+    }
+
+    public get api(): string {
+        return `api://${this._domain}/${this.client}`;
+    }
+
+    public get scope(): string {
+        return this.api + this._scope;
+    }
+
+    public get drive(): string {
+        return this._drive;
     }
 
 }

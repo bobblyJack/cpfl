@@ -8,7 +8,6 @@
             "webRoot": "${workspaceFolder}/dist/",
             "internalConsoleOptions": "openOnSessionStart",
             "port": 9229,
-            "timeout": 600000,
             "preLaunchTask": "Ignition",
             "postDebugTask": "Landing"
         }

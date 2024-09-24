@@ -1,17 +1,9 @@
-import './app.html';
+import './taskpane.html';
 import './styles.css';
-import * as errors from './script/errors';
-import * as buttons from './script/buttons';
-
-export function getElement(id: string) {
-    const element = document.getElementById(id);
-    if (!element) {
-        throw new Error(`element ${id} missing`);
-    }
-    return element;
-}
+import main from './scripts/main';
+import console from './scripts/console';
 
 export default {
-    errors,
-    buttons
+    main,
+    console
 }

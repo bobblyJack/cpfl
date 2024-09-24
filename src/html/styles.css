@@ -19,10 +19,6 @@ h1, h2, h3, h4, h5, h6 {
     font-family: "Saudagar", "Open Sans", Arial, Helvetica, sans-serif;
 }
 
-.hidden {
-    display: none
-}
-
 .light {
     color: #6a7a6a;
     font-weight: 300;
@@ -30,5 +26,5 @@ h1, h2, h3, h4, h5, h6 {
 
 .contrast {
     color: #dfb691;
-    font-weight: 700;
+    font-weight: 500;
 }
