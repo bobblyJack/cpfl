@@ -1,61 +1,17 @@
-class Env {
-
-    /*
-     * environment variables 
-     */
-    private _mode = 'development';
-    private _port = 3000;
-    private _host = "clarkpanagakos.sharepoint.com/taskpane";
-    private _client = "8ca8fd63-8fd6-4414-92e4-21584ed8df0f";
-    private _tenant = "e72b34cf-ef52-473c-816a-e1d7d416dcc4";
-    private _drive = 'b!sZigh2uhLkm81En6bkEH0c-dYK-8B61EljQC5ygtekif7QwnUqswTLKnsBFEkAKV';
-
-    /*
-     * environment parsing methods
-     */
-    
-    public get mode(): 'production' | 'development' {
-        if (this._mode === 'production') {
-            return 'production';
-        }
-        return 'development';
-    }
-
-    public get dev(): boolean {
-        return this.mode === 'development';
-    }
-
-    public get port(): number {
-        return this._port;
-    }
-
-    private get _domain(): string {
-        if (this.dev) {
-            return `localhost:${this.port}`;
-        }
-        return this._host;
-    }
-
-    public get domain(): string {
-        return `https://${this._domain}`;
-    }
-
-    public get client(): string {
-        return this._client;
-    }
-
-    public get tenant(): string {
-        return this._tenant;
-    }
-
-    public get api(): string {
-        return `api://${this._domain}/${this.client}`;
-    }
-
-    public get drive(): string {
-        return this._drive;
-    }
-
+const mode = process.env.NODE_ENV === 'production' ? 'production' : 'development'
+export default {
+    dev: mode === 'development',
+    site: new URL(`https://${
+        mode === 'development' 
+        // dev host
+        ? "localhost:3000"
+        // prod host 
+        : "green-field-0ab7dc600.5.azurestaticapps.net"
+    }`),
+    // client app guid
+    client: "8ca8fd63-8fd6-4414-92e4-21584ed8df0f",
+    // tenant guid
+    tenant: "e72b34cf-ef52-473c-816a-e1d7d416dcc4",
+    // taskpane drive reference
+    drive: "b!sZigh2uhLkm81En6bkEH0c-dYK-8B61EljQC5ygtekif7QwnUqswTLKnsBFEkAKV"
 }
-
-export default new Env();

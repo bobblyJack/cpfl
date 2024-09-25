@@ -2,7 +2,7 @@ import * as https from 'https';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import * as OADC from 'office-addin-dev-certs';
-import env from '../env';
+import env from '../src/env';
 import {verifyToken} from './token';
 import {getMime} from './mime';
 import {httpError} from './errors';
@@ -16,7 +16,7 @@ OADC.getHttpsServerOptions().then((certs) => { // get dev certs
         let filePath: string = "";
 
         try { // parse requested url and define response
-            const url = new URL(`${env.domain}${req.url || '/'}`);
+            const url = new URL(`${env.site.origin}${req.url || '/'}`);
 
             res.setHeader('Content-Type', 'text/plain'); // set header defaults
             if (env.dev || url.pathname.includes('auth')) {
@@ -86,7 +86,7 @@ OADC.getHttpsServerOptions().then((certs) => { // get dev certs
 
         res.end(responseBody); // send response
         
-    }).listen(env.port, () => { // start server
-        console.log(`Listening on port ${env.port}`);
+    }).listen(env.site.port, () => { // start server
+        console.log(`Listening on port ${env.site.port}`);
     });
 });

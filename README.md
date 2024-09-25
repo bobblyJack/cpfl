@@ -19,26 +19,6 @@ check out azure hosting and the vs code plugin.
 # LG. user id
 oid: 7d3223ad-e122-4fff-ab5a-a7c3c48957c1
 
-# url parsing
-need clearer language for my env around url parts
-{
-  "href": "https://username:password@example.com:8080/path/to/resource?query1=value1&query2=value2#fragment",
-  "origin": "https://example.com:8080",
-  "protocol": "https:",
-  "username": "username",
-  "password": "password",
-  "host": "example.com:8080",
-  "hostname": "example.com",
-  "port": "8080",
-  "pathname": "/path/to/resource",
-  "search": "?query1=value1&query2=value2",
-  "searchParams": {
-    "query1": "value1",
-    "query2": "value2"
-  },
-  "hash": "#fragment"
-}
-
 # hash fragments
 can use an anchor element with a hash in the href attribute to scoll to the corresponding id on the same page automatically
 <a href="#section1">Go to Section 1</a>

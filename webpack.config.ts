@@ -6,7 +6,6 @@ import MiniCSSExtractPlugin from 'mini-css-extract-plugin';
 import env from './src/env';
 
 const config: Configuration = {
-    mode: env.mode,
     entry: './src/init.ts',
     output: {
         filename: 'taskpane.js',
@@ -75,9 +74,8 @@ const config: Configuration = {
                     to: "./[path][name][ext]",
                     transform(content) {
                         let output = content.toString();
-                        output = output.replace(/%APPID%/g, env.client);
-                        output = output.replace(/%APPDOMAIN%/g, env.domain);
-                        output = output.replace(/%APPAPI%/g, env.api);
+                        output = output.replace(/%CLIENTID%/g, env.client);
+                        output = output.replace(/%APPHOST%/g, env.site.host);
                         return output;
                     }
                 }
