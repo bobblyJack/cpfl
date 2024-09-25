@@ -6,12 +6,12 @@ export async function refresh() {
         document.body.removeChild(child);
     });
 
-    const user = await router.auth(); // placeholders
-    const msg = `Welcome ${user.name.slice(0, user.name.indexOf(" "))}`
+    const username = await router.getUser();
+    const msg = `Welcome ${username.slice(0, username.indexOf(" "))}`
     
     const header = document.createElement('h1');
     header.id = 'main-header';
-    header.textContent = msg; // use of placeholder
+    header.textContent = msg;
     document.body.appendChild(header);
 
     const para = document.createElement('p');
@@ -24,8 +24,5 @@ export async function refresh() {
             para.remove();
         }, 10000);
     }, 10000);
-
-    return user; // further use of placeholder
-    // user settings should get stored somewhere else.
 
 }

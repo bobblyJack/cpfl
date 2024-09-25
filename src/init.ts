@@ -12,10 +12,13 @@ Office.onReady((info) => {
 
 async function init() {
 
-    const user = await html.refresh();
+    await html.refresh();
 
     Word.run((context) => {
-        for (const [key, value] of Object.entries(user)) {
+        for (const [key, value] of Object.entries({
+            test: 'one',
+            test2: 'two'
+        })) {
             let msg = `${key}: ${value}`;
             context.document.body.insertParagraph(msg, Word.InsertLocation.end);
         }
