@@ -10,17 +10,25 @@ Office.onReady((info) => {
 });
 
 async function init() {
-
     await html.refresh();
-        
-    const data = await router.getFiles();
-    
-    Word.run((context) => {
-        context.document.body.insertParagraph(JSON.stringify(data), "End");
-        return context.sync();
-    });
+    html.addElement('run-button', 'button').onclick = printData;
+}
 
-    
-    
+async function printData() {
+    try {
+        const data = await router.getFiles();
+        Word.run((context) => {
+            context.document.body.insertParagraph(JSON.stringify(data), "End");
+            return context.sync();
+        });
+
+    } catch (err) {
+        if (err instanceof Error) {
+            console.error(err.message);
+        } else {
+            console.error('unknown error caught');
+        }
+        throw err;
+    }
 
 }
