@@ -13,17 +13,15 @@
     "build": "webpack --mode production",
     "dev-build": "webpack --mode development",
     "dev-log": "office-addin-dev-settings runtime-log --enable",
-    "dev-server": "ts-node src/server/app.ts",
+    "dev-server": "ts-node dev/server.ts",
     "sideload-start": "office-addin-debugging start dist/manifest.xml --no-debug",
     "sideload-stop": "office-addin-debugging stop dist/manifest.xml && office-addin-dev-settings runtime-log --disable",
     "validate": "office-addin-manifest validate dist/manifest.xml"
   },
   "dependencies": {
-    "jsonwebtoken": "*",
-    "jwks-rsa": "*"
+    "jose": "*"
   },
   "devDependencies": {
-    "@types/jsonwebtoken": "*",
     "@types/node": "*",
     "@types/office-js": "*",
     "@types/webpack": "*",

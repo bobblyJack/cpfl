@@ -6,7 +6,7 @@ export async function refresh() {
         document.body.removeChild(child);
     });
 
-    const username = await router.getUser();
+    const username = await router.getUsername();
     const msg = `Welcome ${username.slice(0, username.indexOf(" "))}`
     
     const header = document.createElement('h1');

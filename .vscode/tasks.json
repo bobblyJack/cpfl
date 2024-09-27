@@ -3,9 +3,9 @@
 	"tasks": [
 		{
 			"label": "Build",
-			"detail": "Run Webpack through .ENV Config",
+			"detail": "Webpack Dev Mode",
 			"type": "npm",
-			"script": "build",
+			"script": "dev-build",
 			"group": {
 				"kind": "build",
 				"isDefault": true
@@ -33,7 +33,8 @@
 				"isDefault": true
 			},
 			"presentation": {
-				"showReuseMessage": false
+				"showReuseMessage": false,
+				"close": true
 			}
 		},
 		{

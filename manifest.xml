@@ -12,9 +12,9 @@
 	<IconUrl DefaultValue="https://%APPHOST%/assets/icon-32.png"/>
 	<HighResolutionIconUrl DefaultValue="https://%APPHOST%/assets/icon-128.png"/>
 	<SupportUrl DefaultValue="https://clarkpanagakos.com.au"/>
-	<APPHOSTs>
-		<APPHOST>https://clarkpanagakos.com.au</APPHOST>
-	</APPHOSTs>
+	<AppDomains>
+		<AppDomain>https://clarkpanagakos.com.au</AppDomain>
+	</AppDomains>
 	<Hosts>
 		<Host Name="Document"/>
 	</Hosts>

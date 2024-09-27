@@ -1,0 +1,20 @@
+name: AzureSWA CI/CD
+
+trigger: #runs on changes
+  - main
+
+pool: # build env (linux VM)
+  vmImage: ubuntu-latest
+
+variables: # references this variable group for envionment data
+- group: Azure-Static-Web-Apps-green-field-0ab7dc600-variable-group
+
+steps:
+- checkout: self # checks out the repo including submods
+  submodules: true
+
+- task: AzureStaticWebApp@0 
+  inputs:
+    app_location: "src"
+    output_location: "dist"
+    azure_static_web_apps_api_token: $(AZURE_STATIC_WEB_APPS_API_TOKEN_GREEN_FIELD_0AB7DC600)

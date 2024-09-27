@@ -3,26 +3,24 @@ import * as router from './router';
 
 Office.onReady((info) => {
     if (info.host === Office.HostType.Word) {
-        router.log('Accessing 365...');
         init();
     } else {
-        router.log('Office Host Error');
+        console.error('Office Host Error');
     }
 });
 
 async function init() {
 
     await html.refresh();
-
+        
+    const data = await router.getFiles();
+    
     Word.run((context) => {
-        for (const [key, value] of Object.entries({
-            test: 'one',
-            test2: 'two'
-        })) {
-            let msg = `${key}: ${value}`;
-            context.document.body.insertParagraph(msg, Word.InsertLocation.end);
-        }
+        context.document.body.insertParagraph(JSON.stringify(data), "End");
         return context.sync();
     });
+
+    
+    
 
 }
