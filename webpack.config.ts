@@ -10,7 +10,7 @@ process.env.NODE_ENV = process.env.NODE_ENV || devBuild ? 'development' : 'produ
 // environment variables
 const env = {
     DEV_HOST: "localhost:3000",
-    PROD_HOST: "bobblyJack.github.io",
+    PROD_HOST: "bobblyJack.github.io/cpfl",
     CLIENT_ID: "8ca8fd63-8fd6-4414-92e4-21584ed8df0f",
     TENANT_ID: "e72b34cf-ef52-473c-816a-e1d7d416dcc4",
     DRIVE_ID: "b!sZigh2uhLkm81En6bkEH0c-dYK-8B61EljQC5ygtekif7QwnUqswTLKnsBFEkAKV"
@@ -69,11 +69,11 @@ const config: Configuration = {
     },
     plugins: [
         new HtmlWebpackPlugin({
-            filename: 'taskpane.html',
+            filename: 'index.html',
             template: './src/html/taskpane.html'
         }),
         new MiniCSSExtractPlugin({
-            filename: 'taskpane.css'
+            filename: 'styles.css'
         }),
         new DefinePlugin((() => {
             const definitions: [string, string][] = [

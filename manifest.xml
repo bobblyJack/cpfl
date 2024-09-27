@@ -19,7 +19,7 @@
 		<Host Name="Document"/>
 	</Hosts>
 	<DefaultSettings>
-		<SourceLocation DefaultValue="https://%APPHOST%/taskpane.html"/>
+		<SourceLocation DefaultValue="https://%APPHOST%/"/>
 	</DefaultSettings>
 	<Permissions>ReadWriteDocument</Permissions>
 	<VersionOverrides xmlns="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="VersionOverridesV1_0">
@@ -70,7 +70,7 @@
 			</bt:Images>
 			<bt:Urls>
 				<bt:Url id="GetStarted.LearnMoreUrl" DefaultValue="https://clarkpanagakos.com.au"/>
-				<bt:Url id="Taskpane.Url" DefaultValue="https://%APPHOST%/taskpane.html"/>
+				<bt:Url id="Taskpane.Url" DefaultValue="https://%APPHOST%/"/>
 			</bt:Urls>
 			<bt:ShortStrings>
 				<bt:String id="GetStarted.Title" DefaultValue="Get Started"/>

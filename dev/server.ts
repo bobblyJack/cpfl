@@ -23,7 +23,7 @@ OADC.getHttpsServerOptions().then((certs) => { // get dev certs
             res.setHeader('Pragma', 'no-cache');
 
             if (url.pathname === "/") { // set index file path
-                filePath = path.join('dist', 'taskpane.html');
+                filePath = path.join('dist', 'index.html');
             } else {
                 filePath = path.join('dist', url.pathname);
             }
