@@ -11,10 +11,10 @@ Office.onReady((info) => {
 
 async function init() {
     await html.refresh();
-    const runButton = html.addElement('run-button', 'button');
+    const runButton = html.addElement('button');
     runButton.textContent = "Get Drive Content";
     runButton.onclick = printData;
-    const userButton = html.addElement('user-button', 'button');
+    const userButton = html.addElement('button');
     userButton.textContent = "Get Access Token";
     userButton.onclick = () => {
         Word.run(async (context) => {
