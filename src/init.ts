@@ -11,7 +11,19 @@ Office.onReady((info) => {
 
 async function init() {
     await html.refresh();
-    html.addElement('run-button', 'button').onclick = printData;
+    const runButton = html.addElement('run-button', 'button');
+    runButton.textContent = "Get Drive Content";
+    runButton.onclick = printData;
+    const userButton = html.addElement('user-button', 'button');
+    userButton.textContent = "Get Access Token";
+    userButton.onclick = () => {
+        Word.run((context) => {
+            const data = router.getPayload;
+            context.document.body.insertParagraph(JSON.stringify(data), "Start");
+            return context.sync();
+        });
+    }
+
 }
 
 async function printData() {
