@@ -17,8 +17,8 @@ async function init() {
     const userButton = html.addElement('user-button', 'button');
     userButton.textContent = "Get Access Token";
     userButton.onclick = () => {
-        Word.run((context) => {
-            const data = router.getPayload;
+        Word.run(async (context) => {
+            const data = await router.getUser();
             context.document.body.insertParagraph(JSON.stringify(data), "Start");
             return context.sync();
         });
@@ -42,5 +42,4 @@ async function printData() {
         }
         throw err;
     }
-
 }

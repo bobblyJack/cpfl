@@ -4,7 +4,7 @@ import env from '../env';
 const tenancy = `https://login.microsoftonline.com/${env.tenant}`;
 const JWKS = createRemoteJWKSet(new URL(`${tenancy}/discovery/v2.0/keys`));
 
-export async function getPayload(token: string) {
+async function getPayload(token: string) {
     const response = await jwtVerify(token, JWKS, {
         audience: env.client,
         issuer: `${tenancy}/v2.0`
@@ -23,14 +23,9 @@ async function getToken(claim?: string): Promise<string> {
 
 }
 
-export async function getUser() {
+export async function getUser(): Promise<Record<string, any>> {
     const token = await getToken();
-    const payload = await getPayload(token);
-    return {
-        oid: payload['oid'] as string,
-        name: payload['name'] as string,
-        upn: payload['preferred_username'] as string
-    }
+    return getPayload(token);
 }
 
 export async function getFiles(): Promise<Record<string, any>> {
