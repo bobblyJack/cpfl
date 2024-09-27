@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "repository": {
     "type": "git",
-    "url": "https://lg-cpfl@dev.azure.com/lg-cpfl/office-addin/_git/office-addin"
+    "url": "https://github.com/bobblyJack/cpfl"
   },
   "scripts": {
     "build": "webpack --mode production",
