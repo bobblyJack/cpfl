@@ -5,6 +5,7 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCSSExtractPlugin from 'mini-css-extract-plugin';
 
 const devBuild = process.argv.includes('development');
+const devMaps = devBuild ? 'source-map' : false;
 process.env.NODE_ENV = process.env.NODE_ENV || devBuild ? 'development' : 'production';
 
 // environment variables
@@ -16,18 +17,19 @@ const env = {
     DRIVE_ID: "b!sZigh2uhLkm81En6bkEH0c-dYK-8B61EljQC5ygtekif7QwnUqswTLKnsBFEkAKV"
 }
 
-// build configuation
 const config: Configuration = {
-    entry: './src/init.ts',
+    entry: './src/index.ts',
     output: {
         filename: 'taskpane.js',
         path: path.resolve(__dirname, 'dist'),
         assetModuleFilename: './assets/[name][ext]',
+        sourceMapFilename: './src/[name][ext].map',
         clean: true
     },
     module: {
         defaultRules: [
             {
+                include: /src/i,
                 exclude: /node_modules/i
             }
         ],
@@ -52,7 +54,7 @@ const config: Configuration = {
     },
     resolve: {
         extensions: [ 
-            '.ts'
+            '.ts', '...'
         ]
     },
     optimization: {
@@ -110,7 +112,7 @@ const config: Configuration = {
             ]
         })
     ],
-    devtool: 'source-map'
+    devtool: devMaps
 }
 
 export default config;

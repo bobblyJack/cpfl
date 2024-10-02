@@ -1,23 +1,18 @@
 # WIP
-make sure my eventual point can be run entirely from azure + sharepoint.
-the key is to get away from anything that requires the server.
-jsons can be hosted in onedrive, for example
-however, i'd need a way to read/write to them from the browser i guess.
-app roles can be created which will handle admin / user access! that's one thing
-otherwise, i guess i could just fetch names every time and not store that anywhere?
-yeah. well, other than in localStorage obviously.
-that works. that way i don't even need to do any storage.
-the other thing is getting away from jwks / jwt to something browser based
-jose is an option, or switch to msal-browser.
-the other thing to note is how to switch my azure rego from localhost.
-app id URI doesn't have to be a url, just needs to be unique to the app (so api://{client ID} is fine i think)
-i think i'd ideally like to switch completely away from needing a live app service and towards a static page
-i cannot host the html from sharepoint as it is not publicly available
-there would be a feedback loop of auth required
-check out azure hosting and the vs code plugin.
+make auth work without backend server.
+
+things to get:
+name
+@microsoft.graph.downloadUrl
+
+# production steps - to do
+- change app ID URI to prod host
 
 # LG. user id
 oid: 7d3223ad-e122-4fff-ab5a-a7c3c48957c1
+
+# graph ideas
+use Files.ReadWrite.AppFolder instead of a site document library ? at the very least could use for app settings
 
 # hash fragments
 can use an anchor element with a hash in the href attribute to scoll to the corresponding id on the same page automatically

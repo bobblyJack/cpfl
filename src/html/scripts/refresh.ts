@@ -1,28 +1,29 @@
-import * as router from '../../router';
-
-export async function refresh() {
+export function refresh() {
 
     Array.from(document.body.children).forEach(child => {
         document.body.removeChild(child);
     });
 
-    const username = await router.getUsername();
-    const msg = `Welcome ${username.slice(0, username.indexOf(" "))}`
-    
-    const header = document.createElement('h1');
-    header.id = 'main-header';
-    header.textContent = msg;
+    const header = document.createElement("h1");
+    header.id = 'app-header';
+    header.textContent = "Welcome ";
     document.body.appendChild(header);
+    
+    const body = document.createElement("main");
+    body.id = 'app-body';
+    document.body.appendChild(body);
 
-    const para = document.createElement('p');
-    para.textContent = 'Taskpane Refreshed';
-    document.body.appendChild(para);
+    const console = document.createElement("div");
+    console.id = 'app-console';
+    console.classList.add('light');
+    console.classList.add('small');
+    document.body.appendChild(console);
 
+    const log = document.createElement("p");
+    log.textContent = "Taskpane Refreshed";
+    console.appendChild(log);
     setTimeout(() => {
-        para.classList.add('light');
-        setTimeout(() => {
-            para.remove();
-        }, 10000);
-    }, 10000);
+        log.remove();
+    }, 6000);
 
 }

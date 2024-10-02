@@ -28,7 +28,7 @@ but, hypothetically, i just auth using the token when they log in, then i grab a
 then with a map i can fetch from within the browser rather than needing to route to server ???
 
 */
-async function getFile() {
+async function getFileGPT() {
     const file = await fetch('downloadUrl');
     const blob = await file.blob();
 
@@ -52,3 +52,34 @@ async function getFile() {
 // the GPT script creates an invisible link which it clicks for you and then automatically removes
 // it needs to do this so that the browser actually handles the download, i think.
 // although, apparently modern browsers don't even require this to be appended
+
+import env from '../env';
+
+export async function fetchData(token: string) {
+    try {
+        const path = env.drive + '/root/children?$select=name,id,@microsoft.graph.downloadUrl';
+        const response = await fetch('https://graph.microsoft.com/v1.0/drives/' + path, {
+            headers: {
+                'Accept': 'application/json',
+                'Authorization': 'Bearer ' + token,
+                'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+                'Expires': '-1',
+                'Pragma': 'no-cache'
+            }
+        });
+        if (!response.ok) {
+            throw new Error(`${response.status}: ${response.statusText}`);
+        }
+        return response.json();
+
+    } catch (err) {
+        console.log('oh no')
+        console.error(err);
+        throw err
+    }
+}
+
+//export async function getData(): Promise<Record<string, any>> {
+//    return getAuth(fetchData);
+//}
+

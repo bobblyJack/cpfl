@@ -19,6 +19,7 @@
     "validate": "office-addin-manifest validate dist/manifest.xml"
   },
   "dependencies": {
+    "@azure/msal-browser": "*",
     "jose": "*"
   },
   "devDependencies": {

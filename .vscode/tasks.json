@@ -10,12 +10,15 @@
 				"kind": "build",
 				"isDefault": true
 			},
+			"problemMatcher": [],
 			"presentation": {
-				"showReuseMessage": false
+				"showReuseMessage": false,
+				"close": true
 			}
 		},
 		{
 			"label": "Ignition",
+			"detail": "Sideload Office Add-In for Debugging",
 			"dependsOn": [
 				"Build"
 			],
@@ -27,11 +30,11 @@
 				"desktop",
 				"--app", "word"
 			],
-			"detail": "Sideload Office Add-In for Debugging",
 			"group": {
 				"kind": "test",
 				"isDefault": true
 			},
+			"problemMatcher": [],
 			"presentation": {
 				"showReuseMessage": false,
 				"close": true
@@ -39,10 +42,11 @@
 		},
 		{
 			"label": "Landing",
+			"detail": "End Dev-Server and Runtime Logging",
 			"type": "npm",
 			"script": "sideload-stop",
-			"detail": "End Dev-Server and Runtime Logging",
 			"group": "test",
+			"problemMatcher": [],
 			"presentation": {
 				"showReuseMessage": false,
 				"close": true

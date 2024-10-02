@@ -88,10 +88,10 @@
       		<Id>%CLIENTID%</Id>
       		<Resource>api://%APPHOST%/%CLIENTID%</Resource>
       		<Scopes>
-        		<Scope>Files.ReadWrite</Scope>
         		<Scope>openid</Scope>
 				<Scope>profile</Scope>
 				<Scope>User.Read</Scope>
+				<Scope>Files.Read</Scope>
       		</Scopes>
     	</WebApplicationInfo>
 	</VersionOverrides>
