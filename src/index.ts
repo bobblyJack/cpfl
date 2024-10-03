@@ -11,24 +11,19 @@ Office.onReady((info) => {
 
 async function init() {
     const user = await auth.getUser();
-
-    let name = user.account.name || 'Anon ';
-    name = name.slice(0, name.indexOf(" "));
-    html.app.header.textContent += name;
+    html.app.header.textContent += String(user['given_name']);
 
     const runButton = html.addElement('button');
-    runButton.textContent = "Test Function";
+    runButton.textContent = "Fetch Letterhead";
     runButton.onclick = test;
 }
 
 async function test() {
     try {
-        const token = await auth.getToken();
-        const data = await auth.fetchData(token);
+        const data = await auth.getItemID('Letterhead.dotx');
         await printData(data);
-        
+        console.log(JSON.parse(JSON.stringify(data, null, 2)));
         console.log('test complete');
-
     } catch (err) {
         if (err instanceof Error) {
             console.warn(err.message);
@@ -41,10 +36,30 @@ async function test() {
     }
 }
 
+async function getLetterhead(id: string) {
+    //const letterheadID = '/items/013NZABFTR33KWDKUGWVCLIKUL32XBZJNO/';
+    //const item = await auth.queryGraph(id) as Record<string, any>;
+    //const path = item['@microsoft.graph.downloadUrl'];
+    //const template = await auth.getFile(path);
+    //await changeTemplate(template);
+}
+
 async function printData(data: any) {
     Word.run((context) => {
         const value = JSON.stringify(data);
         context.document.body.insertParagraph(value, "End");
+        return context.sync();
+    })
+}
+
+async function changeTemplate(template: string) {
+    Word.run((context) => {
+        context.document.insertFileFromBase64(template, "Replace", {
+            importTheme: true,
+            importStyles: true,
+            importParagraphSpacing: true,
+            importDifferentOddEvenPages: true
+        });
         return context.sync();
     });
 }

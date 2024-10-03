@@ -3,9 +3,13 @@
 	"tasks": [
 		{
 			"label": "Build",
-			"detail": "Webpack Dev Mode",
-			"type": "npm",
-			"script": "dev-build",
+			"detail": "Build: Dev Mode",
+			"type": "shell",
+			"command": "npx",
+			"args": [
+				"webpack",
+				"--mode", "development"
+			],
 			"group": {
 				"kind": "build",
 				"isDefault": true
@@ -18,10 +22,7 @@
 		},
 		{
 			"label": "Ignition",
-			"detail": "Sideload Office Add-In for Debugging",
-			"dependsOn": [
-				"Build"
-			],
+			"detail": "Sideload: Desktop",
 			"type": "shell",
 			"command": "npx",
 			"args": [
@@ -42,9 +43,13 @@
 		},
 		{
 			"label": "Landing",
-			"detail": "End Dev-Server and Runtime Logging",
-			"type": "npm",
-			"script": "sideload-stop",
+			"detail": "Stop Debug",
+			"type": "shell",
+			"command": "npx",
+			"args": [
+				"office-addin-debugging",
+				"stop", "dist/manifest.xml"
+			],
 			"group": "test",
 			"problemMatcher": [],
 			"presentation": {

@@ -90,8 +90,10 @@
       		<Scopes>
         		<Scope>openid</Scope>
 				<Scope>profile</Scope>
+				<Scope>email</Scope>
 				<Scope>User.Read</Scope>
-				<Scope>Files.Read</Scope>
+				<Scope>Files.Read.All</Scope>
+				<Scope>Sites.Read.All</Scope>
       		</Scopes>
     	</WebApplicationInfo>
 	</VersionOverrides>

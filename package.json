@@ -11,21 +11,17 @@
   },
   "scripts": {
     "build": "webpack --mode production",
-    "dev-build": "webpack --mode development",
-    "dev-log": "office-addin-dev-settings runtime-log --enable",
-    "dev-server": "ts-node dev/server.ts",
-    "sideload-start": "office-addin-debugging start dist/manifest.xml --no-debug",
-    "sideload-stop": "office-addin-debugging stop dist/manifest.xml && office-addin-dev-settings runtime-log --disable",
+    "dev-server": "webpack serve --mode development",
     "validate": "office-addin-manifest validate dist/manifest.xml"
   },
   "dependencies": {
-    "@azure/msal-browser": "*",
-    "jose": "*"
+    "@azure/msal-browser": "*"
   },
   "devDependencies": {
     "@types/node": "*",
     "@types/office-js": "*",
     "@types/webpack": "*",
+    "@types/webpack-dev-server": "*",
     "copy-webpack-plugin": "*",
     "css-loader": "*",
     "html-loader": "*",
@@ -40,6 +36,7 @@
     "ts-node": "*",
     "typescript": "*",
     "webpack": "*",
-    "webpack-cli": "*"
+    "webpack-cli": "*",
+    "webpack-dev-server": "*"
   }
 }

@@ -1,8 +1,6 @@
 import {
     PublicClientApplication,
-    LogLevel,
-    InteractionRequiredAuthError,
-    AccountInfo
+    InteractionRequiredAuthError
 } from '@azure/msal-browser';
 import env from '../env';
 
@@ -26,17 +24,20 @@ async function callMSAL() {
                             return;
                         }
                         switch (level) {
-                            case LogLevel.Error:
+                            case 0:
                                 console.error(message);
                                 return;
-                            case LogLevel.Info:
+                            case 1:
+                                console.warn(message);
+                                return;
+                            case 2:
                                 console.info(message);
                                 return;
-                            case LogLevel.Verbose:
+                            case 3:
                                 console.debug(message);
                                 return;
-                            case LogLevel.Warning:
-                                console.warn(message);
+                            default:
+                                console.log(message);
                                 return;
                         }
                     },
@@ -52,44 +53,50 @@ export async function getUser() {
     const msal = await callMSAL();
     let account = msal.getActiveAccount();
 
-    if (!account) { // no active account
-        account = msal.getAccount({
-            tenantId: env.tenant
-        });
-    }
-
-    if (!account) { // no account at all
-        const response = await msal.loginPopup();
-        account = checkAccount(response.account);
-        return response;
-    }
-
-    return msal.ssoSilent({
-        account: checkAccount(account)
-    });
-
-    function checkAccount(account: AccountInfo) {
-        if (account.tenantId !== env.tenant) {
+    if (!account || account.tenantId !== env.tenant) {
+        const response = await logOn(msal);
+        if (response.tenantId !== env.tenant) {
             throw new Error('invalid tenancy login');
         }
-        msal.setActiveAccount(account);
-        return account;
+        account = response.account;
+        msal.setActiveAccount(account); 
     }
+
+    const user = account.idTokenClaims;
+    if (!user) {
+        throw new Error('user identity missing');
+    }
+    return user;
+
 }
+
+async function logOn(msal: PublicClientApplication) {
+    const home = msal.getAccount({
+        tenantId: env.tenant
+    });
+    if (!home) {
+        return msal.loginPopup();
+    }
+    return msal.ssoSilent({
+        account: home
+    });
+}
+
 
 export async function getToken() {
     const msal = await callMSAL();
-    const scope = 'Files.Read';
+    const permission = {
+        scopes: [
+            'Files.Read.All',
+            'Sites.Read.All'
+        ]
+    };
     try {
-        const req = await msal.acquireTokenSilent({
-            scopes: [scope]
-        });
+        const req = await msal.acquireTokenSilent(permission);
         return req.accessToken;
     } catch (err) {
         if (err instanceof InteractionRequiredAuthError) {
-            const req = await msal.acquireTokenPopup({
-                scopes: [scope]
-            });
+            const req = await msal.acquireTokenPopup(permission);
             return req.accessToken;
         }
         throw err;
