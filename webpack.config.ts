@@ -1,48 +1,42 @@
-import {Configuration, DefinePlugin} from 'webpack';
-import {Configuration as ServerConfiguration} from 'webpack-dev-server';
+import {Configuration as WebpackConfig} from 'webpack';
+import {Configuration as ServerConfig} from 'webpack-dev-server';
 import {getHttpsServerOptions} from 'office-addin-dev-certs';
 import * as path from 'path';
+import env from './app.config.json';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCSSExtractPlugin from 'mini-css-extract-plugin';
 
-interface WebpackConfig extends Configuration {
-    devServer?: ServerConfiguration
+interface Configuration extends WebpackConfig {
+    devServer?: ServerConfig
 }
 
+// development variables
 const devBuild = process.argv.includes('development');
+const devPort = 3000;
+const devHost = devBuild 
+    ? `localhost:${devPort}` 
+    : env.host;
 const devMaps = devBuild ? 'source-map' : false;
-process.env.NODE_ENV = process.env.NODE_ENV || devBuild ? 'development' : 'production';
-
 const devCerts = async () => {
     if (process.argv.includes('serve')) {
         return getHttpsServerOptions();
     }
 }
 
-// environment variables
-const env = {
-    DEV_HOST: "localhost:3000",
-    PROD_HOST: "bobblyJack.github.io/cpfl",
-    CLIENT_ID: "8ca8fd63-8fd6-4414-92e4-21584ed8df0f",
-    TENANT_ID: "e72b34cf-ef52-473c-816a-e1d7d416dcc4",
-    DRIVE_ID: "b!sZigh2uhLkm81En6bkEH0c-dYK-8B61EljQC5ygtekif7QwnUqswTLKnsBFEkAKV"
-}
-
-export default async (): Promise<WebpackConfig> => {
+export default async (): Promise<Configuration> => {
     return {
         entry: './src/index.ts',
         output: {
             filename: 'taskpane.js',
             path: path.resolve(__dirname, 'dist'),
             assetModuleFilename: './assets/[name][ext]',
-            sourceMapFilename: './src/[file].map',
+            sourceMapFilename: './maps/[file].map',
             clean: true
         },
         module: {
             defaultRules: [
                 {
-                    include: /src/i,
                     exclude: /node_modules/i
                 }
             ],
@@ -60,7 +54,7 @@ export default async (): Promise<WebpackConfig> => {
                     use: [MiniCSSExtractPlugin.loader, 'css-loader']
                 },
                 {
-                    test: /\.(ico|ttf)$/i,
+                    test: /\.(ttf|ico)$/i,
                     type: 'asset/resource'
                 }
             ]
@@ -85,40 +79,27 @@ export default async (): Promise<WebpackConfig> => {
         plugins: [
             new HtmlWebpackPlugin({
                 filename: 'index.html',
-                template: './src/html/taskpane.html'
+                template: './taskpane.html'
             }),
             new MiniCSSExtractPlugin({
-                filename: 'styles.css'
+                filename: '[name].css'
             }),
-            new DefinePlugin((() => {
-                const definitions: [string, string][] = [
-                    [
-                        'process.env.NODE_ENV', JSON.stringify(process.env.NODE_ENV)
-                    ]
-                ]
-                for (const [key, value] of Object.entries(env)) {
-                    definitions.push([
-                        `process.env.${key}`, JSON.stringify(value)
-                    ])
-                }
-                return Object.fromEntries(definitions);
-            })()),
             new CopyWebpackPlugin({
                 patterns: [
                     {
                         from: "./assets/**/*",
-                        to: "./[path][name][ext]",
+                        to: "./[path][name][ext]"
+                    },
+                    {
+                        from: "app.config.json",
+                        to: "./config.json"
                     },
                     {
                         from: "manifest.xml",
-                        to: "./[path][name][ext]",
                         transform(content) {
                             let output = content.toString();
-                            output = output.replace(/%CLIENTID%/g, env.CLIENT_ID);
-                            output = output.replace(/%APPHOST%/g, devBuild
-                                ? env.DEV_HOST
-                                : env.PROD_HOST
-                            );
+                            output = output.replace(/%APPHOST%/g, devHost);
+                            output = output.replace(/%APPID%/g, env.id);
                             return output;
                         }
                     }
@@ -134,7 +115,7 @@ export default async (): Promise<WebpackConfig> => {
                 type: "https",
                 options: await devCerts()
             },
-            port: 3000
+            port: devPort
         }
     }
 }

@@ -11,13 +11,18 @@
   },
   "scripts": {
     "build": "webpack --mode production",
+    "dev-build": "webpack --mode development",
     "dev-server": "webpack serve --mode development",
+    "start": "office-addin-debugging start dist/manifest.xml",
+    "stop": "office-addin-debugging stop dist/manifest.xml",
     "validate": "office-addin-manifest validate dist/manifest.xml"
   },
   "dependencies": {
-    "@azure/msal-browser": "*"
+    "@azure/msal-browser": "*",
+    "iconify-icon": "*"
   },
   "devDependencies": {
+    "@iconify/types": "*",
     "@types/node": "*",
     "@types/office-js": "*",
     "@types/webpack": "*",

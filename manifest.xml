@@ -85,15 +85,11 @@
 			</bt:LongStrings>
 		</Resources>
 		<WebApplicationInfo>
-      		<Id>%CLIENTID%</Id>
-      		<Resource>api://%APPHOST%/%CLIENTID%</Resource>
+      		<Id>%APPID%</Id>
+      		<Resource>api://%APPHOST%/%APPID%</Resource>
       		<Scopes>
-        		<Scope>openid</Scope>
+				<Scope>openid</Scope>
 				<Scope>profile</Scope>
-				<Scope>email</Scope>
-				<Scope>User.Read</Scope>
-				<Scope>Files.Read.All</Scope>
-				<Scope>Sites.Read.All</Scope>
       		</Scopes>
     	</WebApplicationInfo>
 	</VersionOverrides>

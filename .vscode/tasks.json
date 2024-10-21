@@ -4,12 +4,8 @@
 		{
 			"label": "Build",
 			"detail": "Build: Dev Mode",
-			"type": "shell",
-			"command": "npx",
-			"args": [
-				"webpack",
-				"--mode", "development"
-			],
+			"type": "npm",
+			"script": "dev-build",
 			"group": {
 				"kind": "build",
 				"isDefault": true
@@ -23,14 +19,8 @@
 		{
 			"label": "Ignition",
 			"detail": "Sideload: Desktop",
-			"type": "shell",
-			"command": "npx",
-			"args": [
-				"office-addin-debugging",
-				"start", "dist/manifest.xml",
-				"desktop",
-				"--app", "word"
-			],
+			"type": "npm",
+			"script": "start",
 			"group": {
 				"kind": "test",
 				"isDefault": true
@@ -43,13 +33,9 @@
 		},
 		{
 			"label": "Landing",
-			"detail": "Stop Debug",
-			"type": "shell",
-			"command": "npx",
-			"args": [
-				"office-addin-debugging",
-				"stop", "dist/manifest.xml"
-			],
+			"detail": "Stop Dev-Server",
+			"type": "npm",
+			"script": "stop",
 			"group": "test",
 			"problemMatcher": [],
 			"presentation": {

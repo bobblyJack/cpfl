@@ -1,0 +1,24 @@
+.green {
+    color: #6a7a6a;
+}
+.green .dark {
+    color: #2f4534;
+}
+.green .light {
+    color: #c9d3c9;
+}
+
+.peach {
+    color: #dfb691;
+}
+.peach .light {
+    color: #f3e7dc;
+}
+
+.white {
+    color: #ffffff;
+}
+
+.red {
+    color: #d95c5c;
+}
