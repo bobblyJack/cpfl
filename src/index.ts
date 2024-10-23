@@ -1,4 +1,4 @@
 import './styles';
 import {CPFL} from './app';
 
-Office.onReady(() => CPFL.start());
+Office.onReady((info) => CPFL.start(info));

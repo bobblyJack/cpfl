@@ -1,4 +1,4 @@
-import { getConfig } from "../env";
+import { getConfig } from "../config";
 
 export async function getDrivePath() {
     const env = await getConfig();
