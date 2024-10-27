@@ -1,4 +1,4 @@
-import { Page } from "./pages";
+import { Page } from "../pages/page";
 
 const dash = new Page("Dashboard");
 

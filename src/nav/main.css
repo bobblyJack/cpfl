@@ -1,0 +1,17 @@
+main nav {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
+    gap: 5vh 5vw;
+}
+
+main nav button {
+    display: block;
+    border-bottom: 4px solid #6a7a6a;
+}
+
+main nav button:hover {
+    color: #ffffff;
+    border-bottom-color: #ffffff;
+    background-color: #6a7a6a;
+}

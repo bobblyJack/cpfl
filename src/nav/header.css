@@ -1,0 +1,27 @@
+header nav {
+    color: #f3e7dc;
+}
+
+header nav button {
+    border-bottom: 2px solid #6a7a6a;
+    transition: border-color 500ms ease;
+}
+
+header nav button .active {
+    color: #ffffff;
+    border-bottom-color: #c9d3c9;
+}
+
+header nav button .warn {
+    border-bottom-color: #dfb291;
+}
+
+header nav button:hover {
+    color: #ffffff;
+    border-bottom-color: #ffffff;
+    transition-duration: 0ms;
+}
+
+header nav button .error {
+    border-bottom-color: #d95c5c;
+}

@@ -2,7 +2,7 @@ import {Configuration as WebpackConfig} from 'webpack';
 import {Configuration as ServerConfig} from 'webpack-dev-server';
 import {getHttpsServerOptions} from 'office-addin-dev-certs';
 import * as path from 'path';
-import env from './app.config.json';
+import env from './env.config.json';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCSSExtractPlugin from 'mini-css-extract-plugin';
@@ -91,7 +91,7 @@ export default async (): Promise<Configuration> => {
                         to: "./[path][name][ext]"
                     },
                     {
-                        from: "app.config.json",
+                        from: "env.config.json",
                         to: "./config.json"
                     },
                     {

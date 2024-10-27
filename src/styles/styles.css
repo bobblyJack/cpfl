@@ -35,31 +35,30 @@ mark {
     background-color: #dfb691;
 }
 
+.error {
+    color: #d95c5c;
+}
+
+header {
+    display: flex;
+    padding: 1vh 2.5vw;
+    justify-content: space-between;
+    color: #dfb691;
+    background-color: #2f4534;
+}
+
 main {
     color: #6a7a6a;
     padding: 1vh 5vw;
 }
 
-header, footer {
-    display: flex;
-    color: #f3e7dc;
-    padding: 1vh 2.5vw;
-}
-
-header {
-    justify-content: space-between;
-    background-color: #2f4534;
-}
-
 footer {
+    display: flex;
     justify-content: space-evenly;
+    color: #f3e7dc;
     background-color: #6a7a6a;
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-}
-
-.error {
-    color: #d95c5c;
 }

@@ -1,9 +1,19 @@
 import {
     PublicClientApplication
 } from '@azure/msal-browser';
+import { getEnv } from '../env';
 
-export async function initMSAL(env: EnvConfig) {
-    await Office.onReady();
+let PCA: Promise<PublicClientApplication>;
+
+export async function getMSAL(refresh: boolean) {
+    if (!PCA || refresh) {
+        const env = await getEnv(refresh);
+        PCA = initMSAL(env);
+    }
+    return PCA;
+}
+
+async function initMSAL(env: EnvConfig) {
     const pca = new PublicClientApplication({
         auth: {
             clientId: env.id,
@@ -25,5 +35,6 @@ export async function initMSAL(env: EnvConfig) {
         },
     });
     await pca.initialize();
-    return pca;
+    PCA = Promise.resolve(pca);
+    return PCA;
 }

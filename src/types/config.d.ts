@@ -1,8 +1,3 @@
-interface AppConfig {
-    env: EnvConfig;
-    user: UserConfig;
-}
-
 interface EnvConfig {
     id: string;
     host: string;
@@ -21,4 +16,9 @@ interface UserConfig {
         full: string;
     }
     email: string;
+}
+
+interface OfficeConfig {
+    host: Office.HostType;
+    platform: Office.PlatformType;
 }
