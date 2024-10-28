@@ -22,11 +22,11 @@ export class AuthUser implements UserConfig {
             throw new Error('user id undefined');
         }
 
-        const gname = user["given_name"] as string;
-        const fname = user["family_name"] as string;
-        const email = user.preferred_username || "";
-
-        return new AuthUser(gname, fname, email);
+        return new AuthUser(
+            user["given_name"] as string,
+            user["family_name"] as string,
+            user.preferred_username || ""
+        );
     }
 
     public static async logout() {
@@ -42,24 +42,25 @@ export class AuthUser implements UserConfig {
 
     private _gname: string;
     private _fname: string;
-    private _email: string;
+    public email: string;
     private constructor(gname: string, fname: string, email: string) {
         this._gname = gname;
         this._fname = fname;
-        this._email = email;
+        this.email = email;
     }
 
-    public get email(): string {
-        return this._email;
-    }
     public get id(): string {
         return this.email.slice(0, this.email.indexOf("@")).toUpperCase();
+    }
+
+    private get _fullname(): string {
+        return `${this._gname} ${this._fname}`;
     }
     public get name() {
         return {
             given: this._gname,
             family: this._fname,
-            full: `${this._gname} ${this._fname}`
+            full: this._fullname
         }
     }
 

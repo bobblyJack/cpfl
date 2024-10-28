@@ -4,6 +4,9 @@ use app folder also to cache partially finished files
 change login style from popup to redirect ?
     or just add as fallback state in case popup is blocked
 
+make 3 modes, with different screen sizes... Browser, Taskpane, Mobile.
+navigation and page elements therefore need to be mode specific!
+
 I could literally implement Actionstep's API ??? Needs API Credentials though.
 Alternatively, perhaps accept an export of data from AS to start the client file ?
 
@@ -21,4 +24,3 @@ migrate balance sheet into app ?
 # production steps - to do when publishing
 - change app ID URI to prod host
 - if ever deployed on different tenant, they can change config.json to their values
-
