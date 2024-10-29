@@ -106,3 +106,7 @@ export default class QueueRequest<T> {
 }
 
 */
+
+// use setTimeout recursively with a variable ms timer. start at 1ms, then i++ until it gets to 1000 or so,
+// or alternatively double itself every time perhaps.
+// could also use bitwise operators to handle the doubling.

@@ -1,6 +1,21 @@
-import CPFL from '../app';
-import { NavButton } from '../nav';
+import CPFL from '../';
 
+/**
+ * page rendering object
+ * @wip most things
+ * @wip trim down history from whole class to vault interface
+ */
+export class PageHTML {
+    public constructor(app: CPFL, title: string, history: string | null = null) {
+        // set up and render the page
+
+    }
+
+    private vault: object = {}; // WIP: page-specific storage
+}
+
+
+// not sure if i still need these.
 enum PageIndex {
     "Dashboard",
     "Active Matter",
@@ -21,7 +36,7 @@ enum PageIcons {
 // or just construct them and use that as a reference point, duh, dont enumerate at all
 // finally, finish the rendering
 
-export default class Page {
+export class PageOld {
 
     
 
@@ -53,9 +68,8 @@ export default class Page {
         this.main.render();
         this.footer.render();
     }
-}
 
-private hub: Promise<Page>;
+    private hub: Promise<Page>;
     private mtr: Promise<Page>;
     private bal: Promise<Page>;
     private lib: Promise<Page>;
@@ -86,3 +100,6 @@ private hub: Promise<Page>;
     this.page = new Page(0); // WIP: dashboard creation - welcome message header, nav buttons content, blank footer
             
     private display: Page;
+}
+
+

@@ -1,0 +1,23 @@
+.taskpane header {
+    display: flex;
+    padding: 1vh 2.5vw;
+    justify-content: space-between;
+    color: #dfb691;
+    background-color: #2f4534;
+}
+
+.taskpane main {
+    color: #6a7a6a;
+    padding: 1vh 5vw;
+}
+
+.taskpane footer {
+    display: flex;
+    justify-content: space-evenly;
+    color: #f3e7dc;
+    background-color: #6a7a6a;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}

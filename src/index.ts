@@ -1,16 +1,15 @@
 import { getEnv } from './env';
 import { AuthUser } from './auth';
-import { BrowserApp } from './browser';
-import { MobileApp } from './mobile';
-import { TaskpaneApp } from './taskpane';
+import { setStyles } from './styles';
+import { PageHTML } from './pages';
 
 document.addEventListener('DOMContentLoaded', () => { // WIP: timing handler
     console.log('DOM Content Ready');
 }) 
 
-let appReady = false;
 
-try { // loading page
+let appReady = false; // loading page
+try { 
     const main = document.getElementById("app-main");
     let i = 0;
     if (!main) {
@@ -36,8 +35,6 @@ Office.onReady((info) => {
         
     });
 });
-
-
 
 const supportedHosts = [
     Office.HostType.Word,
@@ -79,46 +76,48 @@ export default class CPFL {
             const page = window.location.hash.slice(1); // get initial page
             // WIP: per-platform supported page types references
 
-            if (info.host === null) { // WIP: out-of-office support
-                throw new Error('out-of-office experience unsupported');
-                CPFL.app = new BrowserApp(page);
+            let mode: AppMode;
+            if (info.host === null) {
+                mode = 'browser';
+                throw new Error('out-of-office experience unsupported'); // WIP: out-of-office support
     
             } else {
                 switch (info.platform) {
                     case Office.PlatformType.Android:
                     case Office.PlatformType.iOS: {
-                        // WIP: mobile support
-                        throw new Error('mobile platform unsupported');
-                        CPFL.app = new MobileApp(page);
+                        mode = 'mobile';
+                        throw new Error('mobile platform unsupported'); // WIP: mobile support
                         break;
                     }
                     case Office.PlatformType.Mac: {
-                        // WIP: mac support
-                        throw new Error('apple platform unsupported');
+                        throw new Error('apple platform unsupported'); // WIP: mac support
                     }
                     default: {
-                        CPFL.app = new TaskpaneApp(page);
+                        mode = 'taskpane';
                     }
                 }
             }
+
+            CPFL.app = new this(mode, page);
         }
 
         return CPFL.app;
     }
     
-    protected constructor(page: string) {
+    protected constructor(mode: AppMode, page: string) {
+
+        setStyles(mode); // apply specific css
 
         this._user = AuthUser.login().then(user => { // login and cache user config
             this._user = Promise.resolve(user);
             return this._user;
         });
 
-        if (page) { // prep for init render
-            this.hash = "";
-        }
-
+        
+        // WIP: init nav, then
         window.onhashchange = this.display; // set event listener
-        this.hash = page || "/hub"; // render init page
+
+        this.current = new PageHTML(this, page); // render page
 
     }
 
@@ -135,28 +134,34 @@ export default class CPFL {
      * hash path navigation
      */
     public get hash() {
-        let path = window.location.hash;
-        path = path.slice(1) // trim leading #
-        return path;
+        return window.location.hash.slice(1);
     }
     public set hash(path: string) {
         window.location.hash = path;
     }
 
-    
-    public async display(ev: HashChangeEvent) {
-        // public facing rendering
-        return this.render
+    private current: PageHTML; // current page context
+    private async display(ev: HashChangeEvent) { // WIP: event listener exposed html rendering
+
+        const env = await this.env;
+
+        const prev = new URL(ev.oldURL);
+        if (prev.hash) {
+            const oldKey = env.id + prev.hash;
+            const oldValue = JSON.stringify(this.current);
+            sessionStorage.setItem(oldKey, oldValue);
+        }
+
+        const next = new URL(ev.newURL);
+
+        const newKey = env.id + next.hash;
+        const newValue = sessionStorage.getItem(newKey);
+
+        this.current = new PageHTML(this, next.hash, newValue);
+
     }
 
-    protected async render(ev?: HashChangeEvent) {
-        // mode-specific html display
-        // extend in subclasses to do stuff like:
-        // store old url
-        // check storage for new url
-        // render new url 
-        
-    }
+    
 
     
 

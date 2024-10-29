@@ -1,3 +1,5 @@
+type AppMode = "taskpane" | "mobile" | "browser";
+
 interface EnvConfig {
     id: string;
     host: string;
@@ -16,9 +18,4 @@ interface UserConfig {
         full: string;
     }
     email: string;
-}
-
-interface OfficeConfig {
-    host: Office.HostType;
-    platform: Office.PlatformType;
 }
