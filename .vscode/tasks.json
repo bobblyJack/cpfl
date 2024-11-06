@@ -42,6 +42,36 @@
 				"showReuseMessage": false,
 				"close": true
 			}
+		},
+		{
+			"label": "AutoFetch",
+			"detail": "automatic git fetcher",
+			"type": "shell",
+			"command": "git fetch",
+			"runOptions": {
+				"runOn": "folderOpen"
+			},
+			"problemMatcher": [],
+			"presentation": {
+				"reveal": "silent",
+				"panel": "dedicated",
+				"close": true
+			}
+		},
+		{
+			"label": "AutoUpdate",
+			"detail": "automatic npm updater",
+			"type": "shell",
+			"command": "npm update",
+			"runOptions": {
+				"runOn": "folderOpen"
+			},
+			"problemMatcher": [],
+			"presentation": {
+				"reveal": "silent",
+				"panel": "dedicated",
+				"close": true
+			}
 		}
 	]
 }

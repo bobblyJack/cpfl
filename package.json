@@ -37,6 +37,7 @@
     "office-addin-dev-certs": "*",
     "office-addin-dev-settings": "*",
     "office-addin-manifest": "*",
+    "source-map-loader": "*",
     "ts-loader": "*",
     "ts-node": "*",
     "typescript": "*",

@@ -1,8 +1,11 @@
-* { /* global styles */
+* {
+    margin: 0;
     font-family: "Open Sans", Arial, Helvetica, sans-serif;
-    box-sizing: border-box;
-    align-items: center;
-    text-align: justify;
+}
+
+body {
+    height: 100vh;
+    color: #6a7a6a;
 }
 
 @font-face {
@@ -16,9 +19,10 @@ h1, h2, h3, h4, h5, h6 {
     font-family: "Saudagar", "Open Sans", Arial, Helvetica, sans-serif;
 }
 
-body {
-    height: 100vh;
-    margin: 0;
+iconify-icon {
+    vertical-align: -0.125em;
+    height: 1em;
+    width: 1em;
 }
 
 a {
@@ -29,12 +33,26 @@ button {
     color: inherit;
     background-color: inherit;
     border-style: hidden;
+    border-color: #6a7a6a;
+}
+
+button:hover {
+    color: #ffffff;
+}
+main button:hover {
+    background-color: #6a7a6a;
+}
+
+header {
+    color: #f3e7dc;
+    background-color: #2f4534;
+}
+
+footer {
+    color: #f3e7dc;
+    background-color: #6a7a6a;
 }
 
 mark {
     background-color: #dfb691;
-}
-
-.error {
-    color: #d95c5c;
 }

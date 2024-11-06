@@ -3,17 +3,12 @@ import {
 } from '@azure/msal-browser';
 import { getEnv } from '../env';
 
-let PCA: Promise<PublicClientApplication>;
-
-export async function getMSAL(refresh: boolean) {
-    if (!PCA || refresh) {
-        const env = await getEnv(refresh);
-        PCA = initMSAL(env);
-    }
-    return PCA;
+export async function initMSAL(refresh: boolean) {
+    const env = await getEnv(refresh);
+    return createMSAL(env);
 }
 
-async function initMSAL(env: EnvConfig) {
+async function createMSAL(env: EnvConfig) {
     const pca = new PublicClientApplication({
         auth: {
             clientId: env.id,
@@ -35,6 +30,5 @@ async function initMSAL(env: EnvConfig) {
         },
     });
     await pca.initialize();
-    PCA = Promise.resolve(pca);
-    return PCA;
+    return pca;
 }

@@ -10,6 +10,10 @@ navigation and page elements therefore need to be mode specific!
 I could literally implement Actionstep's API ??? Needs API Credentials though.
 Alternatively, perhaps accept an export of data from AS to start the client file ?
 
+could tidy up some overuse of imports by making type declarations in types for more things
+in particular class objects seems useful.
+i am finally seeing the value in interfaces!
+
 # icons
 iconify-icon ? the carbon set looked ok.
 imports as a dependency and then can be bundled.

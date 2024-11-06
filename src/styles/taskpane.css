@@ -1,23 +1,51 @@
-.taskpane header {
-    display: flex;
+.taskpane * {
+    text-align: center;
+}
+
+.taskpane header,
+.taskpane footer {
+    display: block;
     padding: 1vh 2.5vw;
-    justify-content: space-between;
-    color: #dfb691;
-    background-color: #2f4534;
+}
+
+.taskpane header nav button {
+    border-bottom-style: solid;
+    border-bottom-width: 2px;
+    transition: border-color 500ms ease;
+    font-size: 2em;
 }
 
 .taskpane main {
-    color: #6a7a6a;
     padding: 1vh 5vw;
+}
+
+.taskpane main nav {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
+    gap: 5vh 5vw;
+}
+
+.taskpane main nav button {
+    text-align: center;
+    border-bottom-style: solid;
+    border-bottom-width: 4px;
+}
+
+.taskpane main nav iconify-icon {
+    font-size: 4em;
 }
 
 .taskpane footer {
     display: flex;
-    justify-content: space-evenly;
-    color: #f3e7dc;
-    background-color: #6a7a6a;
+    flex-direction: column;
+    padding: 1vh 2.5vw;
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
+}
+
+.taskpane footer iconify-icon {
+    font-size: 1.5em;
 }

@@ -2,14 +2,14 @@ import { formURL } from "./url";
 import { authFetch } from "./fetch";
 import { getDrivePath } from "./site";
 
-export async function getItem(id: string, query: SelectQuery = []) {
+export async function getItem(token: string, id: string, query: SelectQuery = []) {
     let path = await getDrivePath();
     path += `/items/${id}`;
-    const url = formURL(path, query)
-    return authFetch<DriveItem>(url);
+    const url = formURL(path, query);
+    return authFetch<DriveItem>(token, url);
 }
 
-export async function getCollection(id?: string) {
+export async function getCollection(token: string, id?: string) {
     const item = id ? `items/${id}` : "root";
     let path = await getDrivePath();
     path += `/${item}/children`;
@@ -19,7 +19,7 @@ export async function getCollection(id?: string) {
 
     return getItems(url)
     async function getItems(url: string | URL, values: DriveItem[] = []) {
-        const response = await authFetch<ItemCollection>(url);
+        const response = await authFetch<ItemCollection>(token, url);
         for (const item of response.value) {
             values.push(item);
         }

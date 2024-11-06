@@ -35,27 +35,44 @@ export default async (): Promise<Configuration> => {
             clean: true
         },
         module: {
-            defaultRules: [
-                {
-                    exclude: /node_modules/i
-                }
-            ],
             rules: [
                 {
+                    test: /\.(m|c)?js$/i,
+                    enforce: "pre",
+                    include: /node_modules/i,
+                    use: [
+                        {
+                            loader: 'source-map-loader',
+                            options: {
+                                filterSourceMappingUrl: (
+                                    url: string, 
+                                    resourcePath: string
+                                ) => {
+                                    return !/node_modules/.test(resourcePath);
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
                     test: /\.ts$/i,
-                    use: 'ts-loader' 
+                    use: 'ts-loader',
+                    exclude: /node_modules/i
                 },
                 {
                     test: /\.html$/i,
-                    use: 'html-loader'
+                    use: 'html-loader',
+                    exclude: /node_modules/i
                 },
                 {
                     test: /\.css$/i,
-                    use: [MiniCSSExtractPlugin.loader, 'css-loader']
+                    use: [MiniCSSExtractPlugin.loader, 'css-loader'],
+                    exclude: /node_modules/i
                 },
                 {
                     test: /\.(ttf|ico)$/i,
-                    type: 'asset/resource'
+                    type: 'asset/resource',
+                    exclude: /node_modules/i
                 }
             ]
         },
@@ -79,6 +96,8 @@ export default async (): Promise<Configuration> => {
         plugins: [
             new HtmlWebpackPlugin({
                 filename: 'index.html',
+                title: 'CPFL Taskpane',
+                favicon: './favicon.ico',
                 template: './taskpane.html'
             }),
             new MiniCSSExtractPlugin({
@@ -106,7 +125,6 @@ export default async (): Promise<Configuration> => {
                 ]
             })
         ],
-        devtool: devMaps,
         devServer: {
             headers: {
                 "Access-Control-Allow-Origin": "*"
@@ -116,6 +134,11 @@ export default async (): Promise<Configuration> => {
                 options: await devCerts()
             },
             port: devPort
-        }
+        },
+        watchOptions: {
+            aggregateTimeout: 10000,
+            ignored: /node_modules/i,
+        },
+        devtool: devMaps
     }
 }

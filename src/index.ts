@@ -1,53 +1,41 @@
+import './styles';
+import 'iconify-icon';
 import { getEnv } from './env';
 import { AuthUser } from './auth';
-import { setStyles } from './styles';
-import { PageHTML } from './pages';
+import { PageHTML } from './html';
+import { initBird } from './debug';
 
-document.addEventListener('DOMContentLoaded', () => { // WIP: timing handler
-    console.log('DOM Content Ready');
-}) 
-
-
-let appReady = false; // loading page
-try { 
-    const main = document.getElementById("app-main");
-    let i = 0;
-    if (!main) {
-        throw new Error('DOM null error');
-    }
-    const loader = setInterval(() => {
-        if (appReady) {
-            clearInterval(loader);
-        } else {
-            i++;
-            console.log(`${i} mississippi`);
-            main.innerText += ".";
+document.addEventListener('DOMContentLoaded', () => { // timing handler
+    console.log('DOM Content Loaded');
+    Office.onReady((info) => {
+        console.log('Office JS Ready', info);
+        try {
+            console.log('Launching App');
+            CPFL.start(info).then(app => {
+                console.log('App Instanced', app);
+            });
+        } catch (err) {
+            console.error(err);
         }
-    }, 1000);
-} catch (err) {
-    console.error(err);
-}
-
-Office.onReady((info) => {
-    console.log('Office JS Ready');
-    CPFL.start(info).then((app) => {
-        appReady = true;
-        
     });
 });
-
-const supportedHosts = [
-    Office.HostType.Word,
-    null, // (OoO browser)
-    // WIP: Office.HostType.Outlook,
-    // WIP: Office.HostType.Excel
-]
 
 export default class CPFL {
 
     public static debug: boolean = false; // toggle debug mode
+
+    private static supports = [ // WIP: expand hosting
+        Office.HostType.Word,
+        null, // (OoO browser)
+        // WIP: Office.HostType.Outlook,
+        // WIP: Office.HostType.Excel
+    ]
     
-    private static app: CPFL;
+    private static _app?: CPFL;
+    public static get app() {
+        return this._app;
+    }
+
     public static async start(info?: {
         host: Office.HostType | null;
         platform: Office.PlatformType | null;
@@ -65,16 +53,12 @@ export default class CPFL {
             }
         }
         
-        if (!CPFL.app || restart) {
+        if (!CPFL._app || restart) { // check app context
 
-            if (supportedHosts.includes(info.host)) {
-                console.log(`Starting Taskpane ${info.host ? "on " + info.host : ""}`);
-            } else {
+            console.log(info);
+            if (!CPFL.supports.includes(info.host)) {
                 throw new Error('Office Host Error');
             }
-
-            const page = window.location.hash.slice(1); // get initial page
-            // WIP: per-platform supported page types references
 
             let mode: AppMode;
             if (info.host === null) {
@@ -98,30 +82,36 @@ export default class CPFL {
                 }
             }
 
-            CPFL.app = new this(mode, page);
+            CPFL._app = new CPFL(mode);
+
         }
 
-        return CPFL.app;
+        return CPFL._app;
+
     }
     
-    protected constructor(mode: AppMode, page: string) {
+    protected constructor(mode: AppMode) { // app construction
 
-        setStyles(mode); // apply specific css
+        document.body.className = mode;
 
-        this._user = AuthUser.login().then(user => { // login and cache user config
+        this._user = AuthUser.login().then(user => {
             this._user = Promise.resolve(user);
-            return this._user;
+            return user;
         });
 
+        new PageHTML("hub", "Dashboard", "home");
+        new PageHTML("mtr", "Active Matter", "credentials");
+        new PageHTML("bal", "Balance Sheet", "calculation");
+        new PageHTML("lib", "Precedent Library", "document");
+        new PageHTML("usr", "User Settings", "settings");
+
+        this.display = "hub"; // WIP change timing on page creation, user awaiting, and display setting
+
+        initBird(); // debugger
         
-        // WIP: init nav, then
-        window.onhashchange = this.display; // set event listener
-
-        this.current = new PageHTML(this, page); // render page
-
     }
 
-    public get env() {
+    public get env(): Promise<EnvConfig> {
         return getEnv(CPFL.debug);
     }
 
@@ -130,39 +120,15 @@ export default class CPFL {
         return this._user;
     }
 
-    /**
-     * hash path navigation
-     */
-    public get hash() {
-        return window.location.hash.slice(1);
-    }
-    public set hash(path: string) {
-        window.location.hash = path;
+    public async token(addedScopes: string[] = []): Promise<string> {
+        return AuthUser.access(addedScopes);
     }
 
-    private current: PageHTML; // current page context
-    private async display(ev: HashChangeEvent) { // WIP: event listener exposed html rendering
-
-        const env = await this.env;
-
-        const prev = new URL(ev.oldURL);
-        if (prev.hash) {
-            const oldKey = env.id + prev.hash;
-            const oldValue = JSON.stringify(this.current);
-            sessionStorage.setItem(oldKey, oldValue);
-        }
-
-        const next = new URL(ev.newURL);
-
-        const newKey = env.id + next.hash;
-        const newValue = sessionStorage.getItem(newKey);
-
-        this.current = new PageHTML(this, next.hash, newValue);
-
+    public get display(): Promise<PageHTML> {
+        return PageHTML.current;
     }
-
-    
-
-    
+    public set display(page: string | PageHTML) {
+        PageHTML.current = page;
+    }
 
 }

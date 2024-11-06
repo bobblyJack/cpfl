@@ -5,9 +5,6 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="description" content="cpfl office taskpane add-in">
 
-        <title>CPFL Taskpane</title>
-        <link rel="icon" href="./src/icons/favicon.ico">
-
         <!-- Open Sans Font -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,13 +16,14 @@
     <body>
         <!-- Static Taskpane Elements -->
         <header id="app-header">
-            <h1 id="header-title">DON'T PANIC</h1>
+            <h1 id="header-title" class="warn">DON'T PANIC</h1>
         </header>
+        <nav id="app-nav"></nav>
         <main id="app-main">
-            <p>Loading CPFL App</p>
+            <div id="main-content"></div>
         </main>
         <footer id="app-footer">
-            <p style="font-size: small;">please be patient</p>
+            <button id="debug-button"><iconify-icon icon="lucide:bird"></iconify-icon></button>
         </footer>
     </body>
 </html>

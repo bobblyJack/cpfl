@@ -5,8 +5,8 @@ import { getItem } from "./item";
  * @param id drive item id
  * @returns base 64 string
  */
-export async function getContent(id: string) {
-    const item = await getItem(id);
+export async function getContent(token: string, id: string) {
+    const item = await getItem(token, id);
     const url = item["@microsoft.graph.downloadUrl"];
     if (!url) {
         console.error('download link missing');
