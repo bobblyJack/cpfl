@@ -136,7 +136,7 @@ export default async (): Promise<Configuration> => {
             port: devPort
         },
         watchOptions: {
-            aggregateTimeout: 10000,
+            aggregateTimeout: 5000,
             ignored: /node_modules/i,
         },
         devtool: devMaps

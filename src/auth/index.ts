@@ -1,10 +1,10 @@
-import { initMSAL } from './client';
-import { getToken } from './token';
+import CPFL from '..';
+import { PublicClientApplication } from '@azure/msal-browser';
+import { createMSAL } from './client';
 import login from './login';
 import logout from './logout';
-import { PublicClientApplication } from '@azure/msal-browser';
+import { getToken } from './token';
 
-// WIP: have added a bunch of probably redundant OFfice.onReadys to this section.
 
 /**
  * authenticated user
@@ -14,14 +14,15 @@ import { PublicClientApplication } from '@azure/msal-browser';
  */
 export class AuthUser implements UserConfig {
 
-    public static debug: boolean = false;
-
     private static _MSAL: Promise<PublicClientApplication>;
     public static get MSAL() { // fetch ms auth library
-        if (!this._MSAL || this.debug) {
-            this._MSAL = initMSAL(this.debug).then(pca => {
-                this._MSAL = Promise.resolve(pca);
-                return pca;
+        if (!this._MSAL || CPFL.debug) {
+            this._MSAL = CPFL.env.then(env => {
+                this._MSAL = createMSAL(env).then(pca => {
+                    this._MSAL = Promise.resolve(pca);
+                    return this._MSAL;
+                });
+                return this._MSAL;
             });
         }
         return this._MSAL;

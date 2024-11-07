@@ -18,4 +18,5 @@ interface UserConfig {
         full: string;
     }
     email: string;
+    admin: boolean;
 }

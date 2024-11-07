@@ -1,5 +1,5 @@
-import './styles';
 import 'iconify-icon';
+import './styles';
 import { getEnv } from './env';
 import { AuthUser } from './auth';
 import { PageHTML } from './html';
@@ -23,6 +23,9 @@ document.addEventListener('DOMContentLoaded', () => { // timing handler
 export default class CPFL {
 
     public static debug: boolean = false; // toggle debug mode
+    public static get env(): Promise<EnvConfig> {
+        return getEnv(this.debug);
+    }
 
     private static supports = [ // WIP: expand hosting
         Office.HostType.Word,
@@ -31,11 +34,7 @@ export default class CPFL {
         // WIP: Office.HostType.Excel
     ]
     
-    private static _app?: CPFL;
-    public static get app() {
-        return this._app;
-    }
-
+    public static app: CPFL;
     public static async start(info?: {
         host: Office.HostType | null;
         platform: Office.PlatformType | null;
@@ -53,7 +52,11 @@ export default class CPFL {
             }
         }
         
-        if (!CPFL._app || restart) { // check app context
+        if (!CPFL.app || restart) { // check app context
+
+            if (restart) {
+                // WIP: reset html to landing page here.
+            }
 
             console.log(info);
             if (!CPFL.supports.includes(info.host)) {
@@ -82,22 +85,22 @@ export default class CPFL {
                 }
             }
 
-            CPFL._app = new CPFL(mode);
+            const user = await AuthUser.login();
+            CPFL.app = new CPFL(mode, user);
 
         }
 
-        return CPFL._app;
+        CPFL.app.display = "hub";
+        return CPFL.app;
 
     }
-    
-    protected constructor(mode: AppMode) { // app construction
+
+    private _user: AuthUser;
+    private _display?: PageHTML;
+    private constructor(mode: AppMode, user: AuthUser) { // app construction
 
         document.body.className = mode;
-
-        this._user = AuthUser.login().then(user => {
-            this._user = Promise.resolve(user);
-            return user;
-        });
+        this._user = user;
 
         new PageHTML("hub", "Dashboard", "home");
         new PageHTML("mtr", "Active Matter", "credentials");
@@ -105,30 +108,41 @@ export default class CPFL {
         new PageHTML("lib", "Precedent Library", "document");
         new PageHTML("usr", "User Settings", "settings");
 
-        this.display = "hub"; // WIP change timing on page creation, user awaiting, and display setting
-
         initBird(); // debugger
         
     }
 
-    public get env(): Promise<EnvConfig> {
-        return getEnv(CPFL.debug);
-    }
-
-    private _user: Promise<AuthUser>;
     public get user() {
         return this._user;
     }
 
-    public async token(addedScopes: string[] = []): Promise<string> {
-        return AuthUser.access(addedScopes);
+    public get token() {
+        return AuthUser.access;
     }
 
-    public get display(): Promise<PageHTML> {
-        return PageHTML.current;
+    public get display(): Promise<PageHTML> { // get current page
+        return PageHTML.cleanQ.then(() => {
+            if (!this._display) {
+                this._display = PageHTML.get('hub');
+                return this._display.open();
+            }
+            return this._display;
+        });
     }
-    public set display(page: string | PageHTML) {
-        PageHTML.current = page;
+
+    public set display(page: string | PageHTML) { // browse to new page
+        try {
+            
+            if (this._display) {
+                this._display.close();
+            }
+
+            this._display = typeof page === 'string' ? PageHTML.get(page) : page;
+            this._display.open();
+
+        } catch (err) {
+            console.error('navigation error', page, err);
+        }
     }
 
 }
