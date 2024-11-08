@@ -1,13 +1,12 @@
 import CPFL from '..';
 import { PageHTML } from '.';
 import { createIconifyIcon } from './icons';
-import { IconifyIconHTMLElement } from 'iconify-icon';
 
 export class NavControl {
     public readonly page: PageHTML;
     private button: HTMLButtonElement;
     private title: HTMLElement;
-    private icon: IconifyIconHTMLElement;
+    private icon: HTMLIconifyElement;
 
     public constructor(page: PageHTML, icon: string) {
         this.page = page;
@@ -52,5 +51,9 @@ export class NavControl {
 
     public show() {
         this.button.classList.remove("hidden");
+    }
+
+    public flag(force?: boolean) {
+        this.button.classList.toggle("warn", force);
     }
 }

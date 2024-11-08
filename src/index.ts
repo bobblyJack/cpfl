@@ -1,9 +1,9 @@
-import 'iconify-icon';
 import './styles';
+import qreq from './qreq';
 import { getEnv } from './env';
 import { AuthUser } from './auth';
 import { PageHTML } from './html';
-import { initBird } from './debug';
+import { createBird } from './debug';
 
 document.addEventListener('DOMContentLoaded', () => { // timing handler
     console.log('DOM Content Loaded');
@@ -20,10 +20,12 @@ document.addEventListener('DOMContentLoaded', () => { // timing handler
     });
 });
 
+type AppMode = "taskpane" | "mobile" | "browser";
+
 export default class CPFL {
 
     public static debug: boolean = false; // toggle debug mode
-    public static get env(): Promise<EnvConfig> {
+    public static get env() {
         return getEnv(this.debug);
     }
 
@@ -90,25 +92,25 @@ export default class CPFL {
 
         }
 
-        CPFL.app.display = "hub";
         return CPFL.app;
 
     }
 
     private _user: AuthUser;
     private _display?: PageHTML;
+    public readonly mode: AppMode;
     private constructor(mode: AppMode, user: AuthUser) { // app construction
 
-        document.body.className = mode;
-        this._user = user;
+        this.mode = mode;
+        document.body.className = mode; // apply targeted css
 
-        new PageHTML("hub", "Dashboard", "home");
-        new PageHTML("mtr", "Active Matter", "credentials");
-        new PageHTML("bal", "Balance Sheet", "calculation");
-        new PageHTML("lib", "Precedent Library", "document");
-        new PageHTML("usr", "User Settings", "settings");
+        this._user = user; // set user config
 
-        initBird(); // debugger
+        PageHTML.init(this); // set up pages
+
+        if (user.admin) { // add debugger
+            createBird().then(bird => PageHTML.footer.appendChild(bird));
+        }
         
     }
 
@@ -120,11 +122,15 @@ export default class CPFL {
         return AuthUser.access;
     }
 
+    public qreq<T>(action: () => Promise<T>) {
+        return new qreq<T>(action);
+    }
+
     public get display(): Promise<PageHTML> { // get current page
-        return PageHTML.cleanQ.then(() => {
+        return qreq.awaitAll().then(() => {
             if (!this._display) {
                 this._display = PageHTML.get('hub');
-                return this._display.open();
+                return new qreq(this._display.open).result;
             }
             return this._display;
         });
@@ -132,13 +138,13 @@ export default class CPFL {
 
     public set display(page: string | PageHTML) { // browse to new page
         try {
-            
+
             if (this._display) {
-                this._display.close();
+                new qreq(this._display.close);
             }
 
             this._display = typeof page === 'string' ? PageHTML.get(page) : page;
-            this._display.open();
+            new qreq(this._display.open);
 
         } catch (err) {
             console.error('navigation error', page, err);

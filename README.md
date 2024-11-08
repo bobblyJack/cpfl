@@ -25,6 +25,8 @@ migrate balance sheet into app ?
     would require access to actionstep data ? maybe not. just names i guess ?
     could key a file id in and save stuff locally based on that ?
 
-# production steps - to do when publishing
-- change app ID URI to prod host
-- if ever deployed on different tenant, they can change config.json to their values
+# to do
+tidy this up.
+need to sort out selecting a client matter and saving/loading that before i can handle the balance sheet.
+so active matter first
+then balance sheet

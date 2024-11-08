@@ -1,11 +1,15 @@
 import CPFL from "..";
 
 export function doubleClicker(bird: HTMLButtonElement) {
-    
-    console.log('tweet tweet');
+    try {
+        console.log('tweet tweet');
 
-    CPFL.debug = !CPFL.debug;
+        CPFL.debug = !CPFL.debug;
 
-    bird.classList.toggle("error", CPFL.debug);
+        bird.classList.toggle("error", CPFL.debug);
+
+    } catch (err) {
+        console.error('double ironic.', err);
+    }
     
 }

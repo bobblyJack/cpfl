@@ -12,7 +12,7 @@ import { getToken } from './token';
  * @wip remote config
  * @wip configurable settings
  */
-export class AuthUser implements UserConfig {
+export class AuthUser {
 
     private static _MSAL: Promise<PublicClientApplication>;
     public static get MSAL() { // fetch ms auth library
@@ -28,7 +28,7 @@ export class AuthUser implements UserConfig {
         return this._MSAL;
     }
 
-    public static async login() { // get partial user config
+    public static async login() { // get id token claims
         const claims = await login(this.MSAL);
         return new AuthUser(claims);
     }

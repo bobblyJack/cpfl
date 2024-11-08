@@ -4,8 +4,8 @@
         <tr>
             <th>Ownership</th>
             <th>Description</th>
-            <th>Wife</th>
-            <th>Husband</th>
+            <th>Client</th>
+            <th>Other Side</th>
             <th>Total</th>
         </tr>
     </thead>
@@ -15,14 +15,14 @@
                 <label></label>
                 <select name="owner">
                     <option selected>...</option>
-                    <option value="W">wife</option>
-                    <option value="H">husband</option>
+                    <option value="C">client</option>
+                    <option value="O">other side</option>
                     <option value="J">joint</option>
                 </select>
             </td>
-            <td><input type="text" placeholder="description of the thing"></td>
-            <td><input type="number" placeholder="W$"></td>
-            <td><input type="number" placeholder="H$"></td>
+            <td><input type="text" placeholder="asset"></td>
+            <td><input type="number" placeholder="$"></td>
+            <td><input type="number" placeholder="$"></td>
             <td>calculated total $</td>
         </tr>
     </tbody>
@@ -30,14 +30,14 @@
         <tr>
             <td></td>
             <td>Total Assets:</td>
-            <td>$ ___</td>
-            <td>$ ___</td>
-            <td>$ ___</td>
+            <td id="tableA-totalC">$ ___</td>
+            <td id="tableA-totalO">$ ___</td>
+            <td id="tableA-total">$ ___</td>
         </tr>
         <tr>
             <td colspan="2"></td>
-            <td>% ___</td>
-            <td>% ___</td>
+            <td id="tableA-percentC">% ___</td>
+            <td id="tableA-percentO">% ___</td>
         </tr>
     </tfoot>
 </table>
