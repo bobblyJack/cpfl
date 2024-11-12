@@ -1,5 +1,8 @@
 import { PageHTML } from "..";
 
+const hub = new PageHTML('hub', 'Dashboard', 'home');
+
+
 export class HubPage extends PageHTML {
     private welcomeMessage: string; 
     constructor() {

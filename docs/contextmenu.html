@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Context Menu</title>
+    <style>
+        /* The custom context menu */
+        #custom-menu {
+            display: none;
+            position: absolute;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+        #custom-menu ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        #custom-menu li {
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+        #custom-menu li:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+
+<div id="target" style="width: 200px; height: 200px; background-color: #007bff; color: white; display: flex; justify-content: center; align-items: center;">
+    Right-click here
+</div>
+
+<div id="custom-menu">
+    <ul>
+        <li onclick="alert('Option 1 clicked')">Option 1</li>
+        <li onclick="alert('Option 2 clicked')">Option 2</li>
+        <li onclick="alert('Option 3 clicked')">Option 3</li>
+    </ul>
+</div>
+
+<script>
+    // Select the target element and the custom context menu
+    const target = document.getElementById('target');
+    const customMenu = document.getElementById('custom-menu');
+
+    // Show the custom context menu on right-click
+    target.addEventListener('contextmenu', function(event) {
+        event.preventDefault();  // Prevent the default context menu
+        const x = event.pageX;   // Get the mouse position
+        const y = event.pageY;
+
+        // Position the custom menu
+        customMenu.style.left = `${x}px`;
+        customMenu.style.top = `${y}px`;
+
+        // Show the custom menu
+        customMenu.style.display = 'block';
+    });
+
+    // Hide the custom context menu when clicking anywhere outside
+    window.addEventListener('click', function(event) {
+        if (!customMenu.contains(event.target) && event.button !== 2) {
+            customMenu.style.display = 'none';  // Hide menu if clicked outside
+        }
+    });
+</script>
+
+</body>
+</html>
+

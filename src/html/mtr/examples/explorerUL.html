@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List of Options</title>
+    <style>
+        .option-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .option-item {
+            padding: 10px;
+            margin: 5px 0;
+            background-color: #f0f0f0;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .option-item:hover {
+            background-color: #ddd;
+        }
+
+        .option-item.selected {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .button-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .select-button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .select-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<ul class="option-list">
+    <li class="option-item">Option 1</li>
+    <li class="option-item">Option 2</li>
+    <li class="option-item">Option 3</li>
+    <li class="option-item">Option 4</li>
+</ul>
+
+<div class="button-container">
+    <button class="select-button" id="submitButton">Submit</button>
+</div>
+
+<script>
+    const items = document.querySelectorAll('.option-item');
+    let selectedItem = null;
+
+    items.forEach(item => {
+        item.addEventListener('click', () => {
+            // Toggle the 'selected' class
+            if (selectedItem) {
+                selectedItem.classList.remove('selected');
+            }
+            item.classList.add('selected');
+            selectedItem = item;
+        });
+    });
+
+    document.getElementById('submitButton').addEventListener('click', () => {
+        if (selectedItem) {
+            alert('You selected: ' + selectedItem.textContent);
+        } else {
+            alert('Please select an option');
+        }
+    });
+</script>
+
+</body>
+</html>

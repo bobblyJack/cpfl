@@ -1,47 +1,42 @@
 import CPFL from '..';
 import { NavControl } from './nav';
-import { HubPage } from './hub';
-import { MtrPage } from './mtr';
-import { BalPage } from './bal';
-import { LibPage } from './lib';
-import { UsrPage } from './usr';
 
 /**
  * Page Objects
+ * @wip extendable properties/methods without defining new classes for each page
  * @wip content and caching
  * @wip check-out-check-in
  */
-export abstract class PageHTML {
+export class PageHTML {
 
-    /* static html elements */
-    public static readonly header = document.getElementById('app-header') as HTMLElement;
-    public static readonly title = document.getElementById('header-title') as HTMLHeadingElement;
-    public static readonly nav = document.getElementById('app-nav') as HTMLElement;
-    public static readonly main = document.getElementById('app-main') as HTMLElement;
-    public static readonly footer = document.getElementById('app-footer') as HTMLElement;
-
-    private static index: Map<string, PageHTML>; // page map
-    public static async init(app: CPFL) {
-
-        const Pages: (new () => PageHTML)[] = [ // default pages
-            HubPage, 
-            MtrPage, 
-            BalPage
-        ];
-        if (app.mode === 'taskpane') { // conditional page
-            Pages.push(LibPage);
-        }
-        Pages.push(UsrPage); // appended default page
-
-        const pages: [string, PageHTML][] = Pages.map(Page => {
-            const page = new Page();
-            return [page.key, page];
-        }); // instance pages and return iterator
-
-        PageHTML.index = new Map(pages); // create index
-
-        app.display = "hub"; // initiate display
+    // static html elements
+    public static get header() {
+        return getStaticElement("header");
     }
+    public static get nav() {
+        return getStaticElement("nav");
+    }
+    public static get main() {
+        return getStaticElement("main");
+    }
+    public static get footer() {
+        return getStaticElement("footer");
+    }
+
+    // page title
+    public static get title() {
+        return this.header.textContent || "";
+    }
+    public static set title(text: string) {
+        const e = this.header.querySelector('h1');
+        if (e) {
+            e.textContent = text;
+        } else {
+            console.error('null app title', this.header);
+        }
+    }
+
+    private static index: Map<string, PageHTML> = new Map(); // page map
 
     public static get(): PageHTML[];
     public static get(key: string): PageHTML;
@@ -58,7 +53,6 @@ export abstract class PageHTML {
         }
     }
 
-    public readonly app: CPFL;
     public readonly key: string;
     public readonly title: string;
     public readonly nav: NavControl;
@@ -67,46 +61,50 @@ export abstract class PageHTML {
         title: string,
         icon: string
     ) { 
-        this.app = CPFL.app;
         this.key = key;
         this.title = title;
         this.nav = new NavControl(this, icon);
+        PageHTML.index.set(this.key, this);
     }
 
-    public async close(): Promise<void> { // base page exit
+    public get app(): CPFL {
+        return CPFL.app;
+    }
+
+    public closer?: () => Promise<void>; // page exit
+    public async close(): Promise<void> {
         console.log('closing', this.key);
-        PageHTML.title.textContent = "";
-        this.nav.deactivate();
+
+        if (this.closer) {
+            await this.closer();
+        }
+        
+        PageHTML.title = "";
+        this.nav.enable();
     }
 
-    public async open(): Promise<this> { // base page entrance
+    public opener?: () => Promise<void>; // page entrance
+    public async open(): Promise<this> {
         console.log('opening', this.key);
-        this.nav.activate();
+
+        if (this.opener) {
+            await this.opener();
+        }
+        
+        this.nav.disable();
         return this;
     }
 
 }
 
-/* SUBCLASS TEMPLATE
 
-import { PageHTML } from "..";
 
-export class {KEY}Page extends PageHTML {
-    
-    constructor() {
-        super({KEY}, {TITLE}, {ICON});
+
+
+function getStaticElement(tag: "header" | "nav" | "main" | "footer") {
+    const e = document.body.querySelector(tag);
+    if (!e) {
+        throw new Error(`null static html ${tag} element`);
     }
-
-    async open() {
-        // subclass open script here
-        return super.open();
-    }
-
-    async close() {
-        // subclass close script here
-        return super.close();
-    }
-
+    return e;
 }
-
-*/

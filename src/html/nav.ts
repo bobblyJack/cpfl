@@ -22,9 +22,7 @@ export class NavControl {
         this.button.appendChild(this.title);
 
         this.button.onclick = () => { // set click behaviour
-            if (!this.button.classList.contains("active")) {
-                CPFL.app.display = this.page.key;
-            }
+            CPFL.app.display = this.page.key;
         }
         
         PageHTML.nav.appendChild(this.button); // append button
@@ -37,23 +35,27 @@ export class NavControl {
         this.title.textContent = input;
     }
 
-    public activate() {
-        this.button.classList.add("active");
+    public disable() {
+        this.button.disabled = true;
     }
 
-    public deactivate() {
-        this.button.classList.remove("active");
+    public enable() {
+        this.button.disabled = false;
     }
 
     public hide() {
-        this.button.classList.add("hidden");
+        this.button.hidden = true;
     }
 
     public show() {
-        this.button.classList.remove("hidden");
+        this.button.hidden = false;
     }
 
-    public flag(force?: boolean) {
-        this.button.classList.toggle("warn", force);
+    public flag(signal: "hint" | "warn" = "warn") {
+        this.button.classList.add(signal);
+    }
+    public unflag() {
+        this.button.classList.remove("hint");
+        this.button.classList.remove("warn");
     }
 }

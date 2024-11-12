@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dropdown Select Example</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            margin: auto;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .button-container {
+            text-align: center;
+        }
+
+        .select-button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .select-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <label for="optionsSelect">Choose an option:</label>
+    <select id="optionsSelect">
+        <option value="" disabled selected>Select an option</option>
+        <option value="option1">Option 1 - Short description</option>
+        <option value="option2">Option 2 - Short description</option>
+        <option value="option3">Option 3 - Short description</option>
+        <option value="option4">Option 4 - Short description</option>
+        <option value="option5">Option 5 - Short description</option>
+    </select>
+
+    <!-- Button to process the selection -->
+    <div class="button-container">
+        <button class="select-button" id="submitButton">Submit</button>
+    </div>
+</div>
+
+<script>
+    // Handle the button click to get the selected option
+    document.getElementById('submitButton').addEventListener('click', function() {
+        const selectElement = document.getElementById('optionsSelect');
+        const selectedOption = selectElement.value;
+
+        if (selectedOption) {
+            alert('You selected: ' + selectedOption);
+        } else {
+            alert('Please select an option');
+        }
+    });
+</script>
+
+</body>
+</html>

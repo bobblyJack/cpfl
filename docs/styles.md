@@ -24,3 +24,8 @@ like [class] could get anything with a class
     ::before and ::after
     it can be used to insert content dynamically
     this seems better done through script though
+
+.class1.class2 is how you do AND
+of course it is! that's how :pseudoclasses work, duh
+.class1:hover is using the AND!
+presumably then that means .class1 :hover would be any hovered descendants of class1

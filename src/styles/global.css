@@ -1,11 +1,14 @@
+/* global low-specificity styles */
+
 * {
     margin: 0;
+    color: inherit;
+    text-decoration-color: inherit;
+    background-color: inherit;
+    border-color: inherit;
+    border-style: hidden;
+    box-sizing: border-box;
     font-family: "Open Sans", Arial, Helvetica, sans-serif;
-}
-
-body {
-    height: 100vh;
-    color: #6a7a6a;
 }
 
 @font-face {
@@ -19,40 +22,81 @@ h1, h2, h3, h4, h5, h6 {
     font-family: "Saudagar", "Open Sans", Arial, Helvetica, sans-serif;
 }
 
+body {
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1 1 auto;
+    overflow: auto;
+}
+
 iconify-icon {
     vertical-align: -0.125em;
     height: 1em;
     width: 1em;
 }
 
-a {
-    color: inherit;
+button:enabled:hover {
+    cursor: pointer;
 }
 
-button {
-    color: inherit;
-    background-color: inherit;
-    border-style: hidden;
-    border-color: #6a7a6a;
+/* Light Theme (default) */
+
+body,
+body.light {
+    color: #dfb691;
+    background-color: #2f4534; 
 }
 
-button:hover {
+body main,
+body.light main {
+    color: #6a7a6a;
+    background-color: #ffffff;
+}
+
+body *:disabled,
+body.light *:disabled {
+    color: #f3e7dc;
+}
+
+body main *:disabled,
+body.light main *:disabled {
+    color: #dde7dd;
+}
+
+body button:enabled:hover,
+body.light button:enabled:hover {
     color: #ffffff;
 }
-main button:hover {
+
+body main button:enabled:hover,
+body.light main button:enabled:hover {
     background-color: #6a7a6a;
 }
 
-header {
-    color: #f3e7dc;
-    background-color: #2f4534;
+body .hint,
+body.light .hint {
+    color: #4a8b8b;
+    border-color: #4a8b8b;
+}
+body .warn,
+body.light .warn {
+    color: #d95c5c;
+    border-color: #d95c5c;
 }
 
-footer {
-    color: #f3e7dc;
-    background-color: #6a7a6a;
+/* Dark Theme (WIP) */
+
+body.dark {
+    color: #f3e7dc; 
+    background-color: #000000;
 }
 
-mark {
-    background-color: #dfb691;
+body.dark main {
+    color: #c9d3c9;         
+    background-color: #222222;
 }

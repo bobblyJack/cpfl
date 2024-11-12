@@ -1,25 +1,89 @@
-/* colour schemes (reference only) */
-.green {
-    color: #6a7a6a;
-}
-.green .dark {
-    color: #2f4534;
-}
-.green .light {
-    color: #c9d3c9;
-}
+/* colour scheme reference */
 
-.peach {
-    color: #dfb691;
-}
-.peach .light {
-    color: #f3e7dc;
-}
+/** WHITE
+* main background
+*/
 
 .white {
     color: #ffffff;
 }
 
+/** GREEN
+* main text
+*/
+
+.green {
+    color: #6a7a6a;
+}
+.green.light {
+    color: #c9d3c9;
+}
+.green.ulight {
+    color: #dde7dd;
+}
+.green.dark {
+    color: #2f4534;
+}
+
+/** PEACH
+* contrast, headings & warnings
+*/
+
+.peach {
+    color: #dfb691;
+}
+.peach.light {
+    color: #f5cfad;
+}
+.peach.ulight {
+    color: #f3e7dc;
+}
+.peach.dark {
+    color: #ff7900;
+}
+
+/** TEAL
+* hints and anchors
+*/
+
+.teal {
+    color: #4a8b8b;
+}
+.teal.light {
+    color: #75caca;
+}
+.teal.ulight {
+    color: #89dedf;
+}
+.teal.dark {
+    color: #085c5c;
+}
+
+/** RED
+* errors
+*/
+
 .red {
     color: #d95c5c;
+}
+.red.light {
+    color: #f88484;
+}
+.red.ulight {
+    color: #ff9393;
+}
+.red.dark {
+    color: #c40000;
+}
+
+/* colour mixing (WIP) */
+
+.srgb {
+    color: color-mix(in srgb, #6a7a6a 50%, #2f4534 50%);
+}
+.hsl {
+    color: color-mix(in hsl, #6a7a6a 50%, #2f4534 50%);
+}
+.lab {
+    color: color-mix(in lab, #6a7a6a 50%, #2f4534 50%);
 }

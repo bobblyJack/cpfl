@@ -31,7 +31,7 @@ interface ParticipantData {
 }
 
 interface PartyData extends ParticipantData {
-    dob: Date;
+    dob?: Date;
     country_of_birth?: string;
     occupation?: string;
 }
@@ -45,27 +45,27 @@ interface CounselData extends ParticipantData {
 }
 
 interface ChildData {
-    given_names: string;
-    family_name: string;
-    dob: Date;
-    gender: Gender;
+    given_names?: string;
+    family_name?: string;
+    dob?: Date;
+    gender?: Gender;
 }
 
 interface RelationshipData {
-    cohab: {
-        date: string | Date;
+    cohab?: {
+        date?: string | Date;
     }
-    marriage: {
-        date: string | Date;
-        place: string;
-        country: string;
+    marriage?: {
+        date?: string | Date;
+        place?: string;
+        country?: string;
     }
-    separation: {
-        date: string | Date;
+    separation?: {
+        date?: string | Date;
     }
-    divorce: {
-        date: string | Date;
-        place: string;
-        country: string;
+    divorce?: {
+        date?: string | Date;
+        place?: string;
+        country?: string;
     }
 }
