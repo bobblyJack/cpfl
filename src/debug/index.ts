@@ -2,23 +2,29 @@ import { clicker } from "./click";
 import { doubleClicker } from "./toggle";
 
 // get it? it's a debugger because the bird eats the bugs.
-export async function createBird() {
+export function initBird(location: HTMLElement) {
 
-    const bird = document.createElement('button');
-    bird.innerHTML = '<iconify-icon icon="lucide:bird"></iconify-icon>';
+    const icon = location.querySelector('iconify-icon');
+    if (!icon) {
+        throw new Error('bird has flown away.');
+    }
+
+    const button = document.createElement('button');
+    icon.replaceWith(button);
+    button.appendChild(icon);
 
     let clickTimer: NodeJS.Timeout;
     const clickDelay = 256;
 
-    bird.onclick = () => {
+    button.onclick = () => {
         clearTimeout(clickTimer);
         clickTimer = setTimeout(clicker, clickDelay);
     }
-    bird.ondblclick = () => {
+    button.ondblclick = () => {
         clearTimeout(clickTimer);
-        doubleClicker(bird);
-    }
-
-    return bird;
+        doubleClicker(button);
+    }   
+        
+    return button;
 
 }

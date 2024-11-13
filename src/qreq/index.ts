@@ -1,7 +1,7 @@
 /**
  * cache and queue handler for requested promises
  */
-export default class QueueRequest<T> {
+export class QueueRequest<T> {
 
     private static queue: QueueRequest<any>[] = []; // the queue
     private static async process<T>(qreq: QueueRequest<T>, timer: number = 1) {

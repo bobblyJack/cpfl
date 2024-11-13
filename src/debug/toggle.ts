@@ -6,7 +6,7 @@ export function doubleClicker(bird: HTMLButtonElement) {
 
         CPFL.debug = !CPFL.debug;
 
-        bird.classList.toggle("error", CPFL.debug);
+        bird.classList.toggle("warn", CPFL.debug);
 
     } catch (err) {
         console.error('double ironic.', err);

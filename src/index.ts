@@ -1,9 +1,8 @@
 import './styles';
-import qreq from './qreq';
 import { getEnv } from './env';
 import { AuthUser } from './auth';
 import { PageHTML } from './html';
-import { createBird } from './debug';
+import { initBird } from './debug';
 
 document.addEventListener('DOMContentLoaded', () => { // timing handler
     console.log('DOM Content Loaded');
@@ -87,8 +86,15 @@ export default class CPFL {
                 }
             }
 
-            const user = await AuthUser.login();
-            CPFL.app = new CPFL(mode, user);
+            const user = await AuthUser.login(); // login user
+            CPFL.app = new CPFL(mode, user); // create app instance
+            for (const key of CPFL.app.keys) {
+                const page = new PageHTML(key);
+                if (key === 'hub') {
+                    PageHTML.set(page);
+                }
+
+            }
 
         }
 
@@ -96,59 +102,28 @@ export default class CPFL {
 
     }
 
-    private _user: AuthUser;
-    private _display?: PageHTML;
+    public readonly user: AuthUser;
     public readonly mode: AppMode;
+    public readonly keys: string[];
     private constructor(mode: AppMode, user: AuthUser) { // app construction
 
-        this.mode = mode;
+        this.mode = mode; // set mode
         document.body.className = mode; // apply targeted css
 
-        this._user = user; // set user config
+        this.user = user; // set user config
 
-        PageHTML.init(this); // set up pages
+        this.keys = [ // WIP - define pages
+            "hub", "act", "bal", "lib", "usr"
+        ];
 
-        if (user.admin) { // add debugger
-            createBird().then(bird => PageHTML.footer.appendChild(bird));
+        if (user.admin) { // init debugger
+            initBird(PageHTML.footer);
         }
         
     }
 
-    public get user() {
-        return this._user;
-    }
-
     public get token() {
         return AuthUser.access;
-    }
-
-    public qreq<T>(action: () => Promise<T>) {
-        return new qreq<T>(action);
-    }
-
-    public get display(): Promise<PageHTML> { // get current page
-        return qreq.awaitAll().then(() => {
-            if (!this._display) {
-                this._display = PageHTML.get('hub');
-                return new qreq(this._display.open).result;
-            }
-            return this._display;
-        });
-    }
-
-    public set display(page: string | PageHTML) { // browse to new page
-        try {
-
-            if (this._display) {
-                new qreq(this._display.close);
-            }
-
-            this._display = typeof page === 'string' ? PageHTML.get(page) : page;
-            new qreq(this._display.open);
-
-        } catch (err) {
-            console.error('navigation error', page, err);
-        }
     }
 
 }

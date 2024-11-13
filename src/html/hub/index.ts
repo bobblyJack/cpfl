@@ -1,31 +1,30 @@
 import { PageHTML } from "..";
 
-const hub = new PageHTML('hub', 'Dashboard', 'home');
+export function initHub(this: PageHTML) { 
 
+    this.title = "Dashboard";
+    this.nav = "home";
 
-export class HubPage extends PageHTML {
-    private welcomeMessage: string; 
-    constructor() {
-        super("hub", "Dashboard", "home");
-        this.welcomeMessage = `Welcome ${this.app.user.name.given}`;
-    }
+    this.opener = openPage;
+    this.closer = closePage;
 
-    async open() {
-        PageHTML.title.textContent = this.welcomeMessage;
-        PageHTML.main.appendChild(PageHTML.nav);
-        PageHTML.get().forEach((page) => {
-            page.nav.text = page.title;
-        });
-        this.nav.hide();
-        return super.open();
-    }
+}
 
-    async close() {
-        PageHTML.header.appendChild(PageHTML.nav);
-        PageHTML.get().forEach((page) => {
-            page.nav.text = "";
-        });
-        this.nav.show();
-        return super.close();
-    }
+async function openPage(this: PageHTML) {
+    PageHTML.title = `Welcome ${this.app.user.name.given}`;
+    PageHTML.get([]).forEach((page) => {
+        page.nav.text = page.title;
+    });
+    this.nav.hide();
+
+    PageHTML.main.appendChild(PageHTML.nav);
+}
+
+async function closePage(this: PageHTML) {
+    PageHTML.get([]).forEach((page) => {
+        page.nav.text = "";
+    });
+    this.nav.show();
+
+    PageHTML.header.appendChild(PageHTML.nav);
 }

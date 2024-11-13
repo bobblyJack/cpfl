@@ -22,7 +22,7 @@ export class NavControl {
         this.button.appendChild(this.title);
 
         this.button.onclick = () => { // set click behaviour
-            CPFL.app.display = this.page.key;
+            PageHTML.set(this.page);
         }
         
         PageHTML.nav.appendChild(this.button); // append button

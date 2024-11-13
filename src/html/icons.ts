@@ -1,6 +1,12 @@
 import 'iconify-icon';
 
 const iconifySet = "carbon";
+/**
+ * create iconify icon html element
+ * @param name icon string name
+ * @param prefix overwrite default iconify set
+ * @wip return a default error icon if name invalid
+ */
 export function createIconifyIcon(name: string, prefix: string = iconifySet) {
     
     const element = document.createElement("iconify-icon");

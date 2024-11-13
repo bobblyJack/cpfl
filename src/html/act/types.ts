@@ -1,3 +1,19 @@
+interface MatterData {
+    readonly id: number;
+    appID?: number;
+    resID?: number;
+
+    client: PartyData;
+    lawyer: LawyerData;
+    counsel?: CounselData;
+
+    op?: PartyData;
+    ol?: LawyerData;
+    oc?: CounselData;
+
+    relationship: RelationshipData;
+    children: ChildData[];
+}
 
 interface ParticipantName {
     prefix?: string;
@@ -37,11 +53,12 @@ interface PartyData extends ParticipantData {
 }
 
 interface LawyerData extends ParticipantData {
+    firm?: string;
     LCode?: string;
 }
 
 interface CounselData extends ParticipantData {
-    
+    chambers?: string;
 }
 
 interface ChildData {

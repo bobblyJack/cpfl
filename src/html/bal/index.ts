@@ -1,7 +1,19 @@
 import { PageHTML } from "..";
 
-export class BalPage extends PageHTML {
-    constructor() {
-        super("bal", "Balance Sheet", "calculation");
-    }
+export function createBal(page: PageHTML): PageHTML {
+    //const page = new PageHTML('bal');
+    page.title = "Balance Sheet";
+    page.nav = "calculation";
+
+    page.opener = openPage;
+    page.closer = closePage;
+
+    return page;
+}
+
+async function openPage(this: PageHTML) {
+
+}
+async function closePage(this: PageHTML) {
+
 }
