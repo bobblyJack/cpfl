@@ -2,6 +2,7 @@ import CPFL from '..';
 import { NavControl } from './nav';
 import initHub from './hub';
 import initAct from './act';
+import initBal from './bal';
 
 /**
  * Page Objects
@@ -103,6 +104,9 @@ export class PageHTML {
     public static async set(page: PageHTML) { // basic navigation
         console.log('attempting nav');
         if (this.display) {
+            if (this.display === page) {
+                return;
+            }
             await this.display.close();
         }
         this.display = await page.open();
@@ -110,8 +114,6 @@ export class PageHTML {
 
     public readonly key: string;
     public title: string = "";
-    public content?: HTMLElement;
-    public tray?: HTMLElement;
     public constructor(key: string) { // page construction
         this.key = key;
         PageHTML.index.set(this.key, this);
@@ -128,6 +130,8 @@ export class PageHTML {
                 return initHub;
             case "act":
                 return initAct;
+            case "bal":
+                return initBal;
             default: return () => {
                 console.log('default page creation used');
                 const pages = PageHTML.get([]);
@@ -142,7 +146,7 @@ export class PageHTML {
     }
     
     private _nav?: NavControl; // navigation element
-    public get nav(): NavControl {
+    public get nav(): NavControl { // WIP - fold into element map ?
         if (!this._nav) {
             console.error('nav control unavailable', this.key);
             this._nav = new NavControl(this, 'error');
@@ -153,22 +157,33 @@ export class PageHTML {
         this._nav = new NavControl(this, icon);
     }
 
+    private index: Map<string, HTMLElement> = new Map(); // page element map
+    public set?: (this: PageHTML, key: string) => HTMLElement;
+    public get<T extends HTMLElement>(key: string) {
+        let element = this.index.get(key);
+        if (!element) {
+            if (this.set) {
+                try {
+                    element = this.set(key);
+                    this.index.set(key, element);
+                } catch (err) {
+                    console.error('element setter invalid', key, this.set);
+                    throw err;
+                }
+            }
+            console.error(key);
+            throw new Error('element key invalid');
+        }
+        return element as T;
+    }
+
     public closer?: (this: PageHTML) => Promise<void>; 
     public async close(): Promise<void> { // base page exit
         console.log('closing', this.key);
         PageHTML.title = "";
-
-        if (this.content) {
-            PageHTML.main.removeChild(this.content);
-        }
-        if (this.tray) {
-            PageHTML.footer.removeChild(this.tray);
-        }
-
         if (this.closer) {
             await this.closer();
         }
-
         this.nav.enable();
     }
     
@@ -176,18 +191,9 @@ export class PageHTML {
     public async open(): Promise<this> { // base page entrance
         console.log('opening', this.key);
         this.nav.disable();
-        
         if (this.opener) {
             await this.opener();
         }
-
-        if (this.content) {
-            PageHTML.main.appendChild(this.content);
-        }
-        if (this.tray) {
-            PageHTML.footer.appendChild(this.tray);
-        }
-        
         return this;
     }
 

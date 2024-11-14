@@ -1,14 +1,11 @@
 import { PageHTML } from "..";
 
-export function createBal(page: PageHTML): PageHTML {
-    //const page = new PageHTML('bal');
-    page.title = "Balance Sheet";
-    page.nav = "calculation";
+export default function (this: PageHTML): PageHTML {
+    
+    this.title = "Balance Sheet";
+    this.nav = "calculation";
 
-    page.opener = openPage;
-    page.closer = closePage;
-
-    return page;
+    return this;
 }
 
 async function openPage(this: PageHTML) {

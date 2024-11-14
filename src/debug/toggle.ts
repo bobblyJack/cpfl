@@ -1,6 +1,6 @@
 import CPFL from "..";
 
-export default function (bird: HTMLButtonElement) {
+export default function (bird: HTMLButtonElement) { // switches debug mode on
     try {
         console.log('tweet tweet');
 

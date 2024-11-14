@@ -1,7 +1,3 @@
-.taskpane * {
-    text-align: center;
-}
-
 .taskpane header,
 .taskpane footer {
     display: block;

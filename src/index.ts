@@ -104,6 +104,7 @@ export default class CPFL {
     public readonly mode: AppMode;
     public readonly keys: string[];
     private constructor(mode: AppMode, user: AuthUser) { // app construction
+        PageHTML.main.textContent = "";
 
         this.mode = mode; // set mode
         document.body.className = mode; // apply targeted css
@@ -122,6 +123,16 @@ export default class CPFL {
 
     public get token() {
         return AuthUser.access;
+    }
+
+    public async refresh() {
+        const page = PageHTML.get();
+        await page.close();
+        return page.open();
+    }
+
+    public get debug() {
+        return CPFL.debug;
     }
 
 }

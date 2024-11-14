@@ -1,14 +1,11 @@
 import { PageHTML } from "..";
 
-export function createLib(page: PageHTML): PageHTML {
-    //const page = new PageHTML('lib');
-    page.title = "Precedent Library";
-    page.nav = "document";
+export default function (this: PageHTML): PageHTML {
+    
+    this.title = "Precedent Library";
+    this.nav = "document";
 
-    page.opener = openPage;
-    page.closer = closePage;
-
-    return page;
+    return this;
 }
 
 async function openPage(this: PageHTML) {

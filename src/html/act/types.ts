@@ -36,7 +36,7 @@ interface Address {
     country_if_foreign?: string;
 }
 
-interface ParticipantData {
+interface ParticipantData { // WIP convert to class for calculated fields
     readonly id: number;
     name: ParticipantName;
     gender?: Gender;

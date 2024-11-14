@@ -13,7 +13,7 @@ export async function importActionstepMatter(): Promise<ActiveMatter> {
             });
         });
         
-        if (!data[0][1]) {
+        if (!data.length) {
             throw new Error('actionstep id undefined');
         }
 
@@ -70,13 +70,19 @@ export async function importActionstepMatter(): Promise<ActiveMatter> {
 }
 
 async function getTableValues(context: Word.RequestContext): Promise<string[][]> {
+    
     const tables = context.document.body.tables;
     tables.load({
         $top: 1,
         values: true
     });
+    
     await context.sync();
-    return tables.items[0].values;
+
+    if (tables.items.length) {
+        return tables.items[0].values;
+    }
+    throw new Error('export table is missing');
 }
 
 function mapParticipantData(data: string[][], i: number): ParticipantData {
@@ -172,6 +178,6 @@ function getDate(data?: string): Date | undefined {
 }
 
 function getPhoneNums(data?: string): string[] {
-    const list = data?.split("\n") || [];
+    const list = data?.split("\r") || [];
     return list.filter(num => num != "****");
 }

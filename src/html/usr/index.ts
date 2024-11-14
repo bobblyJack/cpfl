@@ -1,14 +1,11 @@
 import { PageHTML } from "..";
 
-export function createUsr(page: PageHTML): PageHTML {
-    //const page = new PageHTML('usr');
-    page.title = "User Settings";
-    page.nav = "settings";
+export default function (this: PageHTML): PageHTML {
+    
+    this.title = "User Settings";
+    this.nav = "settings";
 
-    page.opener = openPage;
-    page.closer = closePage;
-
-    return page;
+    return this;
 }
 
 async function openPage(this: PageHTML) {
