@@ -14,6 +14,9 @@ could tidy up some overuse of imports by making type declarations in types for m
 in particular class objects seems useful.
 i am finally seeing the value in interfaces!
 
+# styles
+the style flips at a certain point because the global css is applied immediately but the mode specific stuff is only applied on app instancing. need to figure out whether it would be better to handle styling differently, or alternatively style the loading page in "global" so that it looks ok before the mode stuff is applied. probably further evidence for clearing the taskpane html entirely when the app is instanced tbh.
+
 # icons
 iconify-icon ? the carbon set looked ok.
 imports as a dependency and then can be bundled.

@@ -2,7 +2,7 @@ import {
     PublicClientApplication
 } from '@azure/msal-browser';
 
-export async function createMSAL(env: EnvConfig) {
+export default async function (env: EnvConfig) {
     const pca = new PublicClientApplication({
         auth: {
             clientId: env.id,

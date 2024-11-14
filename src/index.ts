@@ -88,16 +88,14 @@ export default class CPFL {
 
             const user = await AuthUser.login(); // login user
             CPFL.app = new CPFL(mode, user); // create app instance
-            for (const key of CPFL.app.keys) {
+            for (const key of CPFL.app.keys) { // construct pages
                 const page = new PageHTML(key);
-                if (key === 'hub') {
-                    PageHTML.set(page);
-                }
-
+                console.log('page created', page);
             }
 
         }
 
+        PageHTML.get(); // init html display
         return CPFL.app;
 
     }
@@ -112,7 +110,7 @@ export default class CPFL {
 
         this.user = user; // set user config
 
-        this.keys = [ // WIP - define pages
+        this.keys = [ // WIP - define pages (use enum or type, make mode specific?)
             "hub", "act", "bal", "lib", "usr"
         ];
 

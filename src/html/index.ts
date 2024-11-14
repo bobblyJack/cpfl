@@ -1,6 +1,7 @@
 import CPFL from '..';
 import { NavControl } from './nav';
-import { initHub } from './hub';
+import initHub from './hub';
+import initAct from './act';
 
 /**
  * Page Objects
@@ -86,7 +87,14 @@ export class PageHTML {
 
         } else {
             if (!this.display) {
-                throw new Error('display not set');
+                try {
+                    const hub = PageHTML.get('hub');
+                    PageHTML.set(hub);
+                    return hub;
+                } catch (err) {
+                    console.error(err);
+                    throw new Error('display not set');
+                }
             }
             return this.display;
         }
@@ -118,6 +126,8 @@ export class PageHTML {
         switch (this.key) { 
             case "hub": 
                 return initHub;
+            case "act":
+                return initAct;
             default: return () => {
                 console.log('default page creation used');
                 const pages = PageHTML.get([]);

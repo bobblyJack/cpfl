@@ -4,6 +4,44 @@ import { importActionstepMatter } from "./import";
 
 export class ActiveMatter implements MatterData {
 
+    private static _page: PageHTML;
+    public static get page(): PageHTML {
+        if (!this._page) {
+            this._page = PageHTML.get('act');
+        }
+        return this._page;
+    }
+
+    public static get main(): HTMLElement {
+        if (!this.page.content) {
+            this.page.content = document.createElement('div');
+            this.page.content.id = "act-cont";
+        }
+        return this.page.content;
+    }
+
+    private static _label: HTMLElement;
+    public static get label(): HTMLElement {
+        if (!this._label) {
+            let label = document.getElementById('act-cont-label');
+            if (!label) {
+                label = document.createElement('div');
+                label.id = "act-cont-label";
+                this.main.prepend(label);
+            }
+            this._label = label;
+        }
+        return this._label;
+    }
+
+    public static get footer(): HTMLElement {
+        if (!this.page.tray) {
+            this.page.tray = document.createElement('div');
+            this.page.tray.id = "act-tray";
+        }
+        return this.page.tray;
+    }
+
     private static _current: Promise<ActiveMatter> | null = null;
     public static get current(): Promise<ActiveMatter> {
         if (!this._current) {
@@ -13,18 +51,19 @@ export class ActiveMatter implements MatterData {
     }
     public static set current(file: Promise<ActiveMatter> | null) {
         try {
-            const act = PageHTML.get('act');
             if (!file) {
                 this._current = null;
-                act.title = "Select a Matter";
-                act.nav.flag("warn");
+                this.page.title = "Active Matter";
+                this.label.textContent = "Select a Matter";
+                this.page.nav.flag("warn");
             } else {
                 this._current = file.then((current) => {
                     this._current = Promise.resolve(current);
                     const filename = current.client.name.last_name;
-                    act.title = `${filename} (${current.id})`;
-                    act.nav.unflag();
-                    
+                    const matterLabel = `${filename} (${current.id})`;
+                    this.page.title = matterLabel;
+                    this.label.textContent = `Current Matter: ${matterLabel}`;
+                    this.page.nav.unflag();
                     return current;
                 });
             }
@@ -34,17 +73,7 @@ export class ActiveMatter implements MatterData {
     }
 
     public static async import() { // get initial data from current word doc
-        const data = await importActionstepMatter();
-        const file = new ActiveMatter(data.id, data.client, data.lawyer);
-        file.counsel = data.counsel;
-        file.appID = data.appID;
-        file.resID = data.resID;
-        file.op = data.op;
-        file.ol = data.ol;
-        file.oc = data.oc;
-        file.relationship = data.relationship;
-        file.children = data.children;
-        return file;
+        this.current = importActionstepMatter();
     }
 
     readonly id: number; // actionstep id

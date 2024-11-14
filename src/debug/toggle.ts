@@ -1,6 +1,6 @@
 import CPFL from "..";
 
-export function doubleClicker(bird: HTMLButtonElement) {
+export default function (bird: HTMLButtonElement) {
     try {
         console.log('tweet tweet');
 

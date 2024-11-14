@@ -1,6 +1,6 @@
 import CPFL from "..";
 
-export function clicker() {
+export default function () {
     try {
         if (CPFL.debug) {
             console.error('tweet');

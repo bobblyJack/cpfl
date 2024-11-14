@@ -1,7 +1,7 @@
 // fetch initial file data from current word doc
 // map results for participants using table[row][col]
-
-export async function importActionstepMatter(): Promise<MatterData> {
+import { ActiveMatter } from "./matter";
+export async function importActionstepMatter(): Promise<ActiveMatter> {
     try {
         const table = await Word.run(context => getTableValues(context));
         const data = table.map(row => {
@@ -17,7 +17,7 @@ export async function importActionstepMatter(): Promise<MatterData> {
             throw new Error('actionstep id undefined');
         }
 
-        return {
+        const matter: MatterData = {
             id: Number(data[0][1]),
             appID: data[1][1] ? Number(data[1][1]) : undefined,
             resID: data[2][1] ? Number(data[2][1]) : undefined,
@@ -50,6 +50,17 @@ export async function importActionstepMatter(): Promise<MatterData> {
             relationship: mapRelationshipData(data),
             children: mapChildren(data)
         }
+
+        const file = new ActiveMatter(matter.id, matter.client, matter.lawyer);
+        file.counsel = matter.counsel;
+        file.appID = matter.appID;
+        file.resID = matter.resID;
+        file.op = matter.op;
+        file.ol = matter.ol;
+        file.oc = matter.oc;
+        file.relationship = matter.relationship;
+        file.children = matter.children;
+        return file;
         
     } catch (err) {
         console.error('could not import participant data');
@@ -59,10 +70,13 @@ export async function importActionstepMatter(): Promise<MatterData> {
 }
 
 async function getTableValues(context: Word.RequestContext): Promise<string[][]> {
-    const table = context.document.body.tables.items[0];
-    table.load("values");
+    const tables = context.document.body.tables;
+    tables.load({
+        $top: 1,
+        values: true
+    });
     await context.sync();
-    return table.values;
+    return tables.items[0].values;
 }
 
 function mapParticipantData(data: string[][], i: number): ParticipantData {

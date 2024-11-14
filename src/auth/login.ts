@@ -33,6 +33,5 @@ export default async function(pca: Promise<PublicClientApplication>): Promise<Id
     }
 
     return claims;
-
 }
 

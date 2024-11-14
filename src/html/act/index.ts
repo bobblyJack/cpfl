@@ -1,55 +1,35 @@
 import { PageHTML } from "..";
 import { ActiveMatter } from "./matter";
 
-let testButtonClicks = 0;
-let testButtonArmed: boolean = false;
+export default function (this: PageHTML) {
+    
+    this.title = "Active Matter";
+    this.nav = "credentials";
+    this.nav.flag("warn");
 
-export function createAct(page: PageHTML): PageHTML {
-    //const page = new PageHTML('act');
-    page.title = "Active Matter";
-    page.nav = "credentials";
-    page.nav.flag("warn");
+    this.opener = openPage;
+    this.closer = closePage;
 
-    page.opener = openPage;
-    page.closer = closePage;
-
-    page.content = document.createElement('div');
+    this.content = document.createElement('div');
 
     const importButton = document.createElement('button');
     importButton.id = "act-button-import";
     importButton.textContent = "Import Matter";
-    importButton.onclick = ActiveMatter.import;
-    page.content.appendChild(importButton);
+    importButton.onclick = () => ActiveMatter.import();
+    this.content.appendChild(importButton);
 
-    const testButton = document.createElement('button');
-    testButton.textContent = "Test Me";
-    testButton.onclick = () => {
-        testButtonClicks++;
-        console.log('attempt number', testButtonClicks);
-        try {
-            ActiveMatter.current.then(file => {
-                console.log(file);
-                if (testButtonArmed) {
-                    ActiveMatter.current = null;
-                    testButtonArmed = false;
-                } else {
-                    console.log('test button is now armed and ready');
-                    testButtonArmed = true;
-                }
-            });
-        } catch (err) {
-            console.error(err);
-        }
-    }
-    page.content.appendChild(testButton);
+    const closeButton = document.createElement('button');
+    closeButton.textContent = "Close Matter";
+    closeButton.onclick = () => {ActiveMatter.current = null}
+    this.content.appendChild(closeButton);
 
-    return page;
+    return this;
 }
 
 async function openPage(this: PageHTML) {
-    PageHTML.title = this.title;
+    PageHTML.title = "Active Matter";
 }
 
 async function closePage(this: PageHTML) {
-
+    console.log('woop woop woop woop');
 }

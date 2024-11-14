@@ -1,6 +1,6 @@
 import { PageHTML } from "..";
 
-export function initHub(this: PageHTML) { 
+export default function (this: PageHTML) { 
 
     this.title = "Dashboard";
     this.nav = "home";

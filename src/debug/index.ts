@@ -1,5 +1,5 @@
-import { clicker } from "./click";
-import { doubleClicker } from "./toggle";
+import clicker from "./click";
+import doubleClicker from "./toggle";
 
 // get it? it's a debugger because the bird eats the bugs.
 export function initBird(location: HTMLElement) {

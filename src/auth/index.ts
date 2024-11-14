@@ -1,10 +1,11 @@
 import CPFL from '..';
-import { PublicClientApplication } from '@azure/msal-browser';
-import { createMSAL } from './client';
+import { 
+    PublicClientApplication 
+} from '@azure/msal-browser';
+import getMSAL from './client';
+import getToken from './token';
 import login from './login';
 import logout from './logout';
-import { getToken } from './token';
-
 
 /**
  * authenticated user
@@ -18,7 +19,7 @@ export class AuthUser {
     public static get MSAL() { // fetch ms auth library
         if (!this._MSAL || CPFL.debug) {
             this._MSAL = CPFL.env.then(env => {
-                this._MSAL = createMSAL(env).then(pca => {
+                this._MSAL = getMSAL(env).then(pca => {
                     this._MSAL = Promise.resolve(pca);
                     return this._MSAL;
                 });

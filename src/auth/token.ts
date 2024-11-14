@@ -3,7 +3,7 @@ import {
     InteractionRequiredAuthError
 } from "@azure/msal-browser";
 
-export async function getToken(pca: Promise<PublicClientApplication>, addedScopes: string[]) {
+export default async function (pca: Promise<PublicClientApplication>, addedScopes: string[]) {
     const msal = await pca;
     const permission = {
         scopes: [
