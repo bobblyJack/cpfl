@@ -2,11 +2,11 @@ import {
     PublicClientApplication
 } from '@azure/msal-browser';
 
-export default async function (env: EnvConfig) {
+export default async function (client: string, tenant: string) {
     const pca = new PublicClientApplication({
         auth: {
-            clientId: env.id,
-            authority: `https://login.microsoftonline.com/${env.tenant}`
+            clientId: client,
+            authority: `https://login.microsoftonline.com/${tenant}`
         },
         system: {
             loggerOptions: {

@@ -1,61 +1,46 @@
-import CPFL from '..';
 import { PageHTML } from '.';
-import { createIconifyIcon } from './icons';
+import { createIIcon } from '../icons';
 
-export class NavControl {
-    public readonly page: PageHTML;
-    private button: HTMLButtonElement;
-    private title: HTMLElement;
-    private icon: HTMLIconifyElement;
+export default function createNavButton(page: PageHTML): HTMLButtonElement {
+    
+    const button = document.createElement("button");
+    button.onclick = () => PageHTML.display = page;
 
-    public constructor(page: PageHTML, icon: string) {
-        this.page = page;
-
-        this.button = document.createElement("button"); // create button
-        this.button.id = `nav-${page.key}`;
-        
-        this.icon = createIconifyIcon(icon); // create button icon
-        this.button.appendChild(this.icon);
-
-        this.title = document.createElement("div"); // create button text block
-        this.title.textContent = page.title;
-        this.button.appendChild(this.title);
-
-        this.button.onclick = () => { // set click behaviour
-            PageHTML.set(this.page);
-        }
-        
-        PageHTML.nav.appendChild(this.button); // append button
+    let icon: HTMLIconifyElement;
+    switch (page.key) {
+        case "hub": 
+            icon = createIIcon("nav-hub"); 
+            break;
+        case "act": 
+            icon = createIIcon("nav-act"); 
+            break;
+        case "bal": 
+            icon = createIIcon("nav-bal");
+            break;
+        case "lib": 
+            icon = createIIcon("nav-lib");
+            break;
+        case "usr": 
+            icon = createIIcon("nav-usr");
+            break;
+        default:
+            icon = createIIcon("error");
     }
+    button.appendChild(icon);
 
-    public get text(): string {
-        return this.title.textContent || "";
+    if (page.key !== "hub") {
+        const hub = PageHTML.get('hub');
+        const hubButton = button.cloneNode(true) as HTMLButtonElement;
+        hub.set('button', page.key, hubButton);
+        hubButton.onclick = () => PageHTML.display = page;
+        const hubLabel = document.createElement('p');
+        hubLabel.textContent = page.titleExt;
+        hubButton.appendChild(hubLabel);
+        hub.main.appendChild(hubButton);
+        PageHTML.nav.appendChild(button);
+    } else {
+        PageHTML.nav.prepend(button);
     }
-    public set text(input: string) {
-        this.title.textContent = input;
-    }
-
-    public disable() {
-        this.button.disabled = true;
-    }
-
-    public enable() {
-        this.button.disabled = false;
-    }
-
-    public hide() {
-        this.button.hidden = true;
-    }
-
-    public show() {
-        this.button.hidden = false;
-    }
-
-    public flag(signal: "hint" | "warn" = "warn") {
-        this.button.classList.add(signal);
-    }
-    public unflag() {
-        this.button.classList.remove("hint");
-        this.button.classList.remove("warn");
-    }
+    
+    return button;
 }

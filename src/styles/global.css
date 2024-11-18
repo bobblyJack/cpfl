@@ -1,7 +1,7 @@
 /* global low-specificity styles */
 
 * {
-    margin: 0;
+    margin: 0; 
     color: inherit;
     text-decoration-color: inherit;
     background-color: inherit;
@@ -9,7 +9,6 @@
     border-style: hidden;
     box-sizing: border-box;
     font-family: "Open Sans", Arial, Helvetica, sans-serif;
-    text-align: center;
 }
 
 @font-face {
@@ -19,6 +18,7 @@
     font-style: normal;
 }
 
+header,
 h1, h2, h3, h4, h5, h6 {
     font-family: "Saudagar", "Open Sans", Arial, Helvetica, sans-serif;
 }
@@ -30,6 +30,10 @@ body {
     flex-direction: column;
 }
 
+body > * {
+    width: 100vw;
+}
+
 main {
     flex: 1 1 auto;
     overflow: auto;
@@ -39,10 +43,27 @@ iconify-icon {
     vertical-align: -0.125em;
     height: 1em;
     width: 1em;
+    font-size: 2em;
+}
+
+nav button,
+main.hub button {
+    border-bottom-style: solid;
+    margin-bottom: 1vh;
+}
+main:not(.hub) button {
+    border-style: solid;
+    border-radius: 16px;
+    margin: 1vh 1vw;
 }
 
 button:enabled:hover {
     cursor: pointer;
+}
+
+#debug button.warn {
+    border-style: solid;
+    border-radius: 50%;
 }
 
 /* Light Theme (default) */
@@ -77,6 +98,7 @@ body.light button:enabled:hover {
 body main button:enabled:hover,
 body.light main button:enabled:hover {
     background-color: #6a7a6a;
+    border-color: #6a7a6a;
 }
 
 body .hint,

@@ -7,7 +7,7 @@ export function formURL(path: string, select?: SelectQuery): URL {
         ...path.split("/")
     ]
 
-    parts = parts.map(part => encodeURIComponent(part));
+    //parts = parts.map(part => encodeURIComponent(part));
     path = parts.join("/");
 
     const url = new URL(path, graphOrigin);

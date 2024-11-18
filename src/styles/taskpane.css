@@ -1,55 +1,20 @@
-.taskpane header,
-.taskpane footer {
-    display: block;
-    padding: 1vh 2.5vw;
+.taskpane {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
 }
 
-.taskpane header nav button {
-    border-bottom-style: solid;
-    border-bottom-width: 2px;
-    transition: border-color 500ms ease;
+.taskpane header {
     font-size: 2em;
 }
 
-.taskpane main {
-    padding: 1vh 5vw;
-}
-
-.taskpane main nav {
+.taskpane .hub div {
     display: grid;
     grid-template-rows: 1fr 1fr;
     grid-template-columns: 1fr 1fr;
+    padding: 5vh 5vw;
     gap: 5vh 5vw;
 }
-
-.taskpane main nav button {
-    text-align: center;
-    border-bottom-style: solid;
-    border-bottom-width: 4px;
-}
-
-.taskpane main nav iconify-icon {
+.taskpane .hub iconify-icon {
     font-size: 4em;
-}
-
-.taskpane footer {
-    display: flex;
-    flex-direction: column;
-    padding: 1vh 2.5vw;
-}
-
-.taskpane footer iconify-icon {
-    font-size: 1.5em;
-}
-
-
-.taskpane table {
-    table-layout: fixed;
-    width: 100%;
-}
-  
-.taskpane td, .taskpane th {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
 }

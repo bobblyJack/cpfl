@@ -19,7 +19,7 @@ export class AuthUser {
     public static get MSAL() { // fetch ms auth library
         if (!this._MSAL || CPFL.debug) {
             this._MSAL = CPFL.env.then(env => {
-                this._MSAL = getMSAL(env).then(pca => {
+                this._MSAL = getMSAL(env.id, env.tenant).then(pca => {
                     this._MSAL = Promise.resolve(pca);
                     return this._MSAL;
                 });
@@ -38,15 +38,16 @@ export class AuthUser {
         return logout(this.MSAL);
     }
 
-    public static get access() { // get access token
-        return (addedScopes: string[]) => getToken(this.MSAL, addedScopes);
+    public static async access(addedScopes: string[]) { // get access token
+        const msal = await AuthUser.MSAL;
+        const token = await getToken(msal, addedScopes);
+        return token;
     }
 
     private gname: string;
     private fname: string;
     public email: string;
     private constructor(claims: Record<string, any>) {
-        console.log('parsing identity:', claims);
         this.gname = claims['given_name'];
         this.fname = claims['family_name'];
         this.email = claims['email'];
@@ -67,5 +68,7 @@ export class AuthUser {
     public get admin() {
         return this.id === 'LG'; // WIP: placeholder admin check
     }
+
+    
 
 }

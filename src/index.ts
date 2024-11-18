@@ -2,17 +2,12 @@ import './styles';
 import { getEnv } from './env';
 import { AuthUser } from './auth';
 import { PageHTML } from './html';
-import { initBird } from './debug';
+import { getBird } from './debug';
 
 document.addEventListener('DOMContentLoaded', () => { // timing handler
-    console.log('DOM Content Loaded');
     Office.onReady((info) => {
-        console.log('Office JS Ready', info);
         try {
-            console.log('Launching App');
-            CPFL.start(info).then(app => {
-                console.log('App Instanced', app);
-            });
+            CPFL.start(info);
         } catch (err) {
             console.error(err);
         }
@@ -55,10 +50,6 @@ export default class CPFL {
         
         if (!CPFL.app || restart) { // check app context
 
-            if (restart) {
-                // WIP: reset html to landing page here.
-            }
-
             console.log(info);
             if (!CPFL.supports.includes(info.host)) {
                 throw new Error('Office Host Error');
@@ -88,51 +79,50 @@ export default class CPFL {
 
             const user = await AuthUser.login(); // login user
             CPFL.app = new CPFL(mode, user); // create app instance
-            for (const key of CPFL.app.keys) { // construct pages
-                const page = new PageHTML(key);
-                console.log('page created', page);
+
+            const hub = new PageHTML("hub");
+            switch (mode) { // construct pages
+                default: 
+                    new PageHTML("act");
+                    new PageHTML("bal");
+                    new PageHTML("lib");
+                    new PageHTML("usr");
             }
+
+            const bird = getBird(user.admin); // init debugger
+            document.body.insertBefore(bird, PageHTML.main.nextSibling);
+
+            PageHTML.display = hub; // open dashboard
 
         }
 
-        PageHTML.get(); // init html display
         return CPFL.app;
 
     }
 
-    public readonly user: AuthUser;
     public readonly mode: AppMode;
-    public readonly keys: string[];
+    public readonly user: AuthUser;
     private constructor(mode: AppMode, user: AuthUser) { // app construction
-        PageHTML.main.textContent = "";
+        document.body.innerHTML = "";
 
         this.mode = mode; // set mode
         document.body.className = mode; // apply targeted css
 
         this.user = user; // set user config
+        // WIP - get user settings to set css body theme ?
 
-        this.keys = [ // WIP - define pages (use enum or type, make mode specific?)
-            "hub", "act", "bal", "lib", "usr"
-        ];
-
-        if (user.admin) { // init debugger
-            initBird(PageHTML.footer);
-        }
-        
-    }
-
-    public get token() {
-        return AuthUser.access;
-    }
-
-    public async refresh() {
-        const page = PageHTML.get();
-        await page.close();
-        return page.open();
     }
 
     public get debug() {
         return CPFL.debug;
+    }
+
+    public async token(addedScopes: string[] = []) {
+        return AuthUser.access(addedScopes);
+    }
+
+    public get display() {
+        return PageHTML.get();
     }
 
 }

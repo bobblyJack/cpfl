@@ -1,16 +1,9 @@
 import { PageHTML } from "..";
 
-export default function (this: PageHTML): PageHTML {
+export default function (page: PageHTML) {
     
-    this.title = "Balance Sheet";
-    this.nav = "calculation";
+    page.titles = "Balance Sheet";
+    
 
-    return this;
-}
-
-async function openPage(this: PageHTML) {
-
-}
-async function closePage(this: PageHTML) {
-
+    ;
 }

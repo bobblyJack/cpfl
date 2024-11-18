@@ -25,9 +25,8 @@ export async function authFetch<T>(token: string, url: string | URL, method: Fet
         method: FetchMethod[method], // WIP: flesh out beyond GET
         headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + token,
-            'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+            'Cache-Control': 'private, no-store, no-cache, must-revalidate',
             'Expires': '-1',
             'Pragma': 'no-cache'
         }    
@@ -35,12 +34,16 @@ export async function authFetch<T>(token: string, url: string | URL, method: Fet
 
     if (jsonBody) {
         request.body = JSON.stringify(jsonBody);
+        request.headers = {
+            ...request.headers,
+            'Content-Type': 'application/json'
+        }
     }
     
     const response = await fetch(url, request);
 
     if (!response.ok) {
-        console.error('auth fetch response not ok');
+        console.error('auth fetch response not ok', response);
         throw new Error(response.statusText);
     }
 

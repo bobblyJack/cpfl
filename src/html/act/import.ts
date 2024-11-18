@@ -1,7 +1,8 @@
 // fetch initial file data from current word doc
 // map results for participants using table[row][col]
 import { ActiveMatter } from "./matter";
-export async function importActionstepMatter(): Promise<ActiveMatter> {
+
+export default async function () {
     try {
         const table = await Word.run(context => getTableValues(context));
         const data = table.map(row => {
@@ -60,7 +61,8 @@ export async function importActionstepMatter(): Promise<ActiveMatter> {
         file.oc = matter.oc;
         file.relationship = matter.relationship;
         file.children = matter.children;
-        return file;
+
+        ActiveMatter.current = file; // set active matter here.
         
     } catch (err) {
         console.error('could not import participant data');

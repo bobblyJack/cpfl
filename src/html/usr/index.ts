@@ -1,16 +1,7 @@
 import { PageHTML } from "..";
 
-export default function (this: PageHTML): PageHTML {
+export default function (page: PageHTML) {
     
-    this.title = "User Settings";
-    this.nav = "settings";
-
-    return this;
-}
-
-async function openPage(this: PageHTML) {
-
-}
-async function closePage(this: PageHTML) {
-
+    page.titles = "User Settings";
+    
 }

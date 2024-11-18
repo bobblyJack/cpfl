@@ -1,6 +1,16 @@
 const localKey = 'cpfl-env';
 const localPath = './config.json';
 
+interface EnvConfig {
+    id: string;
+    host: string;
+    tenant: string;
+    site: {
+        name: string;
+        domain: string;
+    };
+}
+
 let configCache: Promise<EnvConfig>;
 
 export async function getEnv(refresh: boolean) {

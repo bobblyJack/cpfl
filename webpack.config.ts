@@ -70,7 +70,12 @@ export default async (): Promise<Configuration> => {
                     exclude: /node_modules/i
                 },
                 {
-                    test: /\.(ttf|ico)$/i,
+                    test: /\.(jpg|png|ico)$/i,
+                    type: 'asset/resource',
+                    exclude: /node_modules/i
+                },
+                {
+                    test: /\.ttf$/i,
                     type: 'asset/resource',
                     exclude: /node_modules/i
                 }

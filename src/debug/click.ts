@@ -1,10 +1,10 @@
 import CPFL from "..";
 
-export default function () { // refreshes current page
+export default function () {
     try {
         if (CPFL.debug) {
             console.error('tweet');
-            CPFL.app.refresh();
+            // add refresh here ?
         } else {
             console.log('tweet');
         }

@@ -3,7 +3,7 @@ import { authFetch } from "./fetch";
 import { getDrivePath } from "./site";
 
 export async function getItem(token: string, id: string, query: SelectQuery = []) {
-    let path = await getDrivePath();
+    let path = await getDrivePath(token);
     path += `/items/${id}`;
     const url = formURL(path, query);
     return authFetch<DriveItem>(token, url);
@@ -11,7 +11,7 @@ export async function getItem(token: string, id: string, query: SelectQuery = []
 
 export async function getCollection(token: string, id?: string) {
     const item = id ? `items/${id}` : "root";
-    let path = await getDrivePath();
+    let path = await getDrivePath(token);
     path += `/${item}/children`;
     const url = formURL(path, [
         "name", "id", "file", "folder"
