@@ -1,13 +1,9 @@
-const graphOrigin: string = "https://graph.microsoft.com";
-const graphVersion: string = "v1.0";
-
-export function formURL(path: string, select?: SelectQuery): URL {
+export default function formURL(graphOrigin: string, graphVersion: string, path: string, select?: (keyof DriveItem)[]): URL {
     let parts: string[] = [
         graphVersion,
         ...path.split("/")
     ]
 
-    //parts = parts.map(part => encodeURIComponent(part));
     path = parts.join("/");
 
     const url = new URL(path, graphOrigin);

@@ -1,5 +1,4 @@
 import './styles';
-import { getEnv } from './env';
 import { AuthUser } from './auth';
 import { PageHTML } from './html';
 import { getBird } from './debug';
@@ -19,9 +18,6 @@ type AppMode = "taskpane" | "mobile" | "browser";
 export default class CPFL {
 
     public static debug: boolean = false; // toggle debug mode
-    public static get env() {
-        return getEnv(this.debug);
-    }
 
     private static supports = [ // WIP: expand hosting
         Office.HostType.Word,
@@ -40,7 +36,7 @@ export default class CPFL {
         if (!info) {
             restart = true;
             if (CPFL.debug) {
-                await AuthUser.logout(); // clear msal cache
+                await AuthUser.logout(true); // clear msal cache
             }
             info = {
                 host: Office.context.host,
@@ -115,10 +111,6 @@ export default class CPFL {
 
     public get debug() {
         return CPFL.debug;
-    }
-
-    public async token(addedScopes: string[] = []) {
-        return AuthUser.access(addedScopes);
     }
 
     public get display() {

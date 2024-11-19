@@ -1,16 +1,3 @@
-enum FetchMethod {
-    GET, // retrieve resource - default
-    POST, // submit data or create resource - not idempotent
-    PATCH, // update fields of existing resource
-    DELETE, // remove a resource
-
-    /* uncommon methods */
-    PUT, // completely replace or create a resource
-    HEAD, // get resource metadata (headers only)
-    OPTIONS, // get allowed fetch methods
-    TRACE // loopback debug (returns the request)
-}
-
 /**
  * auth fetch
  * @param url access target
@@ -19,10 +6,10 @@ enum FetchMethod {
  * @param addScopes extra auth
  * @returns json response
  */
-export async function authFetch<T>(token: string, url: string | URL, method: FetchMethod = 0, jsonBody?: any) {
+export default async function authFetch<T>(token: string, url: string | URL, method: FetchMethod = "GET", jsonBody?: any) {
 
     const request: RequestInit = {
-        method: FetchMethod[method], // WIP: flesh out beyond GET
+        method: method, // WIP: flesh out beyond GET
         headers: {
             'Accept': 'application/json',
             'Authorization': 'Bearer ' + token,
@@ -43,7 +30,7 @@ export async function authFetch<T>(token: string, url: string | URL, method: Fet
     const response = await fetch(url, request);
 
     if (!response.ok) {
-        console.error('auth fetch response not ok', response);
+        console.error('auth fetch response not ok', response.status);
         throw new Error(response.statusText);
     }
 

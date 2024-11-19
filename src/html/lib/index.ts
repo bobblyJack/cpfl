@@ -1,5 +1,5 @@
 import { PageHTML } from "..";
-import * as graph from '../../graph';
+import * as graph from '../../auth/graph';
 import { createIIcon } from "../../icons";
 
 export default function (page: PageHTML) {

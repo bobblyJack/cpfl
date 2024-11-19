@@ -5,8 +5,7 @@ import {
 } from "@azure/msal-browser";
 
 // returns id token claims
-export default async function(pca: Promise<PublicClientApplication>): Promise<IdTokenClaims> {
-    const msal = await pca;
+export default async function(msal: PublicClientApplication): Promise<IdTokenClaims> {
 
     let account = msal.getActiveAccount();
 

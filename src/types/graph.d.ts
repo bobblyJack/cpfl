@@ -20,5 +20,3 @@ interface ItemCollection {
     value: DriveItem[];
     "@odata.nextLink"?: string | URL;
 }
-
-type SelectQuery = (keyof DriveItem)[];
