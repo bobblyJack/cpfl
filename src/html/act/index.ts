@@ -1,17 +1,18 @@
 import { PageHTML } from "..";
+import './style.css';
 import importActionstepMatter from './import';
 
-export default function (page: PageHTML) {
+export default async function () {
     
-    page.titleExt = "Active Matter";
+    const page = PageHTML.get('act');
     page.titleInt = "Select a Matter";
-    page.nav.classList.add("warn");
+    page.hnav.classList.add("warn");
 
     // containers - no file
     const main = page.set('div', 'main-0');
     page.main.appendChild(main);
-    const footer = page.set('div', 'footer-0');
-    page.footer.appendChild(footer);
+    const footer = page.set('nav', 'footer-0');
+    page.fnav.appendChild(footer);
 
     // saved matter explorer
     //WIP const explorer = page.set('ul', 'explorer');

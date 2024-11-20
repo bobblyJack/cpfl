@@ -1,9 +1,7 @@
 import { PageHTML } from "..";
 
-export default function (page: PageHTML) {
+export default async function () {
     
-    page.titles = "Balance Sheet";
     
-
-    ;
+    
 }

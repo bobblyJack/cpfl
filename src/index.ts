@@ -1,7 +1,9 @@
-import './styles';
+import './global.css';
+import './themes';
+import body from './static.html';
 import { AuthUser } from './auth';
 import { PageHTML } from './html';
-import { getBird } from './debug';
+import { initBird } from './debug';
 
 document.addEventListener('DOMContentLoaded', () => { // timing handler
     Office.onReady((info) => {
@@ -12,8 +14,6 @@ document.addEventListener('DOMContentLoaded', () => { // timing handler
         }
     });
 });
-
-type AppMode = "taskpane" | "mobile" | "browser";
 
 export default class CPFL {
 
@@ -52,9 +52,8 @@ export default class CPFL {
             }
 
             let mode: AppMode;
-            if (info.host === null) {
+            if (info.host === null) { // WIP: out-of-office support
                 mode = 'browser';
-                throw new Error('out-of-office experience unsupported'); // WIP: out-of-office support
     
             } else {
                 switch (info.platform) {
@@ -75,21 +74,14 @@ export default class CPFL {
 
             const user = await AuthUser.login(); // login user
             CPFL.app = new CPFL(mode, user); // create app instance
-
-            const hub = new PageHTML("hub");
-            switch (mode) { // construct pages
-                default: 
-                    new PageHTML("act");
-                    new PageHTML("bal");
-                    new PageHTML("lib");
-                    new PageHTML("usr");
-            }
-
-            const bird = getBird(user.admin); // init debugger
-            document.body.insertBefore(bird, PageHTML.main.nextSibling);
-
-            PageHTML.display = hub; // open dashboard
-
+            // construct individual pages
+            const hub = new PageHTML("hub", `Welcome ${user.name.given}`);
+            new PageHTML("act");
+            new PageHTML("bal");
+            new PageHTML("lib");
+            new PageHTML("usr");
+            initBird(user.admin); // init debugger
+            PageHTML.display = hub; // render dashboard
         }
 
         return CPFL.app;
@@ -97,22 +89,38 @@ export default class CPFL {
     }
 
     public readonly mode: AppMode;
+    public readonly theme: AppTheme;
     public readonly user: AuthUser;
-    private constructor(mode: AppMode, user: AuthUser) { // app construction
-        document.body.innerHTML = "";
+    private constructor(mode: AppMode, user: AuthUser, theme: AppTheme = "light") { // app construction
+        
+        this.mode = mode;
+        this.theme = theme;
+        this.user = user; // TBD - get user settings to set theme etc ?
 
-        this.mode = mode; // set mode
-        document.body.className = mode; // apply targeted css
-
-        this.user = user; // set user config
-        // WIP - get user settings to set css body theme ?
-
+        document.body.classList.add(mode, theme); // apply targeted css
+        document.body.innerHTML = body; // set static elements
+    
     }
 
+    /**
+     * fetch debug status
+     */
     public get debug() {
         return CPFL.debug;
     }
 
+    /**
+     * debug-only console log
+     */
+    public iflog(...args: any[]) {
+        if (this.debug) {
+            console.log(...args);
+        }
+    }
+
+    /**
+     * fetch current display
+     */
     public get display() {
         return PageHTML.get();
     }

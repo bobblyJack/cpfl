@@ -1,43 +1,54 @@
 import CPFL from '..';
 import createNav from './nav';
+import fetchElement from './element';
+import './hub.css';
 import initAct from './act';
 import initBal from './bal';
 import initLib from './lib';
-import initUsr from './usr';
+
+enum AppPages {
+    "hub" = "Dashboard",
+    "act" = "Active Matter",
+    "bal" = "Balance Sheet",
+    "lib" = "Precedent Library",
+    "usr" = "User Settings"
+}
 
 /**
  * Page Objects
- * @wip check-out-check-in
  */
 export class PageHTML {
 
-    public static get header(): HTMLElement {
-        return getStaticElement("header", this.nav);
-    }
-    public static get nav(): HTMLElement {
-        return getStaticElement("nav", this.main);
-    }
-    public static get main(): HTMLElement {
-        return getStaticElement("main", this.footer);
-    }
-    public static get footer(): HTMLElement {
-        return getStaticElement("footer", null);
-    }
-
-    private static _display: PageHTML; // current display
+    /* current display and basic navigation */
+    private static _display: PageHTML;
     public static get display() {
         if (!this._display) {
             throw new Error('display not set');
         }
         return this._display;
     }
-    public static set display(page: PageHTML) {
-        if (this._display) {
-            this._display.nav.removeAttribute("disabled");
+
+    public static set display(page: PageHTML) { // page navigation
+
+        page.hnav.disabled = true; // prevent double load
+
+        if (PageHTML._display) { 
+            PageHTML._display.hnav.removeAttribute("disabled"); // unlock previous page
+            document.body.classList.remove(PageHTML._display.key); // remove old style
         }
-        this._display = page.render();
+
+        document.body.classList.add(page.key); // load new style
+        
+        // set new content
+        PageHTML.title = page.titleInt;
+        PageHTML.main = page.main;
+        PageHTML.fnav = page.fnav;
+
+        PageHTML._display = page; // register new page
+        
     }
 
+    /* index of pages and search function */
     private static index: Map<string, PageHTML> = new Map(); // page map
     public static get(): PageHTML; // get current page
     public static get(key: string): PageHTML; // get specific page
@@ -67,37 +78,68 @@ export class PageHTML {
         return this.display;
     }
 
-    public readonly key: string;
-    public constructor(key: string) { // page construction
+    /* app header elements*/
+    public static get title(): string { // get page title
+        const e = fetchElement('page-title');
+        return e.textContent || "";
+    }
+    public static set title(text: string) { // set page title
+        if (text.length) {
+            const e = fetchElement('page-title');
+            e.textContent = text;
+        }
+    }
+    public static get hnav(): HTMLElement { // get app navigation bar
+        return fetchElement("header-nav");
+    }
+
+    /* main app container */
+    public static set main(content: HTMLDivElement) { // swap main content
+        const e = fetchElement('main-container');
+        e.replaceChildren(content);
+    }
+
+    /* contextual footer bar */
+    public static get fnav(): HTMLElement | null { // get page navigation bar
+        const e = fetchElement("app-footer");
+        return e.querySelector('nav');
+    }
+    public static set fnav(nav: HTMLElement) { // swap page navigation
+        if (this.fnav) {
+            this.fnav.replaceWith(nav);
+        } else {
+            const e = fetchElement("app-footer");
+            e.appendChild(nav);
+        }
+    }
+
+    /* page construction */
+    public readonly key: keyof typeof AppPages;
+    public titleExt: string; // exterior title
+    public titleInt: string; // interior title
+    public constructor(key: keyof typeof AppPages, h1?: string) {
         this.key = key;
+        this.titleExt = AppPages[key];
+        this.titleInt = h1 ? h1 : this.titleExt;
+        this.set('button', 'nav', createNav(this));
+        this.set('div', 'main');
+        this.set('nav', 'footer');
         PageHTML.index.set(this.key, this);
         switch (this.key) {
-            case "hub": {
-                this.titleExt = "Dashboard";
-                this.titleInt = `Welcome ${this.app.user.name.given}`;
+            case 'hub': break;
+            case 'act': {
+                initAct(); 
                 break;
             }
-            case "act": {
-                initAct(this);
+            case 'bal': {
+                initBal(); 
                 break;
             }
-            case "bal": {
-                initBal(this);
+            case 'lib': {
+                initLib(); 
                 break;
-            }
-            case "lib": {
-                initLib(this);
-                break;
-            }
-            case "usr": {
-                initUsr(this);
-                break;
-            }
-            default: {
-                console.log('default page creation used');
-                const pages = PageHTML.get([]);
-                this.titles = "Page #" + pages.length;
-            }
+            }   
+            case 'usr': break;
         }
     }
 
@@ -105,19 +147,9 @@ export class PageHTML {
         return CPFL.app;
     }
 
-    public titleInt: string = ""; // interior title
-    public titleExt: string = ""; // exterior title
-    public set titles(text: string) {
-        this.titleInt = text;
-        this.titleExt = text;
-    }
-
     private index: Map<string, HTMLElement> = new Map(); // page element map
-    public get<T extends HTMLElement>(tag: keyof HTMLElementTagNameMap, id: string = "") {
-        let key: string = tag;
-        if (id) {
-            key += `-${id}`;
-        }
+    public get<T extends HTMLElement>(tag: keyof HTMLElementTagNameMap, id: string) {
+        const key: string = `${tag}-${id}`;
         let element = this.index.get(key);
         if (!element) {
             throw new Error(`element ${key} not set`);
@@ -125,67 +157,22 @@ export class PageHTML {
         return element as T;
     }
     public set<T extends HTMLElement>(tag: keyof HTMLElementTagNameMap, id: string = "", element?: T) {
-        let key: string = tag;
-        if (id) {
-            key += `-${id}`;
-        }
+        const key: string = `${tag}-${id}`;
         if (!element) {
             element = document.createElement(tag) as T;
-        }
-        if (this.index.has(key)) {
-            console.log('overwriting element', this, tag, id);
         }
         this.index.set(key, element);
         return element;
     }
 
-    public get nav(): HTMLButtonElement { // navigation button
-        try {
-            return this.get('button', 'nav');
-        } catch {
-            return this.set('button', 'nav', createNav(this));
-        }
+    public get hnav(): HTMLButtonElement { // app navigation button
+        return this.get('button', 'nav');
     }
-    public get main(): HTMLElement { // main content container
-        try {
-            return this.get('div', 'main');
-        } catch {
-            return this.set('div', 'main');
-        }
+    public get main(): HTMLDivElement { // main content page
+        return this.get('div', 'main');
     }
-    public get footer(): HTMLElement { // footer container
-        try {
-            return this.get('div', 'footer');
-        } catch {
-            return this.set('div', 'footer');
-        }
+    public get fnav(): HTMLElement { // page navigation bar
+        return this.get('nav', 'footer');
     }
     
-    private render(): this { // simple page rendering
-        for (const page of PageHTML.get([])) {
-            page.nav.disabled = page.key === this.key;
-        }
-        PageHTML.header.textContent = this.titleInt;
-        PageHTML.nav.hidden = this.key === 'hub';
-        PageHTML.main.className = this.key;
-        PageHTML.main.replaceChildren(this.main);
-        PageHTML.footer.replaceChildren(this.footer);
-        return this;
-    }
-
-}
-
-function getStaticElement(tag: keyof HTMLElementTagNameMap, before: HTMLElement | null) {
-    const id = `app-${tag}`;
-    let element = document.getElementById(id);
-    if (!element) {
-        element = document.createElement(tag);
-        element.id = id;
-        if (!before) {
-            document.body.appendChild(element);
-        } else {
-            document.body.insertBefore(element, before);
-        }
-    }
-    return element;
 }

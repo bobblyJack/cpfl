@@ -7,6 +7,7 @@
  * @returns json response
  */
 export default async function authFetch<T>(token: string, url: string | URL, method: FetchMethod = "GET", jsonBody?: any) {
+    console.log('auth fetch request:', method, url, jsonBody);
 
     const request: RequestInit = {
         method: method, // WIP: flesh out beyond GET
@@ -30,8 +31,8 @@ export default async function authFetch<T>(token: string, url: string | URL, met
     const response = await fetch(url, request);
 
     if (!response.ok) {
-        console.error('auth fetch response not ok', response.status);
-        throw new Error(response.statusText);
+        console.error('auth fetch response not ok', response);
+        throw new Error(`http code: ${response.status}`);
     }
 
     return response.json() as T;

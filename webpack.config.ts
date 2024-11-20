@@ -70,12 +70,7 @@ export default async (): Promise<Configuration> => {
                     exclude: /node_modules/i
                 },
                 {
-                    test: /\.(jpg|png|ico)$/i,
-                    type: 'asset/resource',
-                    exclude: /node_modules/i
-                },
-                {
-                    test: /\.ttf$/i,
+                    test: /\.(ttf|jpg|png|ico)$/i,
                     type: 'asset/resource',
                     exclude: /node_modules/i
                 }
@@ -102,7 +97,6 @@ export default async (): Promise<Configuration> => {
             new HtmlWebpackPlugin({
                 filename: 'index.html',
                 title: 'CPFL Taskpane',
-                favicon: './favicon.ico',
                 template: './taskpane.html'
             }),
             new MiniCSSExtractPlugin({
@@ -112,7 +106,13 @@ export default async (): Promise<Configuration> => {
                 patterns: [
                     {
                         from: "./assets/**/*",
-                        to: "./[path][name][ext]"
+                        to: "./[path][name][ext]",
+                        globOptions: {
+                            ignore: [
+                                'favicon.ico',
+                                'saudagar.ttf'
+                            ]
+                        }
                     },
                     {
                         from: "env.config.json",

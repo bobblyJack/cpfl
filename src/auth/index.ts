@@ -22,10 +22,6 @@ export class AuthUser {
     private static graphOrigin: string = "https://graph.microsoft.com";
     private static graphVersion: string = "v1.0";
 
-    public static graphURL(path: string, select?: (keyof DriveItem)[]): URL {
-        return formURL(this.graphOrigin, this.graphVersion, path, select);
-    }
-
     private static _user: AuthUser | null = null;
     public static async login() { // login user
         if (!this._user) {
@@ -67,29 +63,7 @@ export class AuthUser {
     public email: string;
     private constructor(env: EnvConfig, client: PublicClientApplication, claims: Record<string, any>) {
         this.msal = client;
-        this.env = {
-            ...env,
-            site: new Proxy<SharepointConfig>(env.site, {
-                get: (site: SharepointConfig, key: keyof SharepointConfig) => {
-                    if (key === 'id') {
-                        if (!site.id) {
-                            const path = `sites/${site.domain}:/sites/${site.name}`;
-                            try {
-                                const url = AuthUser.graphURL(path, ["id"]);
-                                site.id = this.fetch<Record<string, string>>(url).then((res) => {
-                                    const id = res["id"];
-                                    site.id = Promise.resolve(id);
-                                    return id;
-                                });
-                            } catch (err) {
-                                console.error('error updating site id', err);
-                            }
-                        }
-                    }
-                }
-            })
-        };
-
+        this.env = env;
         this.gname = claims['given_name'];
         this.fname = claims['family_name'];
         this.email = claims['email'];
@@ -121,21 +95,26 @@ export class AuthUser {
     }
 
     private async graph(id?: string, query?: (keyof DriveItem | "children")[]) { // get graph url
-        const siteID = await this.env.site.id as string;
-        let path = `sites/${siteID}/drive/`;
+        if (!this.env.site.id) { // fetch site id first if undefined
+            const sitePath = `sites/${this.env.site.domain}:/sites/${this.env.site.name}`;
+            const siteURL = formURL(AuthUser.graphOrigin, AuthUser.graphVersion, sitePath, ["id"]);
+            const res = await this.fetch<Record<string, string>>(siteURL);
+            this.env.site.id = res["id"];
+        }
+        let path = `sites/${this.env.site.id}/drive/`;
         if (id) {
-            path += `items/${id}`;
+            path += `items/${id}`; // get a specific thing
         } else {
-            path += "root";
+            path += "root"; // or just the root folder
         }
         let select: (keyof DriveItem)[] = [];
         if (query && query.length) {
             if (query.includes("children")) {
-                path += "/children";
+                path += "/children"; // return a collection
             }
             select = query.filter(q => q !== "children");
         }
-        return AuthUser.graphURL(path, select);
+        return formURL(AuthUser.graphOrigin, AuthUser.graphVersion, path, select);
     }
 
     public drive = {

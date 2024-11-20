@@ -1,0 +1,11 @@
+/* Dark Theme (WIP) */
+
+.dark {
+    color: #f3e7dc; 
+    background-color: #000000;
+}
+
+.dark main {
+    color: #c9d3c9;         
+    background-color: #222222;
+}

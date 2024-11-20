@@ -2,13 +2,11 @@ interface EnvConfig {
     id: string; // app client
     tenant: string; // app tenant
     host: string; // prod host
-    site: SharepointConfig;
-}
-
-interface SharepointConfig { // sharepoint site
-    id?: Promise<string>;
-    name: string;
-    domain: string;
+    site: { // sharepoint site
+        id?: string;
+        name: string;
+        domain: string;
+    };
 }
 
 type FetchMethod = 

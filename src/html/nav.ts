@@ -7,26 +7,14 @@ export default function createNavButton(page: PageHTML): HTMLButtonElement {
     button.onclick = () => PageHTML.display = page;
 
     let icon: HTMLIconifyElement;
-    switch (page.key) {
-        case "hub": 
-            icon = createIIcon("nav-hub"); 
-            break;
-        case "act": 
-            icon = createIIcon("nav-act"); 
-            break;
-        case "bal": 
-            icon = createIIcon("nav-bal");
-            break;
-        case "lib": 
-            icon = createIIcon("nav-lib");
-            break;
-        case "usr": 
-            icon = createIIcon("nav-usr");
-            break;
-        default:
-            icon = createIIcon("error");
+    try {
+        icon = createIIcon(`nav-${page.key}`);
+    } catch {
+        icon = createIIcon('error');
     }
+    
     button.appendChild(icon);
+    PageHTML.hnav.appendChild(button);
 
     if (page.key !== "hub") {
         const hub = PageHTML.get('hub');
@@ -36,10 +24,7 @@ export default function createNavButton(page: PageHTML): HTMLButtonElement {
         const hubLabel = document.createElement('p');
         hubLabel.textContent = page.titleExt;
         hubButton.appendChild(hubLabel);
-        hub.main.appendChild(hubButton);
-        PageHTML.nav.appendChild(button);
-    } else {
-        PageHTML.nav.prepend(button);
+        hub.main.appendChild(hubButton);  
     }
     
     return button;

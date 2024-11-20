@@ -1,5 +1,5 @@
 import 'iconify-icon';
-import {IIconReference} from './list';
+import {IIconReference} from './enum';
 
 /**
  * create iconify icon html element

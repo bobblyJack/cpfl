@@ -19,30 +19,30 @@ export class ActiveMatter implements MatterData {
             this._current = null;
             this.page.titleExt = "Active Matter";
             this.page.titleInt = "Select a Matter";
-            this.page.nav.classList.add("warn");
+            this.page.hnav.classList.add("warn");
             this.page.main.replaceChildren(this.page.get('div', 'main-0'));
-            this.page.footer.replaceChildren(this.page.get('div', 'footer-0'));
+            this.page.fnav.replaceChildren(this.page.get('nav', 'footer-0'));
         } else {
                 this._current = file;    
                 this.page.titleExt = `${file.client.name.last_name} (${file.id})`;
                 this.page.titleInt = "Active Matter";
-                this.page.nav.classList.remove("warn");
+                this.page.hnav.classList.remove("warn");
                 let main1: HTMLElement;
-                let footer1: HTMLElement;
+                let footer1: HTMLDivElement;
             try {
                 main1 = this.page.get('div', 'main-1');
-                footer1 = this.page.get('div', 'footer-1');
+                footer1 = this.page.get('nav', 'footer-1');
             } catch {
                 main1 = this.page.set('div', 'main-1');
                 main1.textContent = "placeholder matter label input needs to go here";
-                footer1 = this.page.set('div', 'footer-1');
+                footer1 = this.page.set('nav', 'footer-1');
                 const exitButton = this.page.set<HTMLButtonElement>('button', 'close');
                 exitButton.textContent = "Close Current Matter";
                 exitButton.onclick = () => this.current = null;
                 footer1.appendChild(exitButton);
             }
             this.page.main.replaceChildren(main1);
-            this.page.footer.replaceChildren(footer1);
+            this.page.fnav.replaceChildren(footer1);
             
         }
     }

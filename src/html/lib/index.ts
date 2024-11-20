@@ -1,41 +1,18 @@
 import { PageHTML } from "..";
-import * as graph from '../../auth/graph';
-import { createIIcon } from "../../icons";
+import { LibExplorer } from "./explorer";
 
-export default function (page: PageHTML) {
+export default async function () {
     
-    page.titles = "Precedent Library";
-    console.log('fetching file explorer');
-    initExplorer(page);
+    const page = PageHTML.get('lib');
+
+    const explorer = page.set('div', 'explorer');
+    const pathLabel = page.set('h2', 'path');
+    explorer.appendChild(pathLabel);
+    const entityList = page.set('div', 'list');
+    explorer.appendChild(entityList);
+
+    LibExplorer.open().then(() => {
+        page.main.appendChild(explorer);
+    });
     
-}
-
-async function initExplorer(page: PageHTML) {
-    const token = await page.app.token([]);
-    const root = await graph.getCollection(token);
-    const explorer = page.set('ul', 'explorer');
-
-    for (const item of root) {
-        const entry = page.set('li', item.id);
-        
-        let icon: HTMLIconifyElement;
-        if (item.file) {
-            icon = createIIcon("file");
-        } else if (item.folder) {
-            icon = createIIcon("folder");
-        } else {
-            icon = createIIcon("missing");
-        }
-        entry.appendChild(icon);
-        const label = document.createElement("span");
-        label.textContent = item.name;
-        entry.appendChild(label);
-
-        explorer.appendChild(entry);
-        
-    }
-
-    page.main.appendChild(explorer);
-    console.log('file explorer appended to lib');
-
 }

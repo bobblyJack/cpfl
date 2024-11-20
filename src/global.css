@@ -1,0 +1,59 @@
+/* global styles */
+
+* {
+    margin: 0; 
+    color: inherit;
+    text-decoration-color: inherit;
+    background-color: inherit;
+    border-color: inherit;
+    border-style: hidden;
+    box-sizing: border-box;
+    font-family: "Open Sans", Arial, Helvetica, sans-serif;
+}
+
+@font-face {
+    font-family: "Saudagar";
+    src: url('../assets/saudagar.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+header,
+h1, h2, h3, h4, h5, h6 {
+    font-family: "Saudagar", "Open Sans", Arial, Helvetica, sans-serif;
+}
+
+body {
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+body > * {
+    width: 100vw;
+}
+
+main {
+    flex: 1 1 auto;
+    overflow: auto;
+}
+
+iconify-icon {
+    vertical-align: -0.125em;
+    height: 1em;
+    width: 1em;
+    font-size: 2em;
+}
+
+header button {
+    border-bottom-style: solid;
+    margin-bottom: 1vh;
+}
+
+button:enabled:hover {
+    cursor: pointer;
+}
