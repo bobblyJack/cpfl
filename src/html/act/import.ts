@@ -1,6 +1,8 @@
 // fetch initial file data from current word doc
 // map results for participants using table[row][col]
+import { MatterChild } from "./kids";
 import { ActiveMatter } from "./matter";
+import { MatterParticipant } from "./party";
 
 export default async function () {
     try {
@@ -15,54 +17,61 @@ export default async function () {
         });
         
         if (!data.length) {
+            throw new Error('null actionstep data');
+        }
+
+        const id = Number(data[0][1]);
+        if (!id) {
             throw new Error('actionstep id undefined');
         }
 
-        const matter: MatterData = {
-            id: Number(data[0][1]),
-            appID: data[1][1] ? Number(data[1][1]) : undefined,
-            resID: data[2][1] ? Number(data[2][1]) : undefined,
-            client: {
-                ...mapParticipantData(data, 1),
-                dob: getDate(data[13][1]),
-                country_of_birth: data[14][1],
-                occupation: data[15][1]
-            },
-            lawyer: {
-                ...mapParticipantData(data, 3),
-                LCode: data[15][3]
-            },
-            counsel: {
-                ...mapParticipantData(data, 5)
-            },
-            op: {
-                ...mapParticipantData(data, 2),
-                dob: getDate(data[13][2]),
-                country_of_birth: data[14][2],
-                occupation: data[15][2]
-            },
-            ol: {
-                ...mapParticipantData(data, 4),
-                LCode: data[15][4]
-            },
-            oc: {
-                ...mapParticipantData(data, 6)
-            },
-            relationship: mapRelationshipData(data),
-            children: mapChildren(data)
+        const file = new ActiveMatter(id);
+        mapParticipantData(data, 1, file.client);
+        mapParticipantData(data, 3, file.lawyer);
+        mapParticipantData(data, 5, file.counsel);
+
+        file.relationship = mapRelationshipData(data);
+        file.kids = mapChildren(data);
+
+        
+        if (data[2][1]) { // switch app/res
+            const resID = Number(data[2][1]);
+            if (resID === Number(data[4][1])) {
+                file.respondent = true;
+            }
+        }
+        
+        ActiveMatter.current = file; // set current file
+        
+
+        // WIP
+        /* 
+        const clientWIP = {
+            dob: getDate(data[13][1]),
+            country_of_birth: data[14][1],
+            occupation: data[15][1]
         }
 
-        const file = new ActiveMatter(matter.id, matter.client, matter.lawyer);
-        file.counsel = matter.counsel;
-        file.appID = matter.appID;
-        file.resID = matter.resID;
-        file.op = matter.op;
-        file.ol = matter.ol;
-        file.oc = matter.oc;
-        file.relationship = matter.relationship;
-        file.children = matter.children;
+        const lawyerWIP = {
+            LCode: data[15][3]
+        }
 
-        ActiveMatter.current = file; // set active matter here.
+        op: {
+            ...mapParticipantData(data, 2),
+            dob: getDate(data[13][2]),
+            country_of_birth: data[14][2],
+            occupation: data[15][2]
+        },
+        ol: {
+            ...mapParticipantData(data, 4),
+            LCode: data[15][4]
+        },
+        oc: {
+            ...mapParticipantData(data, 6)
+        },
+        
+        
+        */
         
     } catch (err) {
         console.error('could not import participant data');
@@ -87,28 +96,31 @@ async function getTableValues(context: Word.RequestContext): Promise<string[][]>
     throw new Error('export table is missing');
 }
 
-function mapParticipantData(data: string[][], i: number): ParticipantData {
-    return {
+function mapParticipantData(data: string[][], i: number, p: MatterParticipant) {
+    
+    p.gname = data[6][i];
+    p.fname = data[8][i];
+    p.gender = getGender(data[12][i]);
+    p.email = data[16][i];
+    p.phone = getPhoneNums(data[17][i])[0];
+    p.address = {
+        location: data[19][i] ? data[18][i] : undefined,
+        street: data[18][i] ? data[19][i] : data[18][i],
+        suburb: data[20][i],
+        state: data[21][i],
+        postcode: data[22][i],
+        country: data[23][i]
+    }
+
+    /*
+    const fileWIP = { // do something with this later on
         id: Number(data[4][i]),
         name: {
             prefix: data[5][i],
-            first_name: data[6][i],
             middle_name: data[7][i],
-            last_name: data[8][i],
             suffix: data[9][i],
             aliases: data[10][i],
             preferred: data[11][i]
-        },
-        gender: getGender(data[12][i]),
-        email: data[16][i],
-        phone: getPhoneNums(data[17][i]),
-        main_address: {
-            address_line_1: data[18][i],
-            address_line_2: data[19][i],
-            city: data[20][i],
-            state_province: data[21][i],
-            postcode: data[22][i],
-            country_if_foreign: data[23][i]
         },
         postal_address: {
             address_line_1: data[24][i],
@@ -118,42 +130,62 @@ function mapParticipantData(data: string[][], i: number): ParticipantData {
             postcode: data[28][i],
             country_if_foreign: data[29][i]
         }
-    }
+    }*/
+        
 }
 
 function mapRelationshipData(data: string[][]): RelationshipData {
-    return {
-        cohab: {
-            date: data[31][1] ? getDate(data[31][1]) : data[32][1]
-        },
-        marriage: {
-            date: data[31][2] ? getDate(data[31][2]) : data[32][2],
-            place: data[33][2],
-            country: data[34][2]
-        },
-        separation: {
-            date: data[31][3] ? getDate(data[31][3]) : data[32][3]
-        },
-        divorce: {
-            date: data[31][4] ? getDate(data[31][4]) : data[32][4],
-            place: data[33][4],
-            country: data[34][4]
+    const dates = {
+        cohab: data[31][1] ? getDate(data[31][1]) : data[32][1],
+        marriage: data[31][2] ? getDate(data[31][2]) : data[32][2],
+        separation: data[31][3] ? getDate(data[31][3]) : data[32][3],
+        divorce: data[31][4] ? getDate(data[31][4]) : data[32][4],
+    }
+    const result: RelationshipData = {};
+    for (const [key, val] of Object.entries(dates)) {
+        if (val) {
+            switch (key as keyof RelationshipData) {
+                case "cohab": {
+                    result.cohab = {
+                        date: val
+                    }
+                    break;
+                }
+                case "marriage": {
+                    result.marriage = {
+                        date: val,
+                        place: data[33][2],
+                        country: data[34][2]
+                    }
+                    break;
+                }
+                case "separation": {
+                    result.separation = {
+                        date: val
+                    }
+                    break;
+                }
+                case "divorce": {
+                    result.divorce = {
+                        date: val,
+                        place: data[33][4],
+                        country: data[34][4]
+                    }
+                    break;
+                }
+            }
         }
     }
+    return result;
 }
 
-function mapChildren(data: string[][]): ChildData[] {
-    const children: ChildData[] = [];
+function mapChildren(data: string[][]) {
+    const children = [];
     for (let r = 35; r < data.length; r++) {
         if (r > 35) {
             const row = data[r];
-            const child: ChildData = {
-                family_name: row[1],
-                given_names: row[2],
-                dob: getDate(row[3]),
-                gender: getGender(row[4])
-            }
-            children.push(child);
+            const kid = new MatterChild(row[2], row[1], getDate(row[3]), getGender(row[4]))
+            children.push(kid);
         }
     }
     return children;

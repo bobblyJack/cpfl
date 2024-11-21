@@ -6,7 +6,11 @@ export default async function (client: string, tenant: string) {
     const pca = new PublicClientApplication({
         auth: {
             clientId: client,
-            authority: `https://login.microsoftonline.com/${tenant}`
+            authority: `https://login.microsoftonline.com/${tenant}`,
+            redirectUri: `https://localhost:3000/redirect.html`
+        },
+        cache: {
+            cacheLocation: "localStorage"
         },
         system: {
             loggerOptions: {

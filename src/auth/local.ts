@@ -1,8 +1,8 @@
-export default async function fetchLocal(localKey: string, localPath: string) {
+export default async function fetchLocal(localKey: string, localPath: string, refresh: boolean = false) {
 
     let localValue = localStorage.getItem(localKey);
 
-    if (!localValue) {
+    if (!localValue || refresh) {
 
         const response = await fetch(localPath);
 

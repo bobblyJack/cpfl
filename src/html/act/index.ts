@@ -1,5 +1,6 @@
 import { PageHTML } from "..";
 import './style.css';
+import { ActiveMatter } from "./matter";
 import importActionstepMatter from './import';
 
 export default async function () {
@@ -29,5 +30,10 @@ export default async function () {
     impButton.textContent = "Import Matter";
     impButton.onclick = importActionstepMatter;
     main.appendChild(impButton);
+
+    // file close button
+    const closeButton = page.set("button", "close");
+    closeButton.textContent = "Close Current Matter";
+    closeButton.onclick = () => ActiveMatter.current = null;
 
 }

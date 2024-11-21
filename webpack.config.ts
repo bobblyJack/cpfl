@@ -99,6 +99,10 @@ export default async (): Promise<Configuration> => {
                 title: 'CPFL Taskpane',
                 template: './taskpane.html'
             }),
+            new HtmlWebpackPlugin({
+                filename: 'redirect.html',
+                title: 'Blank Redirect'
+            }),
             new MiniCSSExtractPlugin({
                 filename: '[name].css'
             }),

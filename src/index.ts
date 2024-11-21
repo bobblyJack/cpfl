@@ -19,11 +19,11 @@ export default class CPFL {
 
     public static debug: boolean = false; // toggle debug mode
 
-    private static supports = [ // WIP: expand hosting
+    private static supports = [ // host options
         Office.HostType.Word,
         null, // (OoO browser)
-        // WIP: Office.HostType.Outlook,
-        // WIP: Office.HostType.Excel
+        // TBD: Office.HostType.Outlook,
+        // TBD: Office.HostType.Excel
     ]
     
     public static app: CPFL;
@@ -35,9 +35,6 @@ export default class CPFL {
         let restart: boolean = false; // restart switch
         if (!info) {
             restart = true;
-            if (CPFL.debug) {
-                await AuthUser.logout(true); // clear msal cache
-            }
             info = {
                 host: Office.context.host,
                 platform: Office.context.platform
@@ -60,11 +57,8 @@ export default class CPFL {
                     case Office.PlatformType.Android:
                     case Office.PlatformType.iOS: {
                         mode = 'mobile';
-                        throw new Error('mobile platform unsupported'); // WIP: mobile support
+                        throw new Error('mobile platform unsupported'); // TBD: mobile support
                         break;
-                    }
-                    case Office.PlatformType.Mac: {
-                        throw new Error('apple platform unsupported'); // WIP: mac support
                     }
                     default: {
                         mode = 'taskpane';
@@ -72,7 +66,7 @@ export default class CPFL {
                 }
             }
 
-            const user = await AuthUser.login(); // login user
+            const user = await AuthUser.login(this.debug); // login user
             CPFL.app = new CPFL(mode, user); // create app instance
             // construct individual pages
             const hub = new PageHTML("hub", `Welcome ${user.name.given}`);

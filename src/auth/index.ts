@@ -3,8 +3,7 @@ import {
 } from '@azure/msal-browser';
 import fetchLocal from './local';
 import initMSAL from './client';
-import getIdentity from './identity';
-import getToken from './token';
+import authReq from './req';
 import formURL from './url';
 import authFetch from './fetch';
 import readBlob64 from './blob';
@@ -22,16 +21,26 @@ export class AuthUser {
     private static graphOrigin: string = "https://graph.microsoft.com";
     private static graphVersion: string = "v1.0";
 
+    /* ** dynamic config variables ** */
     private static _user: AuthUser | null = null;
-    public static async login() { // login user
+    private static _env: EnvConfig | null = null;
+    private static _pca: PublicClientApplication | null = null;
+
+
+    public static async login(debug: boolean = false) { // login user
         if (!this._user) {
-            const env = await fetchLocal(this.localKey, this.localPath);
-            const msal = await initMSAL(env.id, env.tenant);
-            const claims = await getIdentity(msal);
-            this._user = new AuthUser(env, msal, claims);
+            if (!this._env || debug) {
+                this._env = await fetchLocal(this.localKey, this.localPath, debug);
+            }
+            if (!this._pca || debug) {
+                this._pca = await initMSAL(this._env.id, this._env.tenant);
+            }
+            const res = await authReq(this._pca);
+            this._user = new AuthUser(res.idTokenClaims);
         }
         return this._user;
     }
+
     public static get user() { // fetch current user
         if (!this._user) {
             throw new Error('no user context found');
@@ -39,34 +48,32 @@ export class AuthUser {
         return this._user;
     }
 
-    public static async logout(fullRefresh: boolean = false) { // clear auth cache
-        if (this._user) {
-            console.log('clearing msal cache')
-            const account = this._user.msal.getActiveAccount();
-            if (account) {
-                await this._user.msal.clearCache({
-                    account: account
-                });
-            }
-            this._user = null;
-            if (fullRefresh) {
-                localStorage.removeItem(this.localKey);
-            }
-        }
-    }
-
-    public env: EnvConfig;
-    public readonly msal: PublicClientApplication;
-
     private gname: string;
     private fname: string;
     public email: string;
-    private constructor(env: EnvConfig, client: PublicClientApplication, claims: Record<string, any>) {
-        this.msal = client;
-        this.env = env;
+    private constructor(claims: Record<string, any>) {
         this.gname = claims['given_name'];
         this.fname = claims['family_name'];
         this.email = claims['email'];
+    }
+
+    public get env() {
+        if (!AuthUser._env) {
+            throw new Error('null environment variables somehow');
+        }
+        return AuthUser._env;
+    }
+
+    public get msal() {
+        if (!AuthUser._pca) {
+            throw new Error('msal not instanced')
+        }
+        return AuthUser._pca;
+    }
+
+    public async logout() { // WIP: logout
+        await this.msal.logoutPopup();
+        AuthUser._user = null;
     }
 
     public get id(): string {
@@ -85,8 +92,9 @@ export class AuthUser {
         return this.id === 'LG'; // WIP: placeholder admin check
     }
 
-    private async token(scopes: string[] = []) {
-        return getToken(this.msal, scopes);
+    private async token() {
+        const res = await authReq(this.msal);
+        return res.accessToken;
     }
 
     public async fetch<T>(url: string | URL) { // fetch w token
@@ -117,13 +125,14 @@ export class AuthUser {
         return formURL(AuthUser.graphOrigin, AuthUser.graphVersion, path, select);
     }
 
-    public drive = {
+    public drive = { // fetch stuff from ms graph
+
         item: async (id: string, select?: (keyof DriveItem)[]) => { // get a single drive item
             const url = await this.graph(id, select);
             return this.fetch<DriveItem>(url);
         },
 
-        collection: async (id?: string) => { // get folder content
+        collection: async (id?: string) => { // get folder children
             const url = await this.graph(id, [
                 "id", "name", "file", "folder", "children"
             ]);
