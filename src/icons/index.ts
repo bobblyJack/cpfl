@@ -1,31 +1,33 @@
 import 'iconify-icon';
-import {IIconReference} from './enum';
+import createIIcon from './element';
 
-/**
- * create iconify icon html element
- * @param name icon string name
- * @param prefix overwrite default iconify set
- * @wip return a default error icon if name invalid
- * @wip might need to return of noob server
- */
-export function createIIcon(key: keyof typeof IIconReference): HTMLIconifyElement {
+const iicon = {
+    create: createIIcon,
+    ref: {
+        hub: "home",
     
-    let name: string = IIconReference[key];
-    let prefix: string = "carbon"; // default icon set
-
-    if (name.includes(":")) {
-        const split = name.indexOf(":");
-        prefix = name.slice(split + 1);
-        name = name.slice(0, split);
+        // active matter
+        act: "credentials",
+        spouse: "partnership",
+        ship: "calendar-heat-map",
+        kids: "pedestrian-child",
+        counsel: "share-knowledge",
+        
+        // balance sheet
+        bal: "calculation",
+    
+        // precedent library
+        lib: "document",
+        file: "document-blank",
+        folder: "folder",
+    
+        // user settings
+        usr: "settings",
+    
+        // errors and such
+        err: "error",
+        null: "missing"
     }
-    
-    const element = document.createElement("iconify-icon");
-    element.icon = `${prefix}:${name}`;
-    
-    if (!element.iconLoaded(element.icon)) {
-        element.loadIcon(element.icon).catch(console.error);
-    }
-
-    return element;
-    
 }
+
+export default iicon;

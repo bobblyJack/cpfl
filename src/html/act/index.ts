@@ -3,6 +3,14 @@ import './style.css';
 import { ActiveMatter } from "./matter";
 import importActionstepMatter from './import';
 
+enum ActSections {
+    act, // page1, the client
+    spouse, // page2, the other side, and their lawyer
+    ship, // page3 relationship cohab dates etc
+    kids, //page4, kids
+    counsel, // page5, both barristers
+}
+
 export default async function () {
     
     const page = PageHTML.get('act');
@@ -23,7 +31,7 @@ export default async function () {
     // file opener buttons
     const newButton = page.set('button', 'new');
     newButton.textContent = "Create Matter";
-    newButton.onclick = () => console.log('placeholder');
+    newButton.onclick = () => ActiveMatter.current = new ActiveMatter(1); // wip
     main.appendChild(newButton);
 
     const impButton = page.set('button', 'import');

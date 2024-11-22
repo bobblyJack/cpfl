@@ -1,32 +1,21 @@
-import clicker from "./toggle";
-import dblclicker from "./restart";
+import { initBird } from "./init";
 
-// get it? it's a debugger because the bird eats the bugs.
-export function initBird(admin: boolean): HTMLButtonElement {
-    
-    let button = document.getElementById('debug-button') as HTMLButtonElement | undefined;
-    if (!button) {
-        throw new Error('bird flew away');
-    }
+let debugMode: boolean;
 
-    button.style.fontSize = "75%";
-
-    if (admin) {// add click functions
-        let clickTimer: NodeJS.Timeout;
-        const clickDelay = 256;
-
-        button.onclick = () => {
-            clearTimeout(clickTimer);
-            clickTimer = setTimeout(() => {
-                button.classList.toggle("warn", clicker());
-            }, clickDelay);
+const debug = {
+    get status(): boolean {
+        if (debugMode === undefined) {
+            debugMode = false;
+            initBird();
         }
-        button.ondblclick = () => {
-            clearTimeout(clickTimer);
-            dblclicker();
+        return debugMode;
+    },
+    flip: () => debugMode = !debug.status,
+    log: (...args: any[]) => {
+        if (debug.status) {
+            console.log(...args);
         }
     }
-
-    return button;
-
 }
+
+export default debug;

@@ -1,9 +1,12 @@
-// fetch initial file data from current word doc
-// map results for participants using table[row][col]
 import { MatterChild } from "./kids";
 import { ActiveMatter } from "./matter";
 import { MatterParticipant } from "./party";
 
+
+/**
+ * fetch actionstep matter data from current word doc
+ * (via specific actionstep template)
+ */
 export default async function () {
     try {
         const table = await Word.run(context => getTableValues(context));
@@ -97,7 +100,7 @@ async function getTableValues(context: Word.RequestContext): Promise<string[][]>
 }
 
 function mapParticipantData(data: string[][], i: number, p: MatterParticipant) {
-    
+    // map results for participants using table[row][col]
     p.gname = data[6][i];
     p.fname = data[8][i];
     p.gender = getGender(data[12][i]);

@@ -174,5 +174,9 @@ export class PageHTML {
     public get fnav(): HTMLElement { // page navigation bar
         return this.get('nav', 'footer');
     }
+
+    public render() {
+        PageHTML.display = this;
+    }
     
 }

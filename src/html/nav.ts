@@ -1,5 +1,6 @@
 import { PageHTML } from '.';
-import { createIIcon } from '../icons';
+import iicon from '../icons';
+import { SubPage } from './section';
 
 export default function createNavButton(page: PageHTML): HTMLButtonElement {
     
@@ -28,4 +29,21 @@ export default function createNavButton(page: PageHTML): HTMLButtonElement {
     }
     
     return button;
+}
+
+export class NavControl {
+    target: PageHTML | SubPage;
+    button: HTMLButtonElement;
+    iicon: HTMLIconifyElement;
+    label: HTMLLabelElement;
+    constructor(target: PageHTML | SubPage) {
+        this.target = target;
+        this.button = document.createElement('button');
+        this.button.onclick = target.render;
+        this.iicon = iicon.create(target.key);
+        this.button.appendChild(this.iicon);
+        this.label = document.createElement('label');
+        this.label.textContent = target.titleExt;
+        this.button.appendChild(this.label);
+    }
 }

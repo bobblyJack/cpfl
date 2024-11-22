@@ -58,13 +58,14 @@ export class ActiveMatter {
         input.oninput = () => {
             this.lawyer.email = input.value;
         }
+        
         main.appendChild(input);
 
         const footer = ActiveMatter.page.set('nav', `footer-${this.id}`);
 
         const button = document.createElement('button'); // debug: print test
         button.textContent = "Print Test";
-        button.onclick = this.printTest;
+        button.onclick = () => this.printTest();
         footer.appendChild(button);
         
     }
@@ -79,7 +80,7 @@ export class ActiveMatter {
         return p;
     }
 
-    // aliases
+    // aliases (our side)
     public get client() {
         return this.party(ParticipantLink.rp);
     }
@@ -90,7 +91,7 @@ export class ActiveMatter {
         return this.party(ParticipantLink.rc);
     }
 
-    get label(): string {
+    get label(): string { // file label
         if (this.client.fname) {
             return `${this.client.fname} (${this.id})`;
         }
@@ -100,13 +101,17 @@ export class ActiveMatter {
     printTest() {
         if (ActiveMatter.page.app.mode === 'taskpane' && Office.context.host === Office.HostType.Word) {
             console.log('word print test', this);
-            this.parties.forEach((p) => {
-                const text = JSON.stringify(p);
-                Word.run(async context => {
-                    context.document.body.insertParagraph(text, "End");
+            
+                Word.run(async (context) => {
+                    console.log(this.parties);
+                    for (const p of Array.from(this.parties.values())) {
+                        const text = JSON.stringify(p);
+                        console.log(text);
+                        context.document.body.insertParagraph(text, "End");
+                    }
                     await context.sync();
                 });
-            });
+            
         } else {
             console.log('non-word print test', this);
         }

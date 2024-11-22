@@ -1,9 +1,10 @@
 import './global.css';
 import './themes';
 import body from './static.html';
+import debug from './debug';
 import { AuthUser } from './auth';
 import { PageHTML } from './html';
-import { initBird } from './debug';
+
 
 document.addEventListener('DOMContentLoaded', () => { // timing handler
     Office.onReady((info) => {
@@ -16,8 +17,6 @@ document.addEventListener('DOMContentLoaded', () => { // timing handler
 });
 
 export default class CPFL {
-
-    public static debug: boolean = false; // toggle debug mode
 
     private static supports = [ // host options
         Office.HostType.Word,
@@ -66,7 +65,7 @@ export default class CPFL {
                 }
             }
 
-            const user = await AuthUser.login(this.debug); // login user
+            const user = await AuthUser.login(CPFL.app ? CPFL.app.debug.status : false); // login user
             CPFL.app = new CPFL(mode, user); // create app instance
             // construct individual pages
             const hub = new PageHTML("hub", `Welcome ${user.name.given}`);
@@ -74,8 +73,10 @@ export default class CPFL {
             new PageHTML("bal");
             new PageHTML("lib");
             new PageHTML("usr");
-            initBird(user.admin); // init debugger
             PageHTML.display = hub; // render dashboard
+
+            CPFL.app.debug.log('app started in debug mode');
+            
         }
 
         return CPFL.app;
@@ -97,21 +98,26 @@ export default class CPFL {
     }
 
     /**
-     * fetch debug status
+     * fetch debugger
      */
     public get debug() {
-        return CPFL.debug;
+        return debug;
     }
 
-    /**
-     * debug-only console log
-     */
-    public iflog(...args: any[]) {
-        if (this.debug) {
-            console.log(...args);
-        }
+    /* get static html elements */
+    public get title() {
+        return document.getElementById('page-title') as HTMLHeadingElement;
     }
-
+    public get hnav() {
+        return document.getElementById('header-nav') as HTMLElement;
+    }
+    public get main() {
+        return document.getElementById('app-main') as HTMLElement;
+    } 
+    public get fnav() {
+        return document.getElementById('footer-nav') as HTMLElement;
+    }
+    
     /**
      * fetch current display
      */
