@@ -1,45 +1,60 @@
+import CPFL from "..";
+import { HeadPage } from "./main";
+import { FootPage } from "./section";
 import { NavControl } from "./nav";
 
-
 /**
- * shared features between head pages + foot pages
+ * Base Page Objects
  */
-abstract class BaseHTML {
-    key: string;
-    title: string; // interior title
-    label: string; // exterior title
-    nav: NavControl;
-    main: HTMLElement;
+export abstract class BaseHTML {
+    private static _head: HeadPage; // current main page
+    private static _feet: FootPage[]; // current sections
+    public static get display() {
+        return {
+            get head(): HeadPage {
+                if (!BaseHTML._head) {
+                    throw new Error('null head');
+                }
+                return BaseHTML._head;
+            },
+            set head(page: HeadPage) { // WIP: page navigation
+                page.app.title = page.title;
+                page.app.main.replaceWith(page.main);
+                page.app.fnav.replaceWith(page.fnav);
+                BaseHTML._head = page;
+            },
+            get feet(): FootPage[] {
+                if (!BaseHTML._feet || !BaseHTML._feet.length) {
+                    throw new Error('null feet');
+                }
+                return BaseHTML._feet;
+            },
+            set feet(feet: FootPage[]) { // TBD: subpage rendering
+                BaseHTML._feet = feet;
+            }
+        }
+    }
+
+    public readonly key: string;
+    public label: string = "";
+    public title: string = "";
+    public nav?: NavControl;
+    public main?: HTMLElement;
     
     constructor(key: string) {
         this.key = key;
     }
 
-    render() {
+    public get app(): CPFL { // fetch app context
+        return CPFL.app;
+    }
 
+    public render() { // WIP: nav exposed browsing
+        if (this instanceof HeadPage) {
+            BaseHTML.display.head = this;
+        } else if (this instanceof FootPage) {
+            BaseHTML.display.feet = [this];
+        }
     }
 
 }
-
-class HeadPage extends BaseHTML {
-    index: Map<string, SubPage>;
-    get(key: string): SubPage {
-
-    }
-    set(key: string, page: SubPage) {
-
-    }
-
-}
-
-class SubPage extends BaseHTML {
-    head: HeadPage;
-    index: Map<string, HTMLElement>;
-    get(tag: keyof HTMLElementTagNameMap, id: string): HTMLElement {
-
-    }
-    set(tag: keyof HTMLElementTagNameMap, id: string, element?: HTMLElement) {
-
-    }
-}
-

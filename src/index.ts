@@ -1,10 +1,9 @@
 import './global.css';
 import './themes';
 import body from './static.html';
+import html from './html';
 import debug from './debug';
 import { AuthUser } from './auth';
-import { PageHTML } from './html';
-
 
 document.addEventListener('DOMContentLoaded', () => { // timing handler
     Office.onReady((info) => {
@@ -25,7 +24,20 @@ export default class CPFL {
         // TBD: Office.HostType.Excel
     ]
     
-    public static app: CPFL;
+    private static _app: CPFL;
+    /**
+     * app instance
+     */
+    public static get app(): CPFL {
+        if (!this._app) {
+            throw new Error('app not ready');
+        }
+        return this._app;
+    }
+    /**
+     * app starter
+     * @param info from office js
+     */
     public static async start(info?: {
         host: Office.HostType | null;
         platform: Office.PlatformType | null;
@@ -40,7 +52,7 @@ export default class CPFL {
             }
         }
         
-        if (!CPFL.app || restart) { // check app context
+        if (!CPFL._app || restart) { // check app context
 
             console.log(info);
             if (!CPFL.supports.includes(info.host)) {
@@ -57,7 +69,6 @@ export default class CPFL {
                     case Office.PlatformType.iOS: {
                         mode = 'mobile';
                         throw new Error('mobile platform unsupported'); // TBD: mobile support
-                        break;
                     }
                     default: {
                         mode = 'taskpane';
@@ -65,64 +76,56 @@ export default class CPFL {
                 }
             }
 
-            const user = await AuthUser.login(CPFL.app ? CPFL.app.debug.status : false); // login user
-            CPFL.app = new CPFL(mode, user); // create app instance
-            // construct individual pages
-            const hub = new PageHTML("hub", `Welcome ${user.name.given}`);
-            new PageHTML("act");
-            new PageHTML("bal");
-            new PageHTML("lib");
-            new PageHTML("usr");
-            PageHTML.display = hub; // render dashboard
-
-            CPFL.app.debug.log('app started in debug mode');
+            const user = await AuthUser.login(CPFL._app ? CPFL.app.debug.status : false); // login user
+            CPFL._app = new CPFL(mode, user); // create app instance
             
         }
 
-        return CPFL.app;
+        return CPFL._app;
 
     }
 
     public readonly mode: AppMode;
     public readonly theme: AppTheme;
     public readonly user: AuthUser;
+    public readonly html = html;
+    public readonly debug = debug;
     private constructor(mode: AppMode, user: AuthUser, theme: AppTheme = "light") { // app construction
         
         this.mode = mode;
-        this.theme = theme;
         this.user = user; // TBD - get user settings to set theme etc ?
+        this.theme = theme;
 
         document.body.classList.add(mode, theme); // apply targeted css
         document.body.innerHTML = body; // set static elements
+
+        this.debug.log('app restarted in debug mode');
+        this.html.init().then(() => this.html.get('hub').render());
     
     }
 
     /**
-     * fetch debugger
+     * header h1 title text
      */
-    public get debug() {
-        return debug;
+    public get title(): string {
+        return document.body.querySelector('header h1')?.textContent || "";
+    }
+    public set title(text: string) {
+        const title = document.body.querySelector('header h1');
+        if (title) {
+            title.textContent = text;
+        }
+        this.debug.log('setting app title', title, text);
     }
 
-    /* get static html elements */
-    public get title() {
-        return document.getElementById('page-title') as HTMLHeadingElement;
-    }
     public get hnav() {
-        return document.getElementById('header-nav') as HTMLElement;
+        return document.body.querySelector('header nav') as HTMLElement;
     }
     public get main() {
-        return document.getElementById('app-main') as HTMLElement;
+        return document.body.querySelector('main') as HTMLElement;
     } 
     public get fnav() {
-        return document.getElementById('footer-nav') as HTMLElement;
-    }
-    
-    /**
-     * fetch current display
-     */
-    public get display() {
-        return PageHTML.get();
+        return document.body.querySelector('footer nav') as HTMLElement;
     }
 
 }

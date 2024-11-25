@@ -1,6 +1,6 @@
 import CPFL from "..";
-import clicker from "./toggle";
-import dblclicker from "./restart";
+import status from "./status";
+import restart from "./restart";
 
 // get it? it's a debugger because the bird eats the bugs.
 export function initBird() {
@@ -21,12 +21,12 @@ export function initBird() {
         button.onclick = () => {
             clearTimeout(clickTimer);
             clickTimer = setTimeout(() => {
-                button.classList.toggle("warn", clicker());
+                button.classList.toggle("warn", status(true));
             }, clickDelay);
         }
         button.ondblclick = () => {
             clearTimeout(clickTimer);
-            dblclicker();
+            restart();
         }
     }
 

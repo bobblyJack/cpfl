@@ -1,12 +1,11 @@
 import CPFL from "..";
+import debug from "./";
 
 export default function () { // restarts
     try {
-        if (CPFL.debug) {
-            CPFL.start().then((app) => {
-                console.error('tweet tweet');
-                app.iflog('restarted in debug mode');
-            });
+        if (debug.status) {
+            debug.err('restarting');
+            CPFL.start();
         } else {
             console.log('tweet tweet');
         }

@@ -1,49 +1,36 @@
-import { PageHTML } from '.';
+import { BaseHTML } from './base';
+import { HeadPage } from './main';
+import { FootPage } from './section';
 import iicon from '../icons';
-import { SubPage } from './section';
-
-export default function createNavButton(page: PageHTML): HTMLButtonElement {
-    
-    const button = document.createElement("button");
-    button.onclick = () => PageHTML.display = page;
-
-    let icon: HTMLIconifyElement;
-    try {
-        icon = createIIcon(`nav-${page.key}`);
-    } catch {
-        icon = createIIcon('error');
-    }
-    
-    button.appendChild(icon);
-    PageHTML.hnav.appendChild(button);
-
-    if (page.key !== "hub") {
-        const hub = PageHTML.get('hub');
-        const hubButton = button.cloneNode(true) as HTMLButtonElement;
-        hub.set('button', page.key, hubButton);
-        hubButton.onclick = () => PageHTML.display = page;
-        const hubLabel = document.createElement('p');
-        hubLabel.textContent = page.titleExt;
-        hubButton.appendChild(hubLabel);
-        hub.main.appendChild(hubButton);  
-    }
-    
-    return button;
-}
 
 export class NavControl {
-    target: PageHTML | SubPage;
+    target: BaseHTML;
     button: HTMLButtonElement;
     iicon: HTMLIconifyElement;
     label: HTMLLabelElement;
-    constructor(target: PageHTML | SubPage) {
+    constructor(target: BaseHTML) {
         this.target = target;
         this.button = document.createElement('button');
-        this.button.onclick = target.render;
-        this.iicon = iicon.create(target.key);
+        this.button.onclick = this.target.render;
+        this.iicon = iicon.create(this.target.key);
         this.button.appendChild(this.iicon);
         this.label = document.createElement('label');
-        this.label.textContent = target.titleExt;
+        this.label.textContent = this.target.label;
         this.button.appendChild(this.label);
+
+        if (target instanceof HeadPage) {
+            if (target.key === "hub") {
+                target.app.hnav.prepend(this.button);
+            } else {
+                const hub = target.app.html.get("hub");
+                const hb = this.button.cloneNode(true) as HTMLButtonElement;
+                hb.onclick = this.target.render;
+                hub.main.appendChild(hb);
+            }
+        } else if (target instanceof FootPage) {
+            target.head.fnav.appendChild(this.button);
+        }
+
     }
+
 }

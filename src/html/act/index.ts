@@ -1,5 +1,7 @@
-import { PageHTML } from "..";
+import CPFL from '../..';
 import './style.css';
+import { HeadPage } from '../main';
+import { FootPage } from '../section';
 import { ActiveMatter } from "./matter";
 import importActionstepMatter from './import';
 
@@ -11,13 +13,17 @@ enum ActSections {
     counsel, // page5, both barristers
 }
 
-export default async function () {
+export default async function (app: CPFL) {
     
-    const page = PageHTML.get('act');
-    page.titleInt = "Select a Matter";
-    page.hnav.classList.add("warn");
+    const page = new HeadPage('act');
+    page.title = "Select a Matter";
+    page.nav.button.classList.add("warn");
 
-    // containers - no file
+    // subpage - no file
+    const sub0 = page.set("clear");
+
+
+    
     const main = page.set('div', 'main-0');
     page.main.appendChild(main);
     const footer = page.set('nav', 'footer-0');
@@ -43,5 +49,7 @@ export default async function () {
     const closeButton = page.set("button", "close");
     closeButton.textContent = "Close Current Matter";
     closeButton.onclick = () => ActiveMatter.current = null;
+
+    return page;
 
 }

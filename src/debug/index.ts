@@ -1,19 +1,17 @@
-import { initBird } from "./init";
+import status from "./status";
 
-let debugMode: boolean;
-
-const debug = {
+const debug: AppDebug = {
     get status(): boolean {
-        if (debugMode === undefined) {
-            debugMode = false;
-            initBird();
-        }
-        return debugMode;
+        return status();
     },
-    flip: () => debugMode = !debug.status,
     log: (...args: any[]) => {
         if (debug.status) {
             console.log(...args);
+        }
+    },
+    err: (...args: any[]) => {
+        if (debug.status) {
+            console.error(...args);
         }
     }
 }
