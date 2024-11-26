@@ -1,4 +1,7 @@
-export default function formURL(graphOrigin: string, graphVersion: string, path: string, select?: (keyof DriveItem)[]): URL {
+const graphOrigin: string = "https://graph.microsoft.com";
+const graphVersion: string = "v1.0";
+
+export default function formGraphURL(path: string, select?: (keyof DriveItem)[]): URL {
     let parts: string[] = [
         graphVersion,
         ...path.split("/")

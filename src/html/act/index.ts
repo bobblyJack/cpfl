@@ -2,8 +2,8 @@ import CPFL from '../..';
 import './style.css';
 import { HeadPage } from '../main';
 import { FootPage } from '../section';
-import { ActiveMatter } from "./matter";
-import importActionstepMatter from './import';
+import { ActiveMatter } from "../../client/matter";
+import importActionstepMatter from '../../client/actionstep';
 
 enum ActSections {
     act, // page1, the client

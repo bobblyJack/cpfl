@@ -1,6 +1,6 @@
 import { MatterChild } from "./kids";
 import { ActiveMatter } from "./matter";
-import { MatterParticipant } from "./party";
+import { MatterParticipant } from "./participant";
 
 
 /**

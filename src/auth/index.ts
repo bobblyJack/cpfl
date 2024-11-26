@@ -1,12 +1,12 @@
 import { 
     PublicClientApplication 
 } from '@azure/msal-browser';
-import fetchLocal from './local';
+import localEnv from './local';
 import initMSAL from './client';
 import authReq from './req';
-import formURL from './url';
 import authFetch from './fetch';
-import readBlob64 from './blob';
+import getDrive from './items';
+import getFileContent from './content';
 
 /**
  * authenticated user context
@@ -15,22 +15,21 @@ import readBlob64 from './blob';
  */
 export class AuthUser {
 
-    /* ** static config variables ** */
-    private static localKey: string = 'cpfl-env';
-    private static localPath: string = './config.json';
-    private static graphOrigin: string = "https://graph.microsoft.com";
-    private static graphVersion: string = "v1.0";
-
-    /* ** dynamic config variables ** */
     private static _user: AuthUser | null = null;
     private static _env: EnvConfig | null = null;
     private static _pca: PublicClientApplication | null = null;
 
+    public static get current() {
+        if (!this._user) {
+            throw new Error('no user logged in');
+        }
+        return this._user;
+    }
 
     public static async login(debug: boolean = false) { // login user
         if (!this._user) {
             if (!this._env || debug) {
-                this._env = await fetchLocal(this.localKey, this.localPath, debug);
+                this._env = await localEnv.get(debug);
             }
             if (!this._pca || debug) {
                 this._pca = await initMSAL(this._env.id, this._env.tenant);
@@ -41,18 +40,11 @@ export class AuthUser {
         return this._user;
     }
 
-    public static get user() { // fetch current user
-        if (!this._user) {
-            throw new Error('no user context found');
-        }
-        return this._user;
-    }
-
-    private gname: string;
+    private gnames: string;
     private fname: string;
     public email: string;
     private constructor(claims: Record<string, any>) {
-        this.gname = claims['given_name'];
+        this.gnames = claims['given_name'];
         this.fname = claims['family_name'];
         this.email = claims['email'];
     }
@@ -62,6 +54,10 @@ export class AuthUser {
             throw new Error('null environment variables somehow');
         }
         return AuthUser._env;
+    }
+
+    public async sync() { // WIP: update local
+        localEnv.set(this.env);
     }
 
     public get msal() {
@@ -76,15 +72,15 @@ export class AuthUser {
         AuthUser._user = null;
     }
 
-    public get id(): string {
+    public get id(): string { // WIP: placeholder user id
         return this.email.slice(0, this.email.indexOf("@")).toUpperCase();
     }
 
-    public get name() {
+    public get name() { // TBD: proper name interface
         return {
-            given: this.gname,
+            given: this.gnames,
             family: this.fname,
-            full: `${this.gname} ${this.fname}`
+            full: `${this.gnames} ${this.fname}`
         }
     }
 
@@ -92,7 +88,7 @@ export class AuthUser {
         return this.id === 'LG'; // WIP: placeholder admin check
     }
 
-    private async token() {
+    private async token() { // get access token
         const res = await authReq(this.msal);
         return res.accessToken;
     }
@@ -102,73 +98,13 @@ export class AuthUser {
         return authFetch<T>(token, url);
     }
 
-    private async graph(id?: string, query?: (keyof DriveItem | "children")[]) { // get graph url
-        if (!this.env.site.id) { // fetch site id first if undefined
-            const sitePath = `sites/${this.env.site.domain}:/sites/${this.env.site.name}`;
-            const siteURL = formURL(AuthUser.graphOrigin, AuthUser.graphVersion, sitePath, ["id"]);
-            const res = await this.fetch<Record<string, string>>(siteURL);
-            this.env.site.id = res["id"];
-        }
-        let path = `sites/${this.env.site.id}/drive/`;
-        if (id) {
-            path += `items/${id}`; // get a specific thing
-        } else {
-            path += "root"; // or just the root folder
-        }
-        let select: (keyof DriveItem)[] = [];
-        if (query && query.length) {
-            if (query.includes("children")) {
-                path += "/children"; // return a collection
-            }
-            select = query.filter(q => q !== "children");
-        }
-        return formURL(AuthUser.graphOrigin, AuthUser.graphVersion, path, select);
-    }
-
-    public drive = { // fetch stuff from ms graph
-
-        item: async (id: string, select?: (keyof DriveItem)[]) => { // get a single drive item
-            const url = await this.graph(id, select);
-            return this.fetch<DriveItem>(url);
-        },
-
-        collection: async (id?: string) => { // get folder children
-            const url = await this.graph(id, [
-                "id", "name", "file", "folder", "children"
-            ]);
-            return getItems(this, url);
-            async function getItems(user: AuthUser, url: string | URL, values: DriveItem[] = []) {
-                const response = await user.fetch<ItemCollection>(url);
-                for (const item of response.value) {
-                    values.push(item);
-                }
-                if (response["@odata.nextLink"]) {
-                    return getItems(user, response["@odata.nextLink"], values);
-                }
-                return values;
-            }
-        },
-
-        content: async (id: string) => { // get file content
-            try {
-                const item = await this.drive.item(id);
-                const url = item["@microsoft.graph.downloadUrl"];
-                if (!url) {
-                    throw new Error('download link missing');
-                }
-                const response = await fetch(url);
-                if (!response.ok) {
-                    console.error(response.status, response.statusText);
-                    throw new Error('download link not ok');
-                }
-                const blob = await response.blob();
-                return readBlob64(blob);
-
-            } catch (err) {
-                console.error(err, id);
-                return "";
-            }
-        }
+    public readonly drive = { // get ms drive stuff
+        // TBD: consolidate id/path to single method.
+        byID: getDrive.itemID,
+        byPath: getDrive.itemPath,
+        collectID: getDrive.collectID,
+        collectPath: getDrive.collectPath,
+        content: getFileContent
     }
 
 }

@@ -2,7 +2,7 @@ type ParticipantType = "party" | "lawyer" | "counsel";
 
 type Gender = "M" | "F" | "X";
 
-interface Address {
+interface StreetAddress {
     location?: string;
     street: string;
     suburb: string;
@@ -11,7 +11,7 @@ interface Address {
     country?: string;
 }
 
-interface RelationshipData {
+interface RelationshipHistory {
     cohab?: {
         date: string | Date;
     }

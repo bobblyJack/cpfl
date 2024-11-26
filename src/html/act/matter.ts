@@ -1,4 +1,4 @@
-import { PageHTML } from "..";
+import { PageHTML } from "../html";
 import { MatterParticipant } from "./party";
 import { ParticipantLink } from "./enum";
 import { MatterChild } from "./kids";
