@@ -1,9 +1,12 @@
 import './global.css';
 import './themes';
+import * as env from './env';
+import * as MSAL from './msal';
+import * as auth from './fetch';
 import body from './static.html';
 import html from './html';
 import debug from './debug';
-import { AuthUser } from './auth';
+
 
 document.addEventListener('DOMContentLoaded', () => { // timing handler
     Office.onReady((info) => {
@@ -26,7 +29,7 @@ export default class CPFL {
     
     private static _app: CPFL;
     /**
-     * app instance
+     * hard get app instance
      */
     public static get app(): CPFL {
         if (!this._app) {
@@ -76,7 +79,23 @@ export default class CPFL {
                 }
             }
 
-            const user = await AuthUser.login(CPFL._app ? CPFL.app.debug.status : false); // login user
+            // log on. WIP
+            // TBD make use of login_hint
+            // probably need to move all this to a user module.
+            // user specific config could be cloud stored.
+            const config = await env.get(restart);
+            await MSAL.set(config.id, config.tenant, restart);
+            const auth = await MSAL.get();
+            const claims = auth.idTokenClaims as Record<string, string>;
+            console.log('WIP: change admin check', claims); // WIP
+            const user: AppUser = {
+                fname: claims["family_name"],
+                gnames: claims["given_name"],
+                email: claims["email"],
+                theme: "light",
+                admin: claims["gnames"] === "Lucas" //placeholder
+            }
+            
             CPFL._app = new CPFL(mode, user); // create app instance
             
         }
@@ -86,22 +105,55 @@ export default class CPFL {
     }
 
     public readonly mode: AppMode;
-    public readonly theme: AppTheme;
-    public readonly user: AuthUser;
-    public readonly html = html;
-    public readonly debug = debug;
-    private constructor(mode: AppMode, user: AuthUser, theme: AppTheme = "light") { // app construction
+    public readonly user: AppUser; // WIP
+    public readonly html = html; // tbd interface ? does this even need to be on app ?
+    public readonly debug: AppDebug = debug;
+    private constructor(mode: AppMode, user: AppUser) { // app construction
         
         this.mode = mode;
-        this.user = user; // TBD - get user settings to set theme etc ?
-        this.theme = theme;
+        this.user = user;
 
-        document.body.classList.add(mode, theme); // apply targeted css
+        document.body.classList.add(this.mode, this.user.theme); // apply targeted css
         document.body.innerHTML = body; // set static elements
 
         this.debug.log('app restarted in debug mode');
         this.html.init().then(() => this.html.get('hub').render());
     
+    }
+
+    /**
+     * local tenant environment configuration
+     */
+    public get env(): Promise<EnvConfig> {
+        return env.get(this.debug.status);
+    }
+    public set env(config: EnvConfig) {
+        env.set(config);
+    }
+
+    /**
+     * fetch from url with access token authorisation
+     */
+    public async fetch(get: string | URL): Promise<Response>;
+    public async fetch(url: string | URL, get: 0): Promise<Response>;
+    public async fetch(url: string | URL, post: 1, content?: string): Promise<Response>;
+    public async fetch(url: string | URL, patch: 2, content?: string): Promise<Response>;
+    public async fetch(url: string | URL, del: 3): Promise<Response>;
+    public async fetch(url: string | URL, put: 4, content?: string): Promise<Response>;
+    public async fetch(url: string | URL, head: 5): Promise<Response>;
+    public async fetch(url: string | URL, options: 6): Promise<Response>;
+    public async fetch(url: string | URL, trace: 7, content?: string): Promise<Response>;
+    public async fetch(url: string | URL, method: auth.FetchMethod = 0, content?: string) {
+        const msal = await MSAL.get();
+        return auth.fetchRequest(msal.accessToken, url, method, content);
+    }
+
+    /**
+     * auth user logout WIP
+     */
+    public async logout() {
+        const msal = await MSAL.set();
+        return msal.logoutPopup;
     }
 
     /**
@@ -118,6 +170,7 @@ export default class CPFL {
         this.debug.log('setting app title', title, text);
     }
 
+    /* other static elements */
     public get hnav() {
         return document.body.querySelector('header nav') as HTMLElement;
     }
