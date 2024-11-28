@@ -4,9 +4,7 @@ import * as env from './env';
 import * as MSAL from './msal';
 import * as auth from './fetch';
 import body from './static.html';
-import html from './html';
 import debug from './debug';
-
 
 document.addEventListener('DOMContentLoaded', () => { // timing handler
     Office.onReady((info) => {
@@ -97,6 +95,7 @@ export default class CPFL {
             }
             
             CPFL._app = new CPFL(mode, user); // create app instance
+            debug.log('app restarted in debug mode');
             
         }
 
@@ -106,7 +105,6 @@ export default class CPFL {
 
     public readonly mode: AppMode;
     public readonly user: AppUser; // WIP
-    public readonly html = html; // tbd interface ? does this even need to be on app ?
     public readonly debug: AppDebug = debug;
     private constructor(mode: AppMode, user: AppUser) { // app construction
         
@@ -116,9 +114,6 @@ export default class CPFL {
         document.body.classList.add(this.mode, this.user.theme); // apply targeted css
         document.body.innerHTML = body; // set static elements
 
-        this.debug.log('app restarted in debug mode');
-        this.html.init().then(() => this.html.get('hub').render());
-    
     }
 
     /**

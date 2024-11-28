@@ -1,4 +1,5 @@
-import { AuthUser } from "../auth";
+import CPFL from "..";
+import { GraphItem } from "../graph";
 import { ParticipantRole } from "./roles";
 import { MatterChild } from "./kids";
 
@@ -6,10 +7,14 @@ type ParticipantTypeMap = Map<ParticipantType, ParticipantSideMap>;
 type ParticipantSideMap = Map<number, ParticipantRoleMap>;
 type ParticipantRoleMap = Map<number, ParticipantRole>;
 
+interface MatterFile {
+
+}
+
 /**
  * matter data
  */
-export class ActiveMatter {
+export class ActiveMatter implements MatterFile {
 
     private static _current: ActiveMatter | null = null;
     public static get current(): ActiveMatter { // current active matter
@@ -22,47 +27,34 @@ export class ActiveMatter {
         this._current = matter;
     }
 
-    private static _cloud: Promise<Map<string, string | ActiveMatter>>;
-    private static get cloud() {
-        if (!this._cloud) {
-            this._cloud = initCloud().then(map => {
-                this._cloud = Promise.resolve(map);
-                return map;
-            });
+    private static index: Map<string, string | ActiveMatter> = new Map();
+    private static root: GraphItem;
+    public static async init() {
+        if (!this.root) {
+            this.root = await GraphItem.branch("matters");
         }
-        return this._cloud;
-
-        async function initCloud(): Promise<Map<string, string>> { // fetch matters from cloud
-            const user = AuthUser.current;
-            const mattersPath = user.env.site.folders.matters;
-            const rawFiles = await user.drive.collectPath(mattersPath);
-            const map = new Map();
-            for (const file of rawFiles) {
-                map.set(file.name.replace(".json", ""), file.id);
+        if (this.root.folder) {
+            const files = await this.root.folder.children;
+            for (const file of files) {
+                this.index.set(file.id, file.name);
             }
-            return map;
         }
     }
-    
-    public static async save() {
-        const cloudMatters = await this.cloud;
-        const matter = ActiveMatter.current;
-        const matterLabel = await matter.label;
-        cloudMatters.set(matterLabel, matter);
-        
 
-        
-    }
-
-    public static async load(label: string) {
-        const cloudMatters = await this.cloud;
-        const val = cloudMatters.get(label);
+    public static async load(key: string) {
+        const val = this.index.get(key);
         if (!val) {
-            throw new Error(`matter ${label} cannot load`);
+            throw new Error(`matter unmapped`);
         }
         if (val instanceof ActiveMatter) {
             return val;
         }
+        const item = GraphItem.get(key);
+        if (!item.file) {
+            throw new Error(`matter invalid`);
+        }
+        const download = await item.file.download();
+        const json = await download.json()
         const user = AuthUser.current;
         const content = await user.drive.content(val, "json") as ActiveMatter;
         cloudMatters.delete(label);
@@ -72,16 +64,37 @@ export class ActiveMatter {
         return content;
     }
 
+
+
+    
+    
+    
+
+    
+
     public readonly key: string; // matter key / actionstep id
+    public readonly item: string; // drive item id
     public respondent: boolean = false; // our client = respondent switch
     public history: RelationshipHistory = {};
     public kids: MatterChild[] = [];
-    public constructor(id: number | string, cname: string, lname: string) {
-        this.key = String(id);
-        const client = ParticipantRole.set(this, "party");
-        client.fname = cname;
-        const lawyer = ParticipantRole.set(this, "lawyer");
-        lawyer.fname = lname; // TBD: add tenant solicitor enum
+    public constructor(init: string | MatterFile) {
+        if (typeof init === 'string') {
+            this.key = init; // TBD: generate a fresh key for non-actionstep matters
+            this.item = ""; // TBD: initial save to cloud that creates the json and maps its id here
+        } else {
+            this.key = init.key; // TBD: the whole fucking interface tbh
+            this.item = init.item; // TBD: i literally had one for participants and now i need to remake yay.
+        }
+    }
+
+    public async save() {
+        const cloudMatters = await this.cloud;
+        const matter = ActiveMatter.current;
+        const matterLabel = await matter.label;
+        cloudMatters.set(matterLabel, matter);
+        
+
+        
     }
 
     /**

@@ -23,7 +23,7 @@ export default async function () {
             throw new Error('null actionstep data');
         }
 
-        const id = Number(data[0][1]);
+        const id = data[0][1];
         if (!id) {
             throw new Error('actionstep id undefined');
         }

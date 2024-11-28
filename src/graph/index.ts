@@ -3,6 +3,7 @@ import formURL from './url';
 import deltaRequest from './delta';
 import GraphFile from './file';
 import GraphFolder from "./folder";
+import getDrive from './drives';
 
 export class GraphItem implements DriveItem {
 
@@ -13,12 +14,13 @@ export class GraphItem implements DriveItem {
         }
         return GraphItem._index;
     }
-
-    public static async init(refresh: boolean = false) {
+    
+    private static async init(refresh: boolean = false) {
         try {
             GraphItem._index = await deltaRequest(refresh);
         } catch (err) {
-            console.error('drive unmapped', err);
+            console.error('drive unmapped');
+            throw err;
         }
     }
 
@@ -38,12 +40,38 @@ export class GraphItem implements DriveItem {
         return instance;
     }
 
+    private static _root: string;
+    public static get root(): GraphItem {
+        if (!this._root) {
+            throw new Error('root unmapped');
+        }
+        return this.get(this._root);
+    }
+
+    public static async branch(key: keyof SharepointFolders): Promise<GraphItem> {
+        try {
+            if (!this._index) {
+                await this.init(CPFL.app.debug.status);
+            }
+            const id = await getDrive(key);
+            const item = this.get(id);
+            if (!item.folder) {
+                CPFL.app.debug.err('branch status invalid');
+            }
+            return item;
+        } catch (err) {
+            console.error('branch undefined');
+            throw err;
+        }
+    }
+
     public readonly id: string;
     public file?: GraphFile;
     public folder?: GraphFolder;
     protected constructor(item: DriveItem) {
         this.id = item.id;
         this._name = item.name;
+
         if (item.file) {
             this.file = new GraphFile(this.id, item.file);
         }
@@ -51,8 +79,9 @@ export class GraphItem implements DriveItem {
             this.folder = new GraphFolder(this.id, item.folder);
         }
 
-        this._parent = "";
-        if (item.parentReference && !item.root) {
+        if (item.root) {
+            GraphItem._root = this.id;
+        } else if (item.parentReference) {
             this._parent = item.parentReference.id;
         }
     }
@@ -91,7 +120,7 @@ export class GraphItem implements DriveItem {
         }
     }
 
-    private _parent: string;
+    private _parent?: string;
     public get parent(): GraphItem {
         if (!this._parent) {
             throw new Error('no parent reference');
@@ -105,21 +134,21 @@ export class GraphItem implements DriveItem {
                 parentReference: {
                     id: item.id,
                     name: item.name,
-                    path: item.path
+                    path: `/drive/${item.path}`
                 }
             });
         }
     }
 
     public get path(): string {
-        const encodedName: string = encodeURIComponent(this.name);
-        let parentPath: string = "";
         try {
-            parentPath = this.parent.path;
+            const parentPath: string = this.parent.path;
+            const encodedName: string = encodeURIComponent(this.name);
+            return `${parentPath}/${encodedName}`;
         } catch {
             CPFL.app.debug.log('root discovered');
+            return "root:"
         }
-        return `${parentPath}/${encodedName}`;
     }
 
 }

@@ -23,14 +23,14 @@ export default async function fetchLocalMetadata(refresh: boolean = false) {
     const updates = await fetchUpdates(deltaKey, link);
 
     for (const update of updates) {
-        const exists = cache.get(update.id);
-        if (exists) {
-            cache.set(update.id, {
-                ...exists,
-                ...update
-            });
+        if (update.deleted) {
+            cache.delete(update.id);
         } else {
-            cache.set(update.id, update);
+            const exists = cache.get(update.id);
+            const item: DriveItem = exists ? {
+                ...exists, ...update
+            } : update;
+            cache.set(item.id, item);
         }
     }
 
