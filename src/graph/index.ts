@@ -1,99 +1,65 @@
 import CPFL from "..";
 import formURL from './url';
 import deltaRequest from './delta';
+import GraphFile from './file';
+import GraphFolder from "./folder";
 
-abstract class GraphItem {
-
-    protected static get root(): keyof SharepointFolders {
-        throw new Error('abstract root access');
-    }
-    public static get path() { // fetch root path
-        return CPFL.app.env.then((env) => env.site.folders[this.root]);
-    }
+export class GraphItem implements DriveItem {
 
     private static _index: Map<string, DriveItem | GraphItem>;
     public static get index(): Map<string, DriveItem | GraphItem> {
-        if (!this._index) {
+        if (!GraphItem._index) {
             throw new Error('drive unmapped');
         }
-        return this._index;
+        return GraphItem._index;
     }
 
     public static async init(refresh: boolean = false) {
         try {
-            this._index = await deltaRequest(this.root, refresh);
+            GraphItem._index = await deltaRequest(refresh);
         } catch (err) {
             console.error('drive unmapped', err);
         }
     }
 
-    public static async open(id: string): Promise<GraphItem> {
-        try {
-            let item = this.index.get(id);
-            if (!item) {
-                throw new Error('item unmapped');
-            }
-            if (item instanceof this) {
-                return item;
-            }
-            if (!item.parentReference) {
-                throw new Error('null parent reference');
-            }
-            const itemPath = item.parentReference.path;
-            const rootPath = await this.path;
-            if (!itemPath.includes(rootPath)) {
-                console.error(itemPath, rootPath);
-                throw new Error('invalid class opener');
-            }
-            switch (this.root) {
-                case "matters": return new MatterItem(id);
-                case "library": return new LibraryItem(id);
-                case "users": return new UserItem(id);
-            }
-        } catch (err) {
-            console.error('item unopened');
-            throw err;
+    public static get(id: string): GraphItem {
+        const item = this.index.get(id);
+        if (!item) {
+            throw new Error('item unmapped');
         }
+        if (item instanceof this) {
+            return item;
+        }
+        if (item.deleted) {
+            console.log('item deleted facet', item);
+        }
+        const instance = new this(item);
+        this.index.set(id, instance);
+        return instance;
     }
-
-    // set up a hybrid map which, when reference, replaces the plain object reference with a class instance.
-    // could possibly get it to go up its parents line until it hits one of the 3 special folders, also.
-    // given itemReference includes the full path, it would be simple to check if that includes folder path
-    // that way it can instance as a correct subclass. neat!
 
     public readonly id: string;
-    protected constructor(id: string) {
-        this.id = id;
-    }
-
-    protected get _baseMap(): Map<string, DriveItem> { // fetch root index
-        const parent = this.constructor as typeof GraphItem;
-        if (!parent.index) {
-            throw new Error('drive unmapped');
+    public file?: GraphFile;
+    public folder?: GraphFolder;
+    protected constructor(item: DriveItem) {
+        this.id = item.id;
+        this._name = item.name;
+        if (item.file) {
+            this.file = new GraphFile(this.id, item.file);
         }
-        return parent.index;
-    }
-
-    public get base(): DriveItem {
-        const item = this._baseMap.get(this.id);
-        if (!item) {
-            throw new Error('drive item unmapped');
+        if (item.folder) {
+            this.folder = new GraphFolder(this.id, item.folder);
         }
-        return item;
-    }
-    public set base(item: DriveItem) {
-        if (this.id === item.id) {
-            this._baseMap.set(this.id, item);
+
+        this._parent = "";
+        if (item.parentReference && !item.root) {
+            this._parent = item.parentReference.id;
         }
     }
 
     private updates: Partial<DriveItem> = {};
     private updateQ: NodeJS.Timeout | null = null;
     protected async update(patch: Partial<DriveItem>) {
-        this.base = {
-            ...this.base,
-            ...patch
-        }
         this.updates = {
             ...this.updates,
             ...patch
@@ -114,34 +80,46 @@ abstract class GraphItem {
         }
     }
 
+    private _name: string;
     public get name(): string {
-        return this.base.name;
+        return this._name;
     }
     public set name(text: string) {
-        this.update({name: text});
+        if (text && text !== this._name) {
+            this._name = text;
+            this.update({name: text});
+        }
+    }
+
+    private _parent: string;
+    public get parent(): GraphItem {
+        if (!this._parent) {
+            throw new Error('no parent reference');
+        }
+        return GraphItem.get(this._parent);
+    }
+    public set parent(item: GraphItem) {
+        if (item !== this.parent) {
+            this._parent = item.id;
+            this.update({
+                parentReference: {
+                    id: item.id,
+                    name: item.name,
+                    path: item.path
+                }
+            });
+        }
+    }
+
+    public get path(): string {
+        const encodedName: string = encodeURIComponent(this.name);
+        let parentPath: string = "";
+        try {
+            parentPath = this.parent.path;
+        } catch {
+            CPFL.app.debug.log('root discovered');
+        }
+        return `${parentPath}/${encodedName}`;
     }
 
 }
-
-export class MatterItem extends GraphItem {
-    public static readonly root: keyof SharepointFolders = "matters";
-
-}
-
-export class LibraryItem extends GraphItem {
-    public static readonly root: keyof SharepointFolders = "library";
-    public static async open(id: string): Promise<LibraryItem> {
-        return super.open(id);
-    }
-
-}
-
-export class UserItem extends GraphItem {
-    public static readonly root: keyof SharepointFolders = "users";
-
-}
-
-const test = GraphItem.open("test")
-const test2 = LibraryItem.open("test")
-const test3 = GraphItem.open<LibraryItem>("test");
-const test4 = LibraryItem.open<LibraryItem>("test");

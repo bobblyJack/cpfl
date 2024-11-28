@@ -1,13 +1,10 @@
 import CPFL from "..";
 import getURL from './url';
 
-const baseCacheKey: string = "cpfl-map";
-const baseDeltaKey: string = "cpfl-delta";
+const cacheKey: string = "cpfl-map";
+const deltaKey: string = "cpfl-delta";
 
-export default async function fetchLocalMetadata(folder: keyof SharepointFolders, refresh: boolean = false) {
-    
-    const cacheKey: string = `${baseCacheKey}-${folder}`;
-    const deltaKey: string = `${baseDeltaKey}-${folder}`;
+export default async function fetchLocalMetadata(refresh: boolean = false) {
     
     let localCache = localStorage.getItem(cacheKey);
     let localDelta = localStorage.getItem(deltaKey);
@@ -17,9 +14,7 @@ export default async function fetchLocalMetadata(folder: keyof SharepointFolders
 
     if (!localCache || !localDelta || refresh) {
         cache = new Map<string, DriveItem>();
-        const env = await CPFL.app.env;
-        const path = env.site.folders[folder];
-        link = await getURL(`${path}/delta`);
+        link = await getURL('root/delta');
     } else {
         cache = JSON.parse(localCache) as Map<string, DriveItem>;
         link = localDelta;

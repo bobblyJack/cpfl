@@ -1,20 +1,27 @@
 interface DriveItem {
     id: string;
     name: string;
-    file?: {
-        hashes: {
-            quickXorHash: string;
-        }
-        mimeType: string;
-    }
-    folder?: {
-        childCount: number;
-    }
-    deleted?: {
-        state: string;
-    }
     parentReference?: ItemReference;
-    root?: {}
+    file?: FileFacet;
+    folder?: FolderFacet;
+    root?: RootFacet;
+    deleted?: DeletedFacet;
+}
+
+interface FileFacet {
+    mimeType: string;
+}
+
+interface FolderFacet {
+    childCount: number;
+}
+
+interface RootFacet {
+    // empty
+}
+
+interface DeletedFacet {
+    state: string;
 }
 
 interface ItemCollection {
