@@ -3,27 +3,33 @@ import CPFL from "..";
 const graphOrigin: string = "https://graph.microsoft.com";
 const graphVersion: string = "v1.0";
 
-export default async function(path: string, select?: (keyof DriveItem)[]): Promise<URL> {
+type GraphScope = "user" | "app" | "site"
 
+export default async function(path: string[], source: GraphScope = "site"): Promise<URL> {
+    const parts = [graphVersion];
     try {
-        const app = CPFL.app;
-        const env = await app.env;
-        let siteID = env.site.id;
-        if (!siteID) {
-            siteID = await fetchSiteID(app, env);
-        }
-        path = `sites/${siteID}/drive/${path}`;
-
-        const url = new URL(`${graphVersion}/${path}`, graphOrigin);
-
-        if (select && select.length) {
-            const search = {
-                $select: select.join(",")
+        if (source === "user") {
+            parts.push("me");
+        } else {
+            parts.push("sites");
+            const app = CPFL.app;
+            const env = await app.env;
+            let siteID = env.site.id;
+            if (!siteID) {
+                siteID = await fetchSiteID(app, env);
             }
-            url.search = new URLSearchParams(search).toString();
+            parts.push(siteID);
         }
-    
-        return url;
+
+        parts.push("drive");
+
+        if (source !== "site") {
+            parts.push("special", "approot");
+        }
+
+        parts.concat(path);
+        
+        return new URL(parts.join("/"), graphOrigin);
 
     } catch (err) {
         console.error('error forming graph URL');

@@ -5,7 +5,15 @@ interface DriveItem {
     file?: FileFacet;
     folder?: FolderFacet;
     root?: RootFacet;
+    // if not root (for some reason root does not have an etag)
+    "@odata.etag": string; // compare to make sure working on latest version
+    // or should i be actually getting eTag ? idk
+    // or cTag? which is content-only, not the entity itself? idkkkkkk
     deleted?: DeletedFacet;
+}
+
+interface DownloadableItem extends DriveItem {
+    "@microsoft.graph.downloadUrl"?: string | URL;
 }
 
 interface FileFacet {

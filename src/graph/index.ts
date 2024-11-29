@@ -1,7 +1,7 @@
 import CPFL from "..";
 import formURL from './url';
 import deltaRequest from './delta';
-import GraphFile from './file';
+import GraphFile from './content';
 import GraphFolder from "./folder";
 import getDrive from './drives';
 

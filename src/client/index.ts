@@ -3,13 +3,9 @@ import { GraphItem } from "../graph";
 import { ParticipantRole } from "./roles";
 import { MatterChild } from "./kids";
 
-type ParticipantTypeMap = Map<ParticipantType, ParticipantSideMap>;
-type ParticipantSideMap = Map<number, ParticipantRoleMap>;
-type ParticipantRoleMap = Map<number, ParticipantRole>;
 
-interface MatterFile {
 
-}
+
 
 /**
  * matter data

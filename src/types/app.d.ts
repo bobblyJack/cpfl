@@ -42,11 +42,6 @@ interface SharepointConfig { // sharepoint site
     id?: string;
     name: string;
     domain: string;
-    folders: SharepointFolders;
 }
-interface SharepointFolders { // folder paths
-    matters: string;
-    library: string;
-    users: string;
-}
+
 
