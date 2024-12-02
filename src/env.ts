@@ -1,6 +1,6 @@
 // cache local environment variables to localStorage
 
-const localKey: string = 'cpfl-env';
+const localKey: string = 'app-env';
 const localPath: string = './config.json';
 let localEnv: Promise<EnvConfig>;
 

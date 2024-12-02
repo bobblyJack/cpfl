@@ -1,5 +1,5 @@
-type GraphScope = "user" | "app" | "site"; // cloud storage
-type GraphCache = "matters" | "contacts"; // local storage
+type GraphCache = "matters" | "contacts" | "precedents"; // local storage
+type GraphScope = "user" | "app"; // cloud storage
 
 interface EncryptedData {
     data: ArrayBuffer,
@@ -13,6 +13,15 @@ interface GraphItem {
     deleted?: {
         state: string;
     }
+}
+
+interface GraphItemReference {
+    id: string;
+    name: string;
+    path: string; // tbd: percent encoded?
+    driveId?: string;
+    driveType?: string;
+    siteId?: string;
 }
 
 interface GraphFile extends GraphItem {
@@ -32,14 +41,12 @@ interface GraphFolder extends GraphItem {
 interface GraphItemCollection {
     value: GraphItem[];
     "@odata.nextLink"?: string | URL;
-    "@odata.deltaLink"?: string | URL;
 }
 
-interface GraphItemReference {
-    id: string;
-    name: string;
-    path: string; // percent encoded
-    driveId?: string;
-    driveType?: string;
-    siteId?: string;
+type GraphDeltaItem = Partial<GraphItem & GraphFile & GraphFolder> & {
+    id: string
+};
+interface GraphDeltaResponse extends GraphItemCollection {
+    value: GraphDeltaItem[];
+    "@odata.deltaLink"?: string | URL;
 }

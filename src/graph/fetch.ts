@@ -1,68 +1,62 @@
 import CPFL from "..";
 
 /**
- * graph fetch methods (WIP)
- * TBD: expand a drive item class (or classes) to incorporate methods
+ * graph fetch methods
  */
 enum FetchMethod {
-    GET,// retrieve resource - default
-    //sites/{hostname}:/{server-relative-path}
-    //sites/{site-id}/drive/items/{item-id}
-    //sites/{site-id}/drive/root:/{item-path}
-    //sites/{siteId}/drive/root/delta
-    POST,// create a resource (not idempotent)
-    // used for checkout/checkin
-    //sites/{siteId}/drive/items/{itemId}/checkout
-    //sites/{siteId}/drive/items/{itemId}/checkin
-    // used to create folder
-    // requires content-type application/json
-    //sites/{site-id}/drive/items/{parent-item-id}/children
-    // can use this property to resolve conflicts also
-    // "@microsoft.graph.conflictBehavior": "rename"
-    PATCH,// update fields of existing resource
-    // can update parentReference to move item
-    // needs auth + content-type application/json
-    //sites/{site-id}/drive/items/{item-id}
-    DELETE,// remove a resource
-    //sites/{siteId}/drive/items/{itemId}
-    PUT, // completely replace or create a resource's content
-    
-    /* as yet unused methods */
-    HEAD,// get resource metadata (headers only)
-    OPTIONS, // get allowed fetch methods
-    TRACE// loopback debug (returns the request)
+    GET,
+    POST,
+    PATCH,
+    DELETE,
+    PUT,
+    HEAD,
+    OPTIONS,
+    TRACE
 }
+
 /**
  * auth get request
+ * retrieve resource
  */
 export default async function authFetch(get: string | URL): Promise<Response>;
 export default async function authFetch(url: string | URL, get: 0): Promise<Response>;
 /**
  * auth post request
+ * create resource (not idempotent)
+ * @wip create folder
+ * @tbd checkin/checkout
  */
 export default async function authFetch(url: string | URL, post: 1, content?: string): Promise<Response>;
 /**
  * auth patch request
+ * update existing resource
+ * @tbd update parentRef to move items
  */
 export default async function authFetch(url: string | URL, patch: 2, content?: string): Promise<Response>;
 /**
  * auth delete request
+ * remove resource
  */
 export default async function authFetch(url: string | URL, del: 3): Promise<Response>;
 /**
  * auth put request
+ * overwrite a resource
+ * @wip upload file content
  */
 export default async function authFetch(url: string | URL, put: 4, content?: string): Promise<Response>;
 /**
  * auth head request
+ * fetch resource metadata headers
  */
 export default async function authFetch(url: string | URL, head: 5): Promise<Response>;
 /**
  * auth options request
+ * query allowed fetch methods
  */
 export default async function authFetch(url: string | URL, options: 6): Promise<Response>;
 /**
  * auth trace request
+ * loopback debugging (returns request)
  */
 export default async function authFetch(url: string | URL, trace: 7, content?: string): Promise<Response>;
 /**

@@ -2,7 +2,6 @@ import './global.css';
 import './themes';
 import * as env from './env';
 import * as MSAL from './msal';
-import * as auth from './graph/fetch';
 import body from './static.html';
 import debug from './debug';
 
@@ -119,12 +118,18 @@ export default class CPFL {
     /**
      * local tenant environment configuration
      */
-    public async env(config?: EnvConfig): Promise<EnvConfig> {
+    public async env(update?: Partial<EnvConfig>): Promise<EnvConfig> {
         const refresh = this.debug.status;
-        if (config && !refresh) {
-            await env.set(config);
+        const config = await env.get(refresh);
+        if (!update) {
+            return config;
         }
-        return env.get(refresh);
+        const updated = {
+            ...config,
+            ...update
+        }   
+        env.set(updated);
+        return updated;
     }
 
     /**

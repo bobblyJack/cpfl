@@ -1,80 +1,64 @@
 import CPFL from "..";
-import cacheReq from "./cache";
 import getURL from './url';
+import authFetch from "./fetch";
 
-export default async function fetchLocalMetadata(refresh: boolean) {
-
-    const store = await cacheReq("contacts");
-    const contactReq = db.transaction("contacts", "readwrite");
-    
-    
-    let localCache = localStorage.getItem(cacheKey);
-    let localDelta = localStorage.getItem(deltaKey);
-
-    let cache: Map<string, DriveItem>;
-    let link: string | URL;
-
-    if (!localCache || !localDelta || refresh) {
-        cache = new Map<string, DriveItem>();
-        link = await getURL('root/delta');
-    } else {
-        cache = JSON.parse(localCache) as Map<string, DriveItem>;
-        link = localDelta;
-    }
-
-    const updates = await fetchUpdates(deltaKey, link);
-
-    for (const update of updates) {
-        if (update.deleted) {
-            cache.delete(update.id);
-        } else {
-            const exists = cache.get(update.id);
-            const item: DriveItem = exists ? {
-                ...exists, ...update
-            } : update;
-            cache.set(item.id, item);
-        }
-    }
-
-    localStorage.setItem(cacheKey, JSON.stringify(cache));
-    
-    return cache;
-}
-
-async function fetchUpdates(key: string, link: string | URL, values: DriveItem[] = []): Promise<DriveItem[]> {
-    let response: ItemCollection;
-    
-    try {
-        const res = await fetch(link);
-        if (!res.ok) {
-            throw res.status;
-        }
-        response = await res.json();
-    } catch {
-        const res = await CPFL.app.fetch(link);
-        response = await res.json(); 
-    }
-
-    for (const item of response.value) {
-        values.push(item);
-    }
-
-    if (response['@odata.nextLink']) {
-        return fetchUpdates(key, response['@odata.nextLink'], values);
-    }
-
-    if (response['@odata.deltaLink']) {
-        localStorage.setItem(key, String(response['@odata.deltaLink']));
-    }
-
-    return values;
-}
-
-async function getDelta() {
+/**
+ * query shared approot for changes
+ */
+export default async function deltaRequest(cache: GraphCache) {
     const env = await CPFL.app.env();
-    const delta = env.delta;
-    let url: URL;
+    let delta = env.delta[cache];
     if (!delta) {
-        url = getURL()
+        delta = getURL(`:/${cache}:/delta`);
     }
+    return fetchUpdates(env.delta, cache, delta);
+}
+
+async function fetchUpdates(
+    env: EnvDeltaCache, 
+    cache: GraphCache, 
+    link: string | URL
+): Promise<GraphDeltaItem[]> {
+    let response: GraphDeltaResponse;
+    let deltaLink: string | URL = "";
+    const values = await collateValues(link);
+    if (!deltaLink) {
+        throw new Error('delta link undefined');
+    }
+    env[cache] = deltaLink;
+    CPFL.app.env(env);
+    return values;
+
+    async function collateValues(
+        dlink: string | URL, 
+        values: GraphDeltaItem[] = [], 
+        token: string | null = null) {
+        try {
+            if (!token) {
+                token = await CPFL.app.access();
+            }
+            const res = await authFetch(dlink);
+            response = await res.json();
+            for (const item of response.value) {
+                values.push(item);
+            }
+            if (response['@odata.nextLink']) {
+                return collateValues(response['@odata.nextLink'], values, token);
+            }
+            if (response["@odata.deltaLink"]) {
+                deltaLink = response["@odata.deltaLink"];
+            }
+            return values;
+        } catch (err) {
+            try {
+                CPFL.app.debug.err('initial error fetching updates');
+                CPFL.app.debug.log('attempting token refresh');
+                return collateValues(dlink, values);
+            } catch (err) {
+                console.error('could not fetch updates', dlink, values);
+                throw err;
+            }
+        }
+    }
+    
 }
