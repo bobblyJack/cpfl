@@ -5,6 +5,11 @@
 type AppMode = "taskpane" | "mobile" | "browser";
 
 /**
+ * App Colour Themes
+ */
+type AppTheme = "light" | "dark"
+
+/**
  * Authenticated App User WIP
  */
 interface AppUser {
@@ -16,11 +21,6 @@ interface AppUser {
 }
 
 /**
- * App Colour Themes
- */
-type AppTheme = "light" | "dark"
-
-/**
  * App Debugger
  */
 interface AppDebug {
@@ -28,20 +28,3 @@ interface AppDebug {
     log: (...args: any[]) => void;
     err: (...args: any[]) => void;
 }
-
-/**
- * local environment configuration
- */
-interface EnvConfig {
-    id: string; // app client
-    tenant: string; // app tenant
-    host: string; // prod host
-    site: SharepointConfig;
-}
-interface SharepointConfig { // sharepoint site
-    id?: string;
-    name: string;
-    domain: string;
-}
-
-

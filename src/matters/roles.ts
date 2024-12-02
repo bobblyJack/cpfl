@@ -1,4 +1,4 @@
-import { ActiveMatter } from "./";
+import { ActiveMatter } from ".";
 
 enum MatterSides {
     neutral,

@@ -1,5 +1,5 @@
 import CPFL from "..";
-import { GraphItem } from "../graph";
+import { GraphItem } from "../graph/archive/items";
 import { ParticipantRole } from "./roles";
 import { MatterChild } from "./kids";
 

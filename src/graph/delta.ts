@@ -1,10 +1,12 @@
 import CPFL from "..";
+import cacheReq from "./cache";
 import getURL from './url';
 
-const cacheKey: string = "cpfl-map";
-const deltaKey: string = "cpfl-delta";
+export default async function fetchLocalMetadata(refresh: boolean) {
 
-export default async function fetchLocalMetadata(refresh: boolean = false) {
+    const store = await cacheReq("contacts");
+    const contactReq = db.transaction("contacts", "readwrite");
+    
     
     let localCache = localStorage.getItem(cacheKey);
     let localDelta = localStorage.getItem(deltaKey);
@@ -66,4 +68,13 @@ async function fetchUpdates(key: string, link: string | URL, values: DriveItem[]
     }
 
     return values;
+}
+
+async function getDelta() {
+    const env = await CPFL.app.env();
+    const delta = env.delta;
+    let url: URL;
+    if (!delta) {
+        url = getURL()
+    }
 }

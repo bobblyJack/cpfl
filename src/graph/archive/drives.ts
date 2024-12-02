@@ -1,5 +1,5 @@
-import CPFL from "..";
-import formURL from './url';
+import CPFL from "../..";
+import formURL from '../url';
 
 const rootIDs: Map<keyof SharepointFolders, Promise<string>> = new Map();
 export default async function findRoot(type: keyof SharepointFolders) {

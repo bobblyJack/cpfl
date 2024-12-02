@@ -1,8 +1,10 @@
+import CPFL from "..";
+
 /**
  * graph fetch methods (WIP)
  * TBD: expand a drive item class (or classes) to incorporate methods
  */
-export enum FetchMethod {
+enum FetchMethod {
     GET,// retrieve resource - default
     //sites/{hostname}:/{server-relative-path}
     //sites/{site-id}/drive/items/{item-id}
@@ -30,16 +32,49 @@ export enum FetchMethod {
     OPTIONS, // get allowed fetch methods
     TRACE// loopback debug (returns the request)
 }
-
+/**
+ * auth get request
+ */
+export default async function authFetch(get: string | URL): Promise<Response>;
+export default async function authFetch(url: string | URL, get: 0): Promise<Response>;
+/**
+ * auth post request
+ */
+export default async function authFetch(url: string | URL, post: 1, content?: string): Promise<Response>;
+/**
+ * auth patch request
+ */
+export default async function authFetch(url: string | URL, patch: 2, content?: string): Promise<Response>;
+/**
+ * auth delete request
+ */
+export default async function authFetch(url: string | URL, del: 3): Promise<Response>;
+/**
+ * auth put request
+ */
+export default async function authFetch(url: string | URL, put: 4, content?: string): Promise<Response>;
+/**
+ * auth head request
+ */
+export default async function authFetch(url: string | URL, head: 5): Promise<Response>;
+/**
+ * auth options request
+ */
+export default async function authFetch(url: string | URL, options: 6): Promise<Response>;
+/**
+ * auth trace request
+ */
+export default async function authFetch(url: string | URL, trace: 7, content?: string): Promise<Response>;
 /**
  * auth fetch
- * @param token user token
  * @param url access target
  * @param method fetch method
  * @param content string body
  * @returns fetch response
  */
-export async function fetchRequest(token: string, url: string | URL, method: FetchMethod = 0, content: string = "") {
+export default async function authFetch(url: string | URL, method: FetchMethod = 0, content: string = "") {
+
+    const token = await CPFL.app.access();
 
     const request: RequestInit = {
         method: FetchMethod[method],

@@ -1,6 +1,6 @@
-import CPFL from "..";
-import formURL from './url';
-import { GraphItem } from ".";
+import CPFL from "../..";
+import formURL from '../url';
+import { GraphItem } from "./items";
 
 export default class GraphFolder implements FolderFacet {
     private readonly id: string;

@@ -2,7 +2,7 @@ import './global.css';
 import './themes';
 import * as env from './env';
 import * as MSAL from './msal';
-import * as auth from './fetch';
+import * as auth from './graph/fetch';
 import body from './static.html';
 import debug from './debug';
 
@@ -119,28 +119,20 @@ export default class CPFL {
     /**
      * local tenant environment configuration
      */
-    public get env(): Promise<EnvConfig> {
-        return env.get(this.debug.status);
-    }
-    public set env(config: EnvConfig) {
-        env.set(config);
+    public async env(config?: EnvConfig): Promise<EnvConfig> {
+        const refresh = this.debug.status;
+        if (config && !refresh) {
+            await env.set(config);
+        }
+        return env.get(refresh);
     }
 
     /**
-     * fetch from url with access token authorisation
+     * fetch access token
      */
-    public async fetch(get: string | URL): Promise<Response>;
-    public async fetch(url: string | URL, get: 0): Promise<Response>;
-    public async fetch(url: string | URL, post: 1, content?: string): Promise<Response>;
-    public async fetch(url: string | URL, patch: 2, content?: string): Promise<Response>;
-    public async fetch(url: string | URL, del: 3): Promise<Response>;
-    public async fetch(url: string | URL, put: 4, content?: string): Promise<Response>;
-    public async fetch(url: string | URL, head: 5): Promise<Response>;
-    public async fetch(url: string | URL, options: 6): Promise<Response>;
-    public async fetch(url: string | URL, trace: 7, content?: string): Promise<Response>;
-    public async fetch(url: string | URL, method: auth.FetchMethod = 0, content?: string) {
+    public async access() {
         const msal = await MSAL.get();
-        return auth.fetchRequest(msal.accessToken, url, method, content);
+        return msal.accessToken;
     }
 
     /**
