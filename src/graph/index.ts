@@ -4,47 +4,72 @@ import * as content from './content';
 import authFetch from './fetch';
 import formGraphURL from './url';
 
+// what to do here? once i get to needing scoped subclasses to cut between file/folder, will be annoying
+// i could map construction functions so that they can be indexed/retrieved as needed
+// i could just add an "itemType" thing so that it doesnt clash with other shit
+// that still leaves the "open" function as returning a mixed return type which is annoying
+
 /**
  * basic graph class
  * @wip use metadata updater
  * @tbd get/set name
  * @tbd get/set parent
  * @tbd get path
- * @tbd enforce subclasses
  */
-export class DriveItem implements GraphItem {  
+abstract class DriveItem implements GraphItem {  
+    protected static get cache(): GraphCache {
+        throw new Error('abstract item cache reference');
+    }
 
     /**
      * fetch display label array
      */
-    public static async labels(store: GraphCache) {
-        return cache.getLabels(store);
+    public static async labels() {
+        return cache.getLabels(this.cache);
     }
 
     /**
-     * construct from display label
+     * instantiate base class from item or label
      */
-    public static async get<T extends GraphItem>(store: GraphCache, label: string) {
-        const item = await cache.getLabelled<T>(store, label);
-        return new DriveItem(store, item);
+    public static async get(input: string | GraphItem) {
+        try {
+            let item: GraphItem;
+            if (typeof input === 'string') {
+                item = await cache.getLabelled(this.cache, input);
+            } else {
+                item = input;
+            }
+
+            if (item.folder) {
+                return new DriveFolder(item);
+            } else {
+                return new DriveFile(item);
+            }
+
+        } catch (err) {
+            console.error('item undefined', err);
+            return undefined;
+        }
     }
 
+
     public readonly id: string; // main db key
-    public readonly cache: GraphCache; // index db store
     public readonly name: string; // file/folder name + extension
     public readonly parent: string; // parent folder id
-    public readonly type: "file" | "folder"; // soft item subclass
     public label: string; // plaintext display label
-    public constructor(store: GraphCache, item: GraphItem) {
+    protected constructor(item: GraphItem) {
         this.id = item.id;
-        this.cache = store;
         this.name = item.name;
         this.label = this.name;
         this.parent = item.parentReference?.id || "";
-        this.type = item.folder ? "folder" : "file";
         this.updates = {
             id: this.id
         }
+    }
+
+    protected get cache(): GraphCache {
+        const parent = this.constructor as typeof DriveItem;
+        return parent.cache;
     }
 
     protected updates: GraphDeltaItem;
@@ -76,17 +101,21 @@ export class DriveItem implements GraphItem {
         }
     }
 
-    /**
-     * get file content (string) or folder children (item[])
-     */
-    public async open() {
-        if (this.type === "file") {
-            const blob = await content.downloadContent(`/items/${this.id}`);
-            return readBlob64(blob);
-        }
-        const kids = await cache.getChildren(this.cache, this.id);
-        const family = kids.map(item => new DriveItem(this.cache, item));
-        return Promise.all(family);
-    }
+}
 
+export class DriveFile extends DriveItem {
+    public async open(): Promise<string> {
+        const blob = await content.downloadContent(`/items/${this.id}`);
+        return readBlob64(blob);
+    }
+}
+
+export class DriveFolder extends DriveItem {
+    public async open(): Promise<DriveItem[]> {
+        const kids = await cache.getChildren(this.cache, this.id);
+        const constructor = this.constructor as typeof DriveItem;
+        const family = kids.map(item => constructor.get(item));
+        const awaited = await Promise.all(family);
+        return awaited.filter((item) => item !== undefined);
+    }
 }

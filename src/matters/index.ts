@@ -1,6 +1,6 @@
 import CPFL from "..";
 import { GraphItem } from "../graph/archive/items";
-import { ParticipantRole } from "./roles";
+import { ParticipantRole } from "../contacts/roles";
 import { MatterChild } from "./kids";
 
 
