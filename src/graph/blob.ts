@@ -7,13 +7,26 @@ export default async function readBlob64(blob: Blob) {
         reader.onerror = (err) => {
             reject(err);
         }
-        reader.onload = (event) => { 
-            if (event.target) {
-                if (typeof event.target.result === 'string') {
-                    resolve(event.target.result);
-                }
-            }
+        reader.onload = () => { 
+            resolve(reader.result as string);
         }
         reader.readAsText(blob);
     });
+}
+
+/**
+ * convert blob file to array buffer
+ */
+export async function readArrayBlobber(blob: Blob): Promise<ArrayBuffer> {
+    return new Promise<ArrayBuffer>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onerror = (err) => {
+            reject(err);
+        }
+        reader.onload = () => {
+            resolve(reader.result as ArrayBuffer);
+        }
+        reader.readAsArrayBuffer(blob);
+    })
+
 }

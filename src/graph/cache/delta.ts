@@ -1,6 +1,6 @@
-import CPFL from "..";
-import getURL from './url';
-import authFetch from "./fetch";
+import CPFL from "../..";
+import getURL from '../url';
+import authFetch from "../fetch";
 
 /**
  * query shared approot for changes
