@@ -1,7 +1,6 @@
 type GraphCache = "matters" | "contacts" | "precedents"; // local storage
-type GraphCacheIndex = "label" | "parent";
-type GraphScope = "user" | "app"; // cloud storage
-type GraphURLFragment = `/items/${string}` | `:/${string}` // enforce id or path strings
+type GraphScope = "user" | "app"; // cloud storage appfolder
+type GraphURLFragment = `/${string}` | `:/${string}` // enforce correct path strings
 
 interface GraphBaseItem {
     id: string;
@@ -9,7 +8,7 @@ interface GraphBaseItem {
 
 interface GraphItem extends GraphBaseItem {
     name: string;
-    parentReference?: ItemReference;
+    parentReference?: GraphItemReference;
     deleted?: {
         state: string;
     }
@@ -50,19 +49,8 @@ interface GraphDeltaResponse extends GraphItemCollection {
     "@odata.deltaLink"?: string | URL;
 }
 
-/**
- * an encrypted object
- */
-interface EncryptedData<T extends {}> {
+interface EncryptedItem<T extends GraphBaseItem> {
+    id: string; // main key string
     data: ArrayBuffer; // encrypted object data
     iv: Uint8Array; // initiation vector for decryption
-}
-
-/**
- * the db cache item
- */
-interface EncryptedItem<T extends {}> extends EncryptedData<T> {
-    id: string; // main key string
-    label: string; // unique indexed plaintext label
-    parent: string; // indexed parent folder key
 }

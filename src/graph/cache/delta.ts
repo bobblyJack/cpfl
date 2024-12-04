@@ -5,13 +5,26 @@ import authFetch from "../fetch";
 /**
  * query shared approot for changes
  */
-export default async function deltaRequest(cache: GraphCache) {
+export default async function deltaRequest(cache: GraphCache, retried: boolean = false) {
     const env = await CPFL.app.env();
     let delta = env.delta[cache];
     if (!delta) {
         delta = getURL(`:/${cache}:/delta`);
     }
-    return fetchUpdates(env.delta, cache, delta);
+    try {
+        return fetchUpdates(env.delta, cache, delta);
+    } catch (err) {
+        if (!retried) { // attempt cache creation
+            const url = getURL('/children');
+            await authFetch(url, 1, JSON.stringify({
+                name: cache,
+                folder: {}
+            }));
+            return deltaRequest(cache, true);
+        }
+        throw err;
+    }
+    
 }
 
 async function fetchUpdates(

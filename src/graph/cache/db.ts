@@ -21,58 +21,51 @@ export default async function getCacheDB(): Promise<IDBDatabase> {
                 const caches = cacheNames.map(async name => {  // delta request
                     const cache = init.objectStore(name);
                     const updates = await deltaRequest(name);
-                    const results: Promise<void>[] = []
+                    const results: Promise<void>[] = [];
 
                     for (const update of updates) { // parse individual updates
-                        const req: IDBRequest<EncryptedItem<GraphItem> | undefined> = cache.get(update.id);
-                        req.onerror = console.error;
-                        req.onsuccess = async () => {
-                            const item = req.result;
 
-                            if (!item) { // map new item
-                                const encryptedData = await enCrypto(update);
-                                let uniqueLabel: string;
-                                if (update.name) {
-                                    uniqueLabel = update.name;
-                                } else {
-                                    CPFL.app.debug.log('unique label undefined', update);
-                                    uniqueLabel = update.id;
-                                }
-                                const encryptedItem: EncryptedItem<GraphItem> = {
-                                    id: update.id,
-                                    label: uniqueLabel,
-                                    parent: update.parentReference?.id || "",
-                                    ...encryptedData
-                                }
-                                const result = new Promise<void>(resolve => {
-                                    const creation = cache.add(encryptedItem);
-                                    creation.onerror = console.error;
-                                    creation.onsuccess = () => resolve();
-                                });
-                                results.push(result);
+                        if (update.deleted) { // removed deleted items
+                            const result = new Promise<void>(resolve => {
+                                const req = cache.delete(update.id);
+                                req.onerror = CPFL.app.debug.err;
+                                req.onsuccess = () => resolve();
+                            });
+                            results.push(result);
 
-                            } else { // update existing item
-                                const decryptedItem = await deCrypto<GraphItem>(item);
-                                const updatedItem = {
-                                    ...decryptedItem, 
-                                    ...update
+                        } else { // register updates
+                            const req: IDBRequest<EncryptedItem<GraphItem> | undefined> = cache.get(update.id);
+                            req.onerror = console.error;
+                            req.onsuccess = async () => {
+                                const item = req.result;
+
+                                if (!item) { // map new item
+                                    const encryptedItem = await enCrypto(update);
+                                    const result = new Promise<void>(resolve => {
+                                        const creation = cache.add(encryptedItem);
+                                        creation.onerror = console.error;
+                                        creation.onsuccess = () => resolve();
+                                    });
+                                    results.push(result);
+
+                                } else { // update existing item
+                                    const decryptedItem = await deCrypto<GraphItem>(item);
+                                    const updatedItem = {
+                                        ...decryptedItem, 
+                                        ...update
+                                    }
+                                    const encryptedItem = await enCrypto(updatedItem);
+                                    const result = new Promise<void>(resolve => {
+                                        const replacement = cache.put(encryptedItem);
+                                        replacement.onerror = console.error;
+                                        replacement.onsuccess = () => resolve();
+                                    });
+                                    results.push(result);
                                 }
-                                const encryptedData = await enCrypto(updatedItem);
-                                const encryptedItem: EncryptedItem<GraphItem> = {
-                                    id: update.id,
-                                    label: updatedItem.name,
-                                    parent: updatedItem.parentReference?.id || "",
-                                    ...encryptedData
-                                }
-                                const result = new Promise<void>(resolve => {
-                                    const replacement = cache.put(encryptedItem);
-                                    replacement.onerror = console.error;
-                                    replacement.onsuccess = () => resolve();
-                                });
-                                results.push(result);
                             }
                         }
                     }
+                    return results;
                 });
 
                 await Promise.all(caches);

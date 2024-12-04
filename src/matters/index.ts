@@ -1,159 +1,86 @@
 import CPFL from "..";
-import { GraphItem } from "../graph/archive/items";
-import { ParticipantRole } from "../contacts/roles";
+import { ContactItem } from "../contacts";
+import { DriveItem } from "../graph";
 import { MatterChild } from "./kids";
+import { MatterParticipant } from "./roles";
+import { POV } from "./sides";
 
+export class MatterItem implements MatterCard {
+    static readonly cache: GraphCache = "matters";
 
-
-
-
-/**
- * matter data
- */
-export class ActiveMatter implements MatterFile {
-
-    private static _current: ActiveMatter | null = null;
-    public static get current(): ActiveMatter { // current active matter
+    private static _current: MatterItem | null = null;
+    public static get current(): MatterItem {
         if (!this._current) {
             throw new Error('no active matter');
         }
         return this._current;
     }
-    public static set current(matter: ActiveMatter | null) { // WIP: matter navigation
-        this._current = matter;
+    public static set current(matter: MatterItem | null) { // WIP matter nav
+        this._current = matter; 
     }
 
-    private static index: Map<string, string | ActiveMatter> = new Map();
-    private static root: GraphItem;
-    public static async init() {
-        if (!this.root) {
-            this.root = await GraphItem.branch("matters");
-        }
-        if (this.root.folder) {
-            const files = await this.root.folder.children;
-            for (const file of files) {
-                this.index.set(file.id, file.name);
-            }
-        }
+    static async create(fileName: string) {
+        const item = await DriveItem.create(`${fileName}.json`, this.cache);
+        const matter = new this(item.id);
+        item.saveContent(matter);
+        return matter;
     }
 
-    public static async load(key: string) {
-        const val = this.index.get(key);
-        if (!val) {
-            throw new Error(`matter unmapped`);
-        }
-        if (val instanceof ActiveMatter) {
-            return val;
-        }
-        const item = GraphItem.get(key);
-        if (!item.file) {
-            throw new Error(`matter invalid`);
-        }
-        const download = await item.file.download();
-        const json = await download.json()
-        const user = AuthUser.current;
-        const content = await user.drive.content(val, "json") as ActiveMatter;
-        cloudMatters.delete(label);
-        const matterLabel = await content.label;
-        cloudMatters.set(matterLabel, content);
-        ActiveMatter.current = content;
-        return content;
+    static async open(fileID: string) {
+        const item = await DriveItem.get(this.cache, fileID);
+        return item.parseContent<MatterItem>();
     }
 
-
-
-    
-    
-    
-
-    
-
-    public readonly key: string; // matter key / actionstep id
-    public readonly item: string; // drive item id
-    public respondent: boolean = false; // our client = respondent switch
-    public history: RelationshipHistory = {};
-    public kids: MatterChild[] = [];
-    public constructor(init: string | MatterFile) {
-        if (typeof init === 'string') {
-            this.key = init; // TBD: generate a fresh key for non-actionstep matters
-            this.item = ""; // TBD: initial save to cloud that creates the json and maps its id here
-        } else {
-            this.key = init.key; // TBD: the whole fucking interface tbh
-            this.item = init.item; // TBD: i literally had one for participants and now i need to remake yay.
-        }
-    }
-
-    public async save() {
-        const cloudMatters = await this.cloud;
-        const matter = ActiveMatter.current;
-        const matterLabel = await matter.label;
-        cloudMatters.set(matterLabel, matter);
-        
-
-        
-    }
-
-    /**
-     * nested participant maps
-     */
-    private index: ParticipantTypeMap = new Map();
-    public get<T extends ParticipantRole>( // participant search function
-        type: ParticipantType, 
-        side: number = 1, // default our side
-        id: number = 0 // default main participant of type/side
-    ): T {
-        const sides = this.index.get(type);
-        if (sides) {
-            const roles = sides.get(side);
-            if (roles) {
-                const role = roles.get(id);
-                if (role) {
-                    return role as T;
+    readonly id: string;
+    asref?: number;
+    participants: Map<ParticipantReferenceKey, MatterParticipant[]>;
+    relationship: RelationshipHistory;
+    children: Map<string, MatterChild>;
+    respondent?: boolean;
+    protected constructor(id: string, base?: MatterCard) {
+        this.id = id;
+        this.asref = base?.asref;
+        this.respondent = base?.respondent;
+        this.relationship = base?.relationship ?? {};
+        this.participants = new Map();
+        this.children = new Map();
+        if (base) {
+            for (const [key, val] of Array.from(base.participants.entries())) {
+                const array = []
+                for (const participant of val) {
+                    array.push(new MatterParticipant(participant));
                 }
+                this.participants.set(key, array);
             }
-        }
-        console.error(this.index, type, side, id); // TBD: debug.err
-        throw new Error(`undefined participant`);
-    }
-    public set(role: ParticipantRole): ParticipantRole {
-        let sides = this.index.get(role.type);
-        if (!sides) {
-            sides = new Map();
-            this.index.set(role.type, sides);
-        }
-        let roles = sides.get(role.side);
-        if (!roles) {
-            roles = new Map();
-            sides.set(role.side, roles);
-        }
-        for (let i = role.id;; i++) {
-            if (!roles.has(i)) {
-                role.id = i;
-                roles.set(i, role);
-                return role;
+            for (const child of Array.from(base.children.values())) {
+                const kid = new MatterChild(child);
+                this.children.set(kid.name.given, kid);
             }
         }
     }
 
-    private _label?: Promise<string>; // file label
-    public get label(): Promise<string> {
-        if (!this._label) {
-            const fname = this.get("party").fname;
-            this._label = Promise.resolve(`${fname} (${this.key})`);
+    private saveTimer: NodeJS.Timeout | null = null;
+    public async save() {
+        if (!this.saveTimer) {
+            this.saveTimer = setTimeout(async () => {
+                CPFL.app.debug.log('saving matter', this);
+                const item = await DriveItem.get(MatterItem.cache, this.id);
+                item.saveContent(this);
+            }, 10000);
         }
-        return this._label;
     }
-    public set label(text: string) {
-        this.label.then((label) => {
-            if (text !== label) {
-                this._label = ActiveMatter.cloud.then((map) => {
-                    map.delete(label);
-                    this._label = Promise.resolve(text);
-                    map.set(label, this);
-                    return label;
-                });
-            }
-        });
+
+    public async addParticipant(side: POV | number, type: ContactType, contact: string | ContactCard) {
+        const key: ParticipantReferenceKey = `${side}_${type}`;
+        const array = this.participants.get(key) ?? [];
+        let item: ContactItem;
+        if (typeof contact === 'string') {
+            item = await ContactItem.open(contact);
+        } else {
+            item = await ContactItem.create(contact);
+        }
+        array.push(new MatterParticipant({id: item.id, side, type}));
+        this.participants.set(key, array);
     }
 
 }

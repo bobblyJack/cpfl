@@ -2,18 +2,27 @@ type ContactType = "party" | "lawyer" | "counsel";
 
 interface ContactCard {
     type: ContactType;
-    gnames: string;
-    fname: string;
-    email: string;
-    gender: Gender;
-    dob: Date;
-    occupation: string;
-    phones: string[];
-    mainAdd: StreetAddress;
-    postAdd: StreetAddress | null;
+    name?: Name;
+    email?: string;
+    gender?: Gender;
+    dob?: Date;
+    occupation?: string;
+    phones?: string[];
+    address?: StreetAddresses;
+    asref?: number; // actionstep id
+}
+
+interface Name {
+    given: string;
+    family: string;
 }
 
 type Gender = "M" | "F" | "X";
+
+interface StreetAddresses {
+    main: StreetAddress;
+    post?: StreetAddress | null;
+}
 
 interface StreetAddress {
     location?: string;

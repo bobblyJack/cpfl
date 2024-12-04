@@ -1,7 +1,4 @@
-import { MatterChild } from "./kids";
-import { ActiveMatter } from "./matter";
-import { MatterParticipant } from "./participant";
-
+import { MatterItem } from ".";
 
 /**
  * fetch actionstep matter data from current word doc
@@ -28,13 +25,24 @@ export default async function () {
             throw new Error('actionstep id undefined');
         }
 
-        const file = new ActiveMatter(id);
-        mapParticipantData(data, 1, file.client);
-        mapParticipantData(data, 3, file.lawyer);
-        mapParticipantData(data, 5, file.counsel);
+        const clientName = data[8][1];
+        if (!clientName) {
+            throw new Error('client fname undefined');
+        }
+
+        const file = await MatterItem.create(`${clientName}_${id}`);
+        file.asref = Number(id);
+        file.addParticipant(1, "party", mapParticipantData(data, 1));
+        file.addParticipant(2, "party", mapParticipantData(data, 2));
+        file.addParticipant(1, "lawyer", mapParticipantData(data, 3));
+        file.addParticipant(2, "lawyer", mapParticipantData(data, 4));
+        file.addParticipant(1, "counsel", mapParticipantData(data, 5));
+        file.addParticipant(2, "counsel", mapParticipantData(data, 6));
 
         file.relationship = mapRelationshipData(data);
-        file.kids = mapChildren(data);
+        for (const child of mapChildren(data)) {
+            file.children.set(child.name.given, child)
+        }
 
         
         if (data[2][1]) { // switch app/res
@@ -44,7 +52,7 @@ export default async function () {
             }
         }
         
-        ActiveMatter.current = file; // set current file
+        MatterItem.current = file; // set current file
         
 
         // WIP
@@ -99,55 +107,76 @@ async function getTableValues(context: Word.RequestContext): Promise<string[][]>
     throw new Error('export table is missing');
 }
 
-function mapParticipantData(data: string[][], i: number, p: MatterParticipant) {
-    // map results for participants using table[row][col]
-    p.gname = data[6][i];
-    p.fname = data[8][i];
-    p.gender = getGender(data[12][i]);
-    p.email = data[16][i];
-    p.phone = getPhoneNums(data[17][i])[0];
-    p.address = {
-        location: data[19][i] ? data[18][i] : undefined,
-        street: data[18][i] ? data[19][i] : data[18][i],
-        suburb: data[20][i],
-        state: data[21][i],
-        postcode: data[22][i],
-        country: data[23][i]
+function mapContactType(i: number): ContactType {
+    switch (i) {
+        case 1:
+        case 2: return "party";
+        case 3:
+        case 4: return "lawyer";
+        case 5:
+        case 6: return "counsel";
+        default: throw new Error('participant index invalid');
     }
+}
+
+function mapParticipantData(data: string[][], i: number): ContactCard {
+    // map results for participants using table[row][col]
+    const result: ContactCard = {
+        type: mapContactType(i),
+        name: {
+            given: data[6][i],
+            family: data[8][i]
+        },
+        gender: getGender(data[12][i]),
+        email: data[16][i],
+        phones: getPhoneNums(data[17][i]),
+        address: {
+            main: {
+                location: data[19][i] ? data[18][i] : undefined,
+                street: data[19][i] ? data[19][i] : data[18][i],
+                suburb: data[20][i],
+                state: data[21][i],
+                postcode: data[22][i],
+                country: data[23][i]
+            },
+            post: {
+                location: data[25][i] ? data[24][i] : undefined,
+                street: data[25][i] ? data[25][i] : data[24][i],
+                suburb: data[26][i],
+                state: data[27][i],
+                postcode: data[28][i],
+                country: data[29][i]
+            }
+        },
+        asref: Number(data[4][i])
+    }
+
+    return result;
 
     /*
     const fileWIP = { // do something with this later on
-        id: Number(data[4][i]),
         name: {
             prefix: data[5][i],
             middle_name: data[7][i],
             suffix: data[9][i],
             aliases: data[10][i],
             preferred: data[11][i]
-        },
-        postal_address: {
-            address_line_1: data[24][i],
-            address_line_2: data[25][i],
-            city: data[26][i],
-            state_province: data[27][i],
-            postcode: data[28][i],
-            country_if_foreign: data[29][i]
         }
     }*/
         
 }
 
-function mapRelationshipData(data: string[][]): RelationshipData {
+function mapRelationshipData(data: string[][]): RelationshipHistory {
     const dates = {
         cohab: data[31][1] ? getDate(data[31][1]) : data[32][1],
         marriage: data[31][2] ? getDate(data[31][2]) : data[32][2],
         separation: data[31][3] ? getDate(data[31][3]) : data[32][3],
         divorce: data[31][4] ? getDate(data[31][4]) : data[32][4],
     }
-    const result: RelationshipData = {};
+    const result: RelationshipHistory = {};
     for (const [key, val] of Object.entries(dates)) {
         if (val) {
-            switch (key as keyof RelationshipData) {
+            switch (key as keyof RelationshipHistory) {
                 case "cohab": {
                     result.cohab = {
                         date: val
@@ -182,20 +211,27 @@ function mapRelationshipData(data: string[][]): RelationshipData {
     return result;
 }
 
-function mapChildren(data: string[][]) {
+function mapChildren(data: string[][]): ChildCard[] {
     const children = [];
     for (let r = 35; r < data.length; r++) {
         if (r > 35) {
             const row = data[r];
-            const kid = new MatterChild(row[2], row[1], getDate(row[3]), getGender(row[4]))
+            const kid: ChildCard = {
+                name: {
+                    family: row[2],
+                    given: row[1]
+                },
+                dob: getDate(row[3]),
+                gender: getGender(row[4])
+            }
             children.push(kid);
         }
     }
     return children;
 }
 
-function getGender(data?: string): Gender | undefined {
-    const bit = data?.slice(0, 1).toUpperCase();
+function getGender(data: string = ""): Gender | undefined {
+    const bit = data.slice(0, 1).toUpperCase();
     switch (bit) {
         case "M":
         case "F":
@@ -206,8 +242,8 @@ function getGender(data?: string): Gender | undefined {
     }
 }
 
-function getDate(data?: string): Date | undefined {
-    const date = new Date(data || "");
+function getDate(data: string = ""): Date | undefined {
+    const date = new Date(data);
     if (isNaN(+date)) {
         return undefined;
     }

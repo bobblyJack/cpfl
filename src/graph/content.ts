@@ -29,10 +29,9 @@ export async function downloadContent(input: GraphURLFragment, source: GraphScop
 export async function uploadContent(content: string, path: string, source: GraphScope = "app") {
     try {
         const url = formURL(`:/${path}:/content`, source);
-        await authFetch(url, 4, content);
-        return true;
+        return authFetch(url, 4, content);
     } catch (err) {
-        CPFL.app.debug.err('error uploading drive item', path, err);
-        return false;
+        CPFL.app.debug.err('error uploading file content');
+        throw err;
     }
 }

@@ -11,19 +11,15 @@ async function initTransaction(storeName: string) {
     return trans.objectStore(storeName);
 }
 
-async function storeItem(store: IDBObjectStore, item: GraphBaseItem) {
-    // receives store and uses that to
-    // encrypt item and put it in the database
-    // for use at end of set
-    const id = item.id;
-    let label: string = "";
-        for (const [k, v] of Object.entries(item)) {
-            if (k === "label" || (!label && k === "name")) {
-                label = String(v);
-            }
-        }
-    const encryption = await enCrypto(item);
-    const encryptedItem = {id, label, ...encryption}
+async function addItem(store: IDBObjectStore, item: GraphBaseItem) {
+    const encryptedItem = await enCrypto(item);
+    const req = store.add(encryptedItem);
+    req.onerror = console.error;
+    req.onsuccess = CPFL.app.debug.log;
+}
+
+async function putItem(store: IDBObjectStore, item: GraphBaseItem) {
+    const encryptedItem = await enCrypto(item);
     const req = store.put(encryptedItem);
     req.onerror = console.error;
     req.onsuccess = CPFL.app.debug.log;
@@ -81,18 +77,18 @@ export async function setItem<T extends GraphBaseItem>(
 ) {
     if (force) {
         const store = await initTransaction(storeName);
-        return storeItem(store, item);
+        return putItem(store, item);
     }
     const init = await fetchItem<T>(storeName, item.id);
     const store = init[0];
     if (!init[1]) {
-        return storeItem(store, item);
+        return addItem(store, item);
     }
     const update: T = {
         ...init[1],
         ...item
     }
-    return storeItem(store, update);
+    return putItem(store, update);
 }
 
 export async function deleteItem(storeName: GraphCache, key: string) {
@@ -100,49 +96,4 @@ export async function deleteItem(storeName: GraphCache, key: string) {
     const req = store.delete(key);
     req.onerror = console.error;
     req.onsuccess = CPFL.app.debug.log;
-}
-
-async function getIndex(storeName: GraphCache, index: GraphCacheIndex): Promise<IDBIndex> {
-    const store = await initTransaction(storeName);
-    return store.index(index);
-}
-
-export async function getLabels(storeName: GraphCache) {
-    const i = await getIndex(storeName, "label");
-    return new Promise<string[]>(resolve => {
-        const req: IDBRequest<IDBValidKey[]> = i.getAllKeys();
-        req.onerror = console.error;
-        req.onsuccess = () => {
-            const keys = req.result.map((key) => String(key));
-            resolve(keys);
-        }
-    });
-}
-
-export async function getLabelled<T extends GraphItem>(storeName: GraphCache, label: string): Promise<T> {
-    const i = await getIndex(storeName, "label");
-    return new Promise<T>(resolve => {
-        const req: IDBRequest<EncryptedItem<T>> = i.get(label);
-        req.onerror = console.error;
-        req.onsuccess = async () => {
-            const encryptedItem = req.result;
-            const item = await deCrypto<T>(encryptedItem);
-            resolve(item);
-        }
-    });
-}
-
-export async function getChildren<T extends GraphItem>(storeName: GraphCache, id: string): Promise<T[]> {
-    const i = await getIndex(storeName, "parent");
-    return new Promise<T[]>(resolve => {
-        const req: IDBRequest<EncryptedItem<T>[]> = i.getAll(id);
-        req.onerror = console.error;
-        req.onsuccess = async () => {
-            const items = req.result.map(async (encryptedItem) => {
-                const item = await deCrypto<T>(encryptedItem);
-                return item;
-            });
-            resolve(Promise.all(items));
-        }
-    });
 }

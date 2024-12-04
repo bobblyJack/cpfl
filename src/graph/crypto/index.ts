@@ -1,6 +1,7 @@
 import getKey from './key';
 
-export async function enCrypto<T extends {}>(obj: T): Promise<EncryptedData<T>> {
+export async function enCrypto<T extends GraphBaseItem>(obj: T): Promise<EncryptedItem<T>> {
+    const id = obj.id;
     const stringData = JSON.stringify(obj);
     const cryptoKey = await getKey();
     const iv = crypto.getRandomValues(new Uint8Array(12));
@@ -10,18 +11,18 @@ export async function enCrypto<T extends {}>(obj: T): Promise<EncryptedData<T>> 
         cryptoKey,
         encodedData
     )
-    return {data, iv};
+    return {id, data, iv};
 }
 
-export async function deCrypto<T extends {}>(encryptedData: EncryptedData<T>): Promise<T> {
+export async function deCrypto<T extends GraphBaseItem>(encryptedItem: EncryptedItem<T>): Promise<T> {
     const key = await getKey();
     const decryptedData = await crypto.subtle.decrypt(
         {
             name: "AES-GCM", 
-            iv: encryptedData.iv
+            iv: encryptedItem.iv
         },
         key, 
-        encryptedData.data
+        encryptedItem.data
     );
     const stringData = new TextDecoder().decode(decryptedData);
     return JSON.parse(stringData) as T;
