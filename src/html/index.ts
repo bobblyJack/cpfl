@@ -2,40 +2,35 @@ import init from './init';
 import { BaseHTML } from './base';
 import { HeadPage } from './main';
 
-enum AppPages { // page key & label
-    "hub" = "Dashboard",
-    "act" = "Active Matter",
-    "lib" = "Precedent Library",
-    "bal" = "Balance Sheet",
-    "usr" = "User Settings"
-}
-
-const index: Map<keyof typeof AppPages, HeadPage> = new Map(); // full page map;
+/**
+ * full page map
+ */
+const index: Map<PageKey, HeadPage> = new Map();
 
 /**
  * page search function
  * @returns () gets current page
  */
-function search(): HeadPage;
+function get(): HeadPage | null;
 /**
  * page search function
  * @returns specific page
  */
-function search(key: string): HeadPage;
+function get(key: PageKey): HeadPage;
 /**
  * page search function
  * @returns whole page collection
  */
-function search(all: []): HeadPage[];
+function get(all: []): HeadPage[];
 /**
  * page search function
  * @returns specific pages
  */
-function search(keys: string[]): HeadPage[];
+function get(keys: PageKey[]): HeadPage[];
 
-function search( // search function implementation
-    req?: string | string[]
-): HeadPage | HeadPage[] {
+function get( // search function implementation
+    req?: PageKey | PageKey[]
+): HeadPage | HeadPage[] | null {
     if (Array.isArray(req)) {
         if (!req.length) {
             return Array.from(index.values());
@@ -43,14 +38,14 @@ function search( // search function implementation
         const pages: HeadPage[] = []
         for (const key of req) {
             try {
-                pages.push(search(key));
+                pages.push(get(key));
             } catch (err) {
                 console.error(err);
             }
         }
         return pages;
     } else if (req) {
-        const page = index.get(req as keyof typeof AppPages);
+        const page = index.get(req);
         if (!page) {
             throw new Error(`invalid get request: ${req}`);
         }
@@ -59,11 +54,13 @@ function search( // search function implementation
     return BaseHTML.display.head;
 }
 
+/**
+ * page register function
+ */
+function set(page: HeadPage) {
+    index.set(page.key as PageKey, page);
+}
+
 export default {
-    keys: AppPages,
-    init: init,
-    get: search,
-    set: (page: HeadPage) => {
-        index.set(page.key as keyof typeof AppPages, page);
-    }
+    init, get, set
 }

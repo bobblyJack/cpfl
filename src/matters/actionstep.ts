@@ -52,7 +52,7 @@ export default async function () {
             }
         }
         
-        MatterItem.current = file; // set current file
+        return file; // set current file
         
 
         // WIP

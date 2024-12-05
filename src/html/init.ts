@@ -8,8 +8,8 @@ import initUsr from './usr';
 export default async function () {
     try {
         const app = CPFL.app;
-        app.main.textContent = "loading active matters";
-        const pageKeys: (keyof typeof app.html.keys)[] = ["hub", "act"];
+        app.main.textContent = "initiating app pages";
+        const pageKeys: PageKey[] = ["hub", "act"];
 
         switch (app.mode) { // WIP: mode specific page loading
             case 'taskpane': pageKeys.push("lib");
@@ -17,8 +17,7 @@ export default async function () {
             case 'mobile': pageKeys.push("usr");
         }
 
-        app.main.textContent = "initiating app pages";
-        const pages = pageKeys.map((key) => { // map init functions
+        const pagesInits = pageKeys.map((key) => { // map init functions
             switch (key) {
                 case 'hub': return initHub;
                 case 'act': return initAct;
@@ -26,9 +25,12 @@ export default async function () {
                 case 'lib': return initLib;
                 case 'usr': return initUsr;
             }
-        }).map(init => init(app)); // then create pages
+        });
+        const pages = pagesInits.map(init => init(app)); // then call inits
 
         await Promise.all(pages);
+
+        return app.html('hub').render();
 
     } catch (err) {
         console.error('error on html init', err);

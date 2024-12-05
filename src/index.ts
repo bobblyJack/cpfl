@@ -3,7 +3,9 @@ import './themes';
 import * as env from './env';
 import * as MSAL from './msal';
 import body from './static.html';
+import html from './html';
 import debug from './debug';
+import {AppUser} from './users';
 
 document.addEventListener('DOMContentLoaded', () => { // timing handler
     Office.onReady((info) => {
@@ -76,24 +78,9 @@ export default class CPFL {
                 }
             }
 
-            // log on. WIP
-            // TBD make use of login_hint
-            // probably need to move all this to a user module.
-            // user specific config could be cloud stored.
             const config = await env.get(restart);
             await MSAL.set(config.id, config.tenant, restart);
-            const auth = await MSAL.get();
-            const claims = auth.idTokenClaims as Record<string, string>;
-            console.log('WIP: change admin check', claims); // WIP
-            const user: AppUser = {
-                fname: claims["family_name"],
-                gnames: claims["given_name"],
-                email: claims["email"],
-                theme: "light",
-                admin: claims["gnames"] === "Lucas" //placeholder
-            }
-            
-            CPFL._app = new CPFL(mode, user); // create app instance
+            CPFL._app = new CPFL(mode); // create app instance
             debug.log('app restarted in debug mode');
             
         }
@@ -103,16 +90,15 @@ export default class CPFL {
     }
 
     public readonly mode: AppMode;
-    public readonly user: AppUser; // WIP
     public readonly debug: AppDebug = debug;
-    private constructor(mode: AppMode, user: AppUser) { // app construction
-        
-        this.mode = mode;
-        this.user = user;
-
-        document.body.classList.add(this.mode, this.user.theme); // apply targeted css
-        document.body.innerHTML = body; // set static elements
-
+    private constructor(mode: AppMode) { // app construction
+        this.mode = mode; // set app mode
+        AppUser.login().then(user => { // authenticate user
+            document.body.classList.add(this.mode, user.theme); // apply targeted css
+            document.body.innerHTML = body; // set static elements
+            html.init();
+            // WIP: init HTML
+        });
     }
 
     /**
@@ -141,11 +127,17 @@ export default class CPFL {
     }
 
     /**
-     * auth user logout WIP
+     * active user context
      */
-    public async logout() {
-        const msal = await MSAL.set();
-        return msal.logoutPopup;
+    public get user(): AppUser {
+        return AppUser.current;
+    }
+
+    /**
+     * html page search
+     */
+    public get html() {
+        return html.get;
     }
 
     /**

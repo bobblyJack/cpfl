@@ -3,6 +3,7 @@ import * as cache from './cache';
 import * as content from './content';
 import authFetch from './fetch';
 import formGraphURL from './url';
+export * as userConfig from './user';
 
 /**
  * basic graph class
@@ -146,5 +147,4 @@ export class DriveItem implements GraphItem {
             return values;
         }
     }
-
 }

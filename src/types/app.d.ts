@@ -10,17 +10,6 @@ type AppMode = "taskpane" | "mobile" | "browser";
 type AppTheme = "light" | "dark"
 
 /**
- * Authenticated App User WIP
- */
-interface AppUser {
-    fname: string;
-    gnames: string;
-    email: string;
-    theme: AppTheme;
-    admin: boolean;
-}
-
-/**
  * App Debugger
  */
 interface AppDebug {
@@ -28,3 +17,4 @@ interface AppDebug {
     log: (...args: any[]) => void;
     err: (...args: any[]) => void;
 }
+

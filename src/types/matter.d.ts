@@ -6,7 +6,7 @@ interface MatterCard {
     respondent?: boolean;
 }
 
-type ParticipantReferenceKey = `${number}_${ContactType}` // side+type -> contacts
+type ParticipantReferenceKey = `${number}_${ContactType}` // side_type -> contacts
 
 interface ParticipantReference {
     id: string;

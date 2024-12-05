@@ -1,9 +1,16 @@
 import CPFL from "..";
-import { ContactItem } from "../contacts";
+import actionstep from "./actionstep";
 import { DriveItem } from "../graph";
 import { MatterChild } from "./kids";
 import { MatterParticipant } from "./roles";
 import { POV } from "./sides";
+import { 
+    ContactCounsel, 
+    ContactItem, 
+    ContactLawyer, 
+    ContactParty 
+} from "../contacts";
+
 
 export class MatterItem implements MatterCard {
     static readonly cache: GraphCache = "matters";
@@ -16,7 +23,10 @@ export class MatterItem implements MatterCard {
         return this._current;
     }
     public static set current(matter: MatterItem | null) { // WIP matter nav
-        this._current = matter; 
+        if (this._current) {
+            this._current.save();
+        }
+        this._current = matter;
     }
 
     static async create(fileName: string) {
@@ -31,11 +41,17 @@ export class MatterItem implements MatterCard {
         return item.parseContent<MatterItem>();
     }
 
+    /** import from actionstep */
+    static async import() {
+        this.current = await actionstep();
+        return this.current;
+    }
+
     readonly id: string;
     asref?: number;
-    participants: Map<ParticipantReferenceKey, MatterParticipant[]>;
+    readonly participants: Map<ParticipantReferenceKey, MatterParticipant[]>;
     relationship: RelationshipHistory;
-    children: Map<string, MatterChild>;
+    readonly children: Map<string, MatterChild>;
     respondent?: boolean;
     protected constructor(id: string, base?: MatterCard) {
         this.id = id;
@@ -81,6 +97,53 @@ export class MatterItem implements MatterCard {
         }
         array.push(new MatterParticipant({id: item.id, side, type}));
         this.participants.set(key, array);
+    }
+
+    public async getParticipant<T extends ContactItem>(side: POV | number, type: ContactType) {
+        const participants = this.participants.get(`${side}_${type}`);
+        if (!participants || !participants.length) {
+            return []
+        } else if (participants.length === 1) {
+            return participants[0].openContact<T>();
+        } else {
+            return Promise.all(participants.map((participant) => participant.openContact<T>()));
+        }
+    }
+
+    public get client() {
+        return this.getParticipant<ContactParty>(1, "party").then((clients => {
+            if (Array.isArray(clients)) {
+                if (!clients.length) {
+                    throw new Error('primary client unmapped');
+                }
+                return clients[0];
+            }
+            return clients;
+        }));
+    }
+
+    public get lawyer() {
+        return this.getParticipant<ContactLawyer>(1, "lawyer").then((lawyers => {
+            if (Array.isArray(lawyers)) {
+                if (!lawyers.length) {
+                    throw new Error('assigned lawyer unmapped');
+                }
+                return lawyers[0];
+            }
+            return lawyers;
+        }));
+    }
+
+    public get counsel() {
+        return this.getParticipant<ContactCounsel>(1, "counsel").then((counsel => {
+            if (Array.isArray(counsel)) {
+                if (!counsel.length) {
+                    throw new Error('counsel unmapped');
+                }
+                return counsel[0];
+            }
+            return counsel;
+        }));
     }
 
 }

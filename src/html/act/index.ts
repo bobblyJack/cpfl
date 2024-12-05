@@ -2,8 +2,7 @@ import CPFL from '../..';
 import './style.css';
 import { HeadPage } from '../main';
 import { FootPage } from '../section';
-import { ActiveMatter } from "../../matters/matter";
-import importActionstepMatter from '../../matters/actionstep';
+import { MatterItem } from '../../matters';
 
 enum ActSections {
     act, // page1, the client
@@ -13,14 +12,21 @@ enum ActSections {
     counsel, // page5, both barristers
 }
 
+// if no matter open, set foot to act, which has otherwise hidden bits on it
+// also hide fnav
+// or create a different subsection i guess and control what navs are exposed
+
 export default async function (app: CPFL) {
     
     const page = new HeadPage('act');
     page.title = "Select a Matter";
     page.nav.button.classList.add("warn");
+    
 
-    // subpage - no file
-    const sub0 = page.set("clear");
+    // subpage 1 - who we are acting for
+    const act = page.set("act");
+    act.title = "Client";
+    
 
 
     

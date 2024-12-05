@@ -4,57 +4,80 @@ import { FootPage } from "./section";
 import { NavControl } from "./nav";
 
 /**
- * Base Page Objects
+ * Base Page Object
  */
 export abstract class BaseHTML {
-    private static _head: HeadPage; // current main page
-    private static _feet: FootPage[]; // current sections
+    /**
+     * get current display
+     */
     public static get display() {
         return {
-            get head(): HeadPage {
-                if (!BaseHTML._head) {
-                    throw new Error('null head');
+            get head(): HeadPage | null {
+                try {
+                    const main = document.body.querySelector('main');
+                    if (!main) {
+                        return null;
+                    }
+                    return CPFL.app.html(main.className as PageKey);
+                } catch (err) {
+                    console.log('no head page', err);
+                    return null;
                 }
-                return BaseHTML._head;
-            },
-            set head(page: HeadPage) { // WIP: page navigation
-                page.app.title = page.title;
-                page.app.main.replaceWith(page.main);
-                page.app.fnav.replaceWith(page.fnav);
-                BaseHTML._head = page;
             },
             get feet(): FootPage[] {
-                if (!BaseHTML._feet || !BaseHTML._feet.length) {
-                    throw new Error('null feet');
+                try {
+                    if (!this.head) {
+                        return []
+                    }
+                    const currentPage = this.head;
+                    const sections = Array.from(currentPage.main.querySelectorAll('section'));
+                    const activeSections = sections.filter(section => !section.hasAttribute('hidden'));
+                    return activeSections.map((section) => currentPage.get(section.className));
+                } catch (err) {
+                    console.log('no page feet', err);
+                    return []
                 }
-                return BaseHTML._feet;
-            },
-            set feet(feet: FootPage[]) { // TBD: subpage rendering
-                BaseHTML._feet = feet;
             }
         }
     }
 
-    public readonly key: string;
-    public label: string = "";
-    public title: string = "";
-    public nav?: NavControl;
-    public main?: HTMLElement;
+    public readonly nav: NavControl;
+    public constructor(public readonly key: string) {
+        this.nav = new NavControl(this);
+    }
     
-    constructor(key: string) {
-        this.key = key;
+    /**
+     * pass app context
+     */
+    public get app(): CPFL { // pass app context
+        return CPFL.app; 
     }
 
-    public get app(): CPFL { // fetch app context
-        return CPFL.app;
-    }
+    /**
+     * base custom rendering
+     */
+    public loader?: () => void;
 
-    public render() { // WIP: nav exposed browsing
-        if (this instanceof HeadPage) {
-            BaseHTML.display.head = this;
-        } else if (this instanceof FootPage) {
-            BaseHTML.display.feet = [this];
+    /**
+     * nav exposed browsing
+     */
+    public render(): void {
+        if (this.loader) {
+            this.app.debug.log('running page loader', this.key, this.loader);
+            this.loader();
         }
     }
 
+    /**
+     * check if current
+     */
+    public get rendered(): boolean {
+        if (this instanceof HeadPage) {
+            return BaseHTML.display.head === this;
+        } else if (this instanceof FootPage) {
+            return BaseHTML.display.feet.includes(this);
+        } else {
+            return false;
+        }
+    }
 }
