@@ -12,29 +12,50 @@ export class FootPage extends BaseHTML {
     public readonly head: HeadPage;
     public readonly main: HTMLElement = document.createElement('section');
     public readonly index: Map<string, HTMLElement> = new Map();
-    public constructor(key: string, head: HeadPage, label: string) {
+    public constructor(key: FootKey, head: HeadPage) {
+        if (!head.key.includes(key)) {
+            console.error('invalid section mapped', key, head);
+        }
         super(key);
         this.head = head;
-        this.main.className = this.key;
+        this.main.className = this.section;
         this.main.hidden = true;
         this.head.main.appendChild(this.main);
         this.head.fnav.appendChild(this.nav.button);
     }
 
     /**
+     * slice off headkey from footkey
+     */
+    public get section(): string {
+        return this.key.slice(this.key.indexOf("_") + 1);
+    }
+
+    /**
+     * fetch label from labeller
+     */
+    public get label(): string {
+        if (this.head.labeller) {
+            return this.head.labeller(this.section);
+        }
+        return this.section;
+    }
+
+    /**
      * nav exposed browsing
+     * @wip does not call super.render
+     * @wip proper order handling
      */
     public render(): void {
         const currentSubs = BaseHTML.display.feet;
         while (currentSubs.length >= FootPage._size) {
-            const oldFoot = currentSubs.shift(); // WIP this won't actually handle remembering order
+            const oldFoot = currentSubs.shift();
             if (oldFoot) {
                 oldFoot.nav.button.removeAttribute('disabled');
                 oldFoot.main.hidden = true;
             }
         }
         this.main.removeAttribute('hidden');
-        super.render();
     }
 
     /**

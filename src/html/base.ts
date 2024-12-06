@@ -18,7 +18,7 @@ export abstract class BaseHTML {
                     if (!main) {
                         return null;
                     }
-                    return CPFL.app.html(main.className as PageKey);
+                    return CPFL.app.html(main.className as HeadKey);
                 } catch (err) {
                     console.log('no head page', err);
                     return null;
@@ -32,7 +32,11 @@ export abstract class BaseHTML {
                     const currentPage = this.head;
                     const sections = Array.from(currentPage.main.querySelectorAll('section'));
                     const activeSections = sections.filter(section => !section.hasAttribute('hidden'));
-                    return activeSections.map((section) => currentPage.get(section.className));
+                    return activeSections.map((section) => {
+                        const headKey = currentPage.key as HeadKey;
+                        const sectionKey = section.className;
+                        return currentPage.get(`${headKey}_${sectionKey}` as FootKey);
+                    });
                 } catch (err) {
                     console.log('no page feet', err);
                     return []

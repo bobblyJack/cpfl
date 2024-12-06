@@ -5,7 +5,7 @@ import { HeadPage } from './main';
 /**
  * full page map
  */
-const index: Map<PageKey, HeadPage> = new Map();
+const index: Map<HeadKey, HeadPage> = new Map();
 
 /**
  * page search function
@@ -16,7 +16,7 @@ function get(): HeadPage | null;
  * page search function
  * @returns specific page
  */
-function get(key: PageKey): HeadPage;
+function get(key: HeadKey): HeadPage;
 /**
  * page search function
  * @returns whole page collection
@@ -26,10 +26,10 @@ function get(all: []): HeadPage[];
  * page search function
  * @returns specific pages
  */
-function get(keys: PageKey[]): HeadPage[];
+function get(keys: HeadKey[]): HeadPage[];
 
 function get( // search function implementation
-    req?: PageKey | PageKey[]
+    req?: HeadKey | HeadKey[]
 ): HeadPage | HeadPage[] | null {
     if (Array.isArray(req)) {
         if (!req.length) {
@@ -58,7 +58,7 @@ function get( // search function implementation
  * page register function
  */
 function set(page: HeadPage) {
-    index.set(page.key as PageKey, page);
+    index.set(page.key as HeadKey, page);
 }
 
 export default {

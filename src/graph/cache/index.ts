@@ -97,3 +97,23 @@ export async function deleteItem(storeName: GraphCache, key: string) {
     req.onerror = console.error;
     req.onsuccess = CPFL.app.debug.log;
 }
+
+/**
+ * return map of file names -> ids
+ */
+export async function mapItems(storeName: GraphCache): Promise<Map<string, string>> {
+    const store = await initTransaction(storeName);
+    return new Promise<Map<string, string>>((resolve, reject) => {
+        const req: IDBRequest<EncryptedItem<GraphItem>[]> = store.getAll();
+        req.onerror = reject;
+        req.onsuccess = async () => {
+            const result = new Map<string, string>();
+            const encryptedArray = req.result;
+            for (const encryptedItem of encryptedArray) {
+                const item = await deCrypto(encryptedItem);
+                result.set(item.name, item.id);
+            }
+            resolve(result);
+        }
+    });
+}

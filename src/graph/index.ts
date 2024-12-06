@@ -37,6 +37,16 @@ export class DriveItem implements GraphItem {
         return driveItem;
     }
 
+    private static caches: Map<GraphCache, Map<string, string>> = new Map();
+    public static async cache(store: GraphCache) { // fetch index of names -> ids
+        let map = this.caches.get(store);
+        if (!map) {
+            map = await cache.mapItems(store);
+            this.caches.set(store, map);
+        }
+        return map;
+    }
+
     public readonly id: string; // main db key
     public readonly cache: GraphCache; // local location
     public readonly type: "file" | "folder";

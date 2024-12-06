@@ -9,7 +9,7 @@ export default async function () {
     try {
         const app = CPFL.app;
         app.main.textContent = "initiating app pages";
-        const pageKeys: PageKey[] = ["hub", "act"];
+        const pageKeys: HeadKey[] = ["hub", "act"];
 
         switch (app.mode) { // WIP: mode specific page loading
             case 'taskpane': pageKeys.push("lib");

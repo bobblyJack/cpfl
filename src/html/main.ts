@@ -4,11 +4,12 @@ import { FootPage } from "./section";
 
 export class HeadPage extends BaseHTML {
       
-    public readonly index: Map<string, FootPage> = new Map();
+    public readonly index: Map<FootKey, FootPage> = new Map();
     public readonly main: HTMLElement = document.createElement('main');
     public readonly fnav: HTMLElement = document.createElement('nav');
+    public labeller?: (section: string) => string;
     private _title: string;
-    public constructor(key: PageKey, title?: string) {
+    public constructor(key: HeadKey, title?: string) {
         super(key);
         html.set(this);
         this._title = title ? title : this.label;
@@ -47,7 +48,7 @@ export class HeadPage extends BaseHTML {
      * exterior title
      */
     public get label(): string {
-        switch (this.key as PageKey) {
+        switch (this.key as HeadKey) {
             case "hub": return "Dashboard";
             case "act": return "Active Matter";
             case "lib": return "Precedent Library";
@@ -66,7 +67,7 @@ export class HeadPage extends BaseHTML {
     /**
      * get specific page section
      */
-    public get(key: string): FootPage {
+    public get(key: FootKey): FootPage {
         const page = this.index.get(key);
         if (!page) {
             throw new Error(`can't find subsection ${key} on ${this.key}`);
@@ -77,11 +78,11 @@ export class HeadPage extends BaseHTML {
     /**
      * set and return specific page section
      */
-    public set(page: string | FootPage): FootPage {
+    public set(page: FootKey | FootPage): FootPage {
         if (typeof page === 'string') {
             page = new FootPage(page, this);
         }
-        this.index.set(page.key, page);
+        this.index.set(page.key as FootKey, page);
         return page;
     }
 

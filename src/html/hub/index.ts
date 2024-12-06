@@ -14,5 +14,17 @@ function populateDashboard(hub: HeadPage) {
     if (hb) {
         hb.remove();
     }
+    const buttons = Array.from(hub.main.querySelectorAll('button'));
+    for (const button of buttons) {
+        try {
+            const page = hub.app.html(button.className as PageKey);
+            const label = document.createElement('label');
+            label.textContent = page.label;
+            button.appendChild(label);
+        } catch (err) {
+            console.error('error labelling hub nav', button);
+        }
+    }
+
     hub.loader = undefined;
 }

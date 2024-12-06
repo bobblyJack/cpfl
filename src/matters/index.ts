@@ -15,30 +15,62 @@ import {
 export class MatterItem implements MatterCard {
     static readonly cache: GraphCache = "matters";
 
-    private static _current: MatterItem | null = null;
-    public static get current(): MatterItem {
-        if (!this._current) {
-            throw new Error('no active matter');
+    public static get page() {
+        const page = CPFL.app.html('act');
+        if (!page) {
+            throw new Error('matter page undefined');
         }
+        return page;
+    }
+
+    public static async list() {
+        return DriveItem.cache(this.cache);
+    }
+
+    private static _current: MatterItem | null = null;
+    public static get current(): MatterItem | null {
         return this._current;
     }
     public static set current(matter: MatterItem | null) { // WIP matter nav
-        if (this._current) {
-            this._current.save();
+        if (matter !== this._current) {
+
+            try {
+                const nullSub = this.page.get('act_null');
+                if (matter && !this._current) {
+                    nullSub.main.hidden = true;
+                    for (const foot of this.page.feet) {
+                        
+                    }
+                } else if (this._current && !matter) {
+                    nullSub.main.removeAttribute('hidden');
+                }
+
+                if (this._current) {
+                    this._current.save();
+                }
+
+            } catch (err) {
+
+            } finally {
+                this._current = matter;
+            }
+
+            
         }
-        this._current = matter;
     }
 
     static async create(fileName: string) {
         const item = await DriveItem.create(`${fileName}.json`, this.cache);
         const matter = new this(item.id);
         item.saveContent(matter);
-        return matter;
+        this.current = matter;
+        return this.current;
     }
 
     static async open(fileID: string) {
         const item = await DriveItem.get(this.cache, fileID);
-        return item.parseContent<MatterItem>();
+        this.current = await item.parseContent<MatterItem>();
+        return this.current;
     }
 
     /** import from actionstep */

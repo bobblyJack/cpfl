@@ -1,61 +1,93 @@
 import CPFL from '../..';
 import './style.css';
+import nullMatter from './null.html';
 import { HeadPage } from '../main';
-import { FootPage } from '../section';
 import { MatterItem } from '../../matters';
 
-enum ActSections {
-    act, // page1, the client
-    spouse, // page2, the other side, and their lawyer
-    ship, // page3 relationship cohab dates etc
-    kids, //page4, kids
-    counsel, // page5, both barristers
+function actLabels(key: string) {
+    switch (key as ActSection) {
+        case 'us': return "Client";
+        case 'them': return "Other Side";
+        case 'ship': return "Relationship";
+        case 'kids': return "Children";
+        case 'bar': return "Counsel";
+        case 'null': return "No Matter Open";
+    }
 }
-
-// if no matter open, set foot to act, which has otherwise hidden bits on it
-// also hide fnav
-// or create a different subsection i guess and control what navs are exposed
 
 export default async function (app: CPFL) {
     
     const page = new HeadPage('act');
-    page.title = "Select a Matter";
+    page.labeller = actLabels;
     page.nav.button.classList.add("warn");
+
+    // no active matter section
     
+    const nullSub = page.set('act_null');
+    nullSub.nav.button.hidden = true;
+    nullSub.main.innerHTML = nullMatter;
 
-    // subpage 1 - who we are acting for
-    const act = page.set("act");
-    act.title = "Client";
+    const newFileName = nullSub.main.querySelector('#new-matter input') as HTMLInputElement;
+    const newButton = nullSub.main.querySelector('#new-matter button') as HTMLButtonElement;
+    newButton.onclick = () => {
+        if (!newFileName.value) {
+            console.error('value needed for new matter file name');
+        } else {
+            MatterItem.create(newFileName.value);
+        }
+    }
+
+    const importSection = nullSub.main.querySelector('#import-matter') as HTMLDivElement;
+    if (app.mode !== "taskpane") {
+        importSection.hidden = true;
+    } else {
+        const importButton = importSection.querySelector('button') as HTMLButtonElement;
+        importButton.onclick = () => MatterItem.import();
+    }
+
+    const loadSection = nullSub.main.querySelector('#load-matter') as HTMLDivElement;
+    const loadSelector = loadSection.querySelector('select') as HTMLSelectElement;
+    const loadButton = loadSection.querySelector('button') as HTMLButtonElement;
+
+    const map = await MatterItem.list();
+    if (!map.size) {
+        loadSection.hidden = true;
+    } else {
+        for (const [fileName, fileID] of Array.from(map.entries())) {
+            const option = document.createElement('option');
+            option.textContent = fileName;
+            option.value = fileID;
+            loadSelector.appendChild(option);
+        }
+    }
+
+    loadButton.onclick = () => {
+        try {
+            const id = loadSelector.value;
+            MatterItem.open(id)
+        } catch (err) {
+            console.error('error opening matter', err);
+        }
+    }
+
+    // active matter sections
+
+    const clientSection = page.set('act_us');
+    const oppSection = page.set('act_them');
+    const shipSection = page.set('act_ship');
+    const kidsSection = page.set('act_kids');
+    const counselSection = page.set('act_bar');
+
+    // page loader
+
+    page.loader = () => {
+        if (MatterItem.current) {
+            page.get('act_us').render();
+            page.fnav.removeAttribute('hidden');
+        } else {
+            page.get('act_null').render();
+            page.fnav.hidden = true;
+        }
+    }
     
-
-
-    
-    const main = page.set('div', 'main-0');
-    page.main.appendChild(main);
-    const footer = page.set('nav', 'footer-0');
-    page.fnav.appendChild(footer);
-
-    // saved matter explorer
-    //WIP const explorer = page.set('ul', 'explorer');
-
-
-
-    // file opener buttons
-    const newButton = page.set('button', 'new');
-    newButton.textContent = "Create Matter";
-    newButton.onclick = () => ActiveMatter.current = new ActiveMatter(1); // wip
-    main.appendChild(newButton);
-
-    const impButton = page.set('button', 'import');
-    impButton.textContent = "Import Matter";
-    impButton.onclick = importActionstepMatter;
-    main.appendChild(impButton);
-
-    // file close button
-    const closeButton = page.set("button", "close");
-    closeButton.textContent = "Close Current Matter";
-    closeButton.onclick = () => ActiveMatter.current = null;
-
-    return page;
-
 }
