@@ -1,5 +1,5 @@
 type GraphCache = "matters" | "contacts" | "precedents"; // local storage
-type GraphScope = "user" | "app"; // cloud storage appfolder
+type GraphScope = "user" | "app"; // cloud storage root
 type GraphURLFragment = `/${string}` | `:/${string}` // enforce correct path strings
 
 interface GraphBaseItem {
@@ -12,30 +12,22 @@ interface GraphItem extends GraphBaseItem {
     deleted?: {
         state: string;
     }
-    file?: {}
-    folder?: {}
+    file?: {
+        mimeType: string;
+    }
+    "@microsoft.graph.downloadUrl"?: string | URL;
+    folder?: {
+        childCount: number;
+    }
+    root?: {/*emptyfacet*/}
 }
 
 interface GraphItemReference extends GraphBaseItem {
     name: string;
-    path: string; // tbd: percent encoded?
+    path: string; // TBD: handle percent encoding
     driveId?: string;
     driveType?: string;
     siteId?: string;
-}
-
-interface GraphFile extends GraphItem {
-    file: {
-        mimeType: string;
-    }
-    "@microsoft.graph.downloadUrl": string | URL;
-}
-
-interface GraphFolder extends GraphItem {
-    folder: {
-        childCount: number;
-    }
-    root?: {/*emptyfacet*/}
 }
 
 interface GraphItemCollection {
@@ -43,14 +35,14 @@ interface GraphItemCollection {
     "@odata.nextLink"?: string | URL;
 }
 
-type GraphDeltaItem = GraphBaseItem & Partial<GraphItem & GraphFile & GraphFolder>;
+type GraphDeltaItem = GraphBaseItem & Partial<GraphItem>;
 interface GraphDeltaResponse extends GraphItemCollection {
     value: GraphDeltaItem[];
     "@odata.deltaLink"?: string | URL;
 }
 
-interface EncryptedItem<T extends GraphBaseItem> {
-    id: string; // main key string
-    data: ArrayBuffer; // encrypted object data
-    iv: Uint8Array; // initiation vector for decryption
+type EncryptedGraphItem<T extends GraphBaseItem = GraphItem> = GraphBaseItem & {
+    iv: Uint8Array; // decryption vector
+} & {
+    [K in keyof Omit<T, keyof GraphBaseItem>]: ArrayBuffer; // encrypted data
 }

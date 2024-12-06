@@ -1,4 +1,6 @@
-import {cacheNames} from "./names";
+const cacheNames: GraphCache[] = [
+    "contacts", "matters", "precedents"
+]
 
 export default async function buildCacheDB(this: IDBOpenDBRequest, ev: IDBVersionChangeEvent) {
     if (!ev.oldVersion) {
@@ -7,8 +9,8 @@ export default async function buildCacheDB(this: IDBOpenDBRequest, ev: IDBVersio
             keyPath: "id",
             autoIncrement: true
         }
-        for (const name of cacheNames) {
-            db.createObjectStore(name, dbParams);
+        for (const store of cacheNames) {
+            db.createObjectStore(store, dbParams);
         }
     }
 }
