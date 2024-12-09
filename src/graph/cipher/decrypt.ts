@@ -4,14 +4,14 @@ import getKey from './key';
  * decrypt item
  * @param obj to decrypt
  */
-export async function deCrypto<T extends GraphBaseItem>(obj: EncryptedGraphItem<T>): Promise<T>;
+export async function deCrypto(obj: EncryptedGraphItem): Promise<GraphItem>;
 /**
  * decrypt property
  * @param data property value
  * @param iv encryption vector
  */
 export async function deCrypto(data: ArrayBuffer, iv: Uint8Array): Promise<string>;
-export async function deCrypto<T extends GraphBaseItem>(encryptedItem: EncryptedGraphItem<T> | ArrayBuffer, iv?: Uint8Array): Promise<T | string> {
+export async function deCrypto(encryptedItem: EncryptedGraphItem | ArrayBuffer, iv?: Uint8Array): Promise<GraphItem | string> {
     const key = await getKey();
     if (encryptedItem instanceof ArrayBuffer) {
         if (!iv) {
@@ -29,7 +29,7 @@ export async function deCrypto<T extends GraphBaseItem>(encryptedItem: Encrypted
         }
     }
 
-    return {...data, id} as T;
+    return {...data, id};
 }
 
 async function decryptData(key: CryptoKey, iv: Uint8Array, data: ArrayBuffer): Promise<string> {

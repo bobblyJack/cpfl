@@ -1,5 +1,5 @@
 import CPFL from "..";
-import { DriveItem } from "../graph";
+import { DriveItem } from "../graph/archive";
 import { ContactAddresses } from "./address";
 import { ContactName } from "./names";
 

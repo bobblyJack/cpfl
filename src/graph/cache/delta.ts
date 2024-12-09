@@ -1,6 +1,7 @@
 import CPFL from "../..";
 import getURL from '../url';
 import authFetch from "../fetch";
+import collItems from "../collate";
 import * as cipher from '../cipher';
 
 export default async function updateCacheDB(db: IDBDatabase) {
@@ -23,7 +24,7 @@ async function updateCache(trans: IDBTransaction, cache: GraphCache) {
             delreq.onerror = CPFL.app.debug.err;
             delreq.onsuccess = CPFL.app.debug.log;
         } else {
-            const getreq: IDBRequest<EncryptedGraphItem<GraphDeltaItem> | undefined> = store.get(update.id);
+            const getreq: IDBRequest<EncryptedGraphItem | undefined> = store.get(update.id);
             getreq.onerror = CPFL.app.debug.err;
             getreq.onsuccess = async () => {
                 const item = getreq.result;
@@ -44,7 +45,10 @@ async function deltaRequest(cache: GraphCache, retried: boolean = false) {
         delta = getURL(`:/${cache}:/delta`);
     }
     try {
-        return fetchUpdates(env.delta, cache, delta);
+        const res = await collItems(delta, true);
+        env.delta[cache] = res["@odata.deltaLink"] as string | URL;
+        CPFL.app.env(env.delta);
+        return res.value;
     } catch (err) {
         if (!retried) { // attempt cache creation
             const url = getURL('/children');
@@ -56,54 +60,4 @@ async function deltaRequest(cache: GraphCache, retried: boolean = false) {
         }
         throw err;
     }
-    
-}
-
-async function fetchUpdates(
-    env: EnvDeltaCache, 
-    cache: GraphCache, 
-    link: string | URL
-): Promise<GraphDeltaItem[]> {
-    let response: GraphDeltaResponse;
-    let deltaLink: string | URL = "";
-    const values = await collateValues(link);
-    if (!deltaLink) {
-        throw new Error('delta link undefined');
-    }
-    env[cache] = deltaLink;
-    CPFL.app.env(env);
-    return values;
-
-    async function collateValues(
-        dlink: string | URL, 
-        values: GraphDeltaItem[] = [], 
-        token: string | null = null) {
-        try {
-            if (!token) {
-                token = await CPFL.app.access();
-            }
-            const res = await authFetch(dlink);
-            response = await res.json();
-            for (const item of response.value) {
-                values.push(item);
-            }
-            if (response['@odata.nextLink']) {
-                return collateValues(response['@odata.nextLink'], values, token);
-            }
-            if (response["@odata.deltaLink"]) {
-                deltaLink = response["@odata.deltaLink"];
-            }
-            return values;
-        } catch (err) {
-            try {
-                CPFL.app.debug.err('initial error fetching updates');
-                CPFL.app.debug.log('attempting token refresh');
-                return collateValues(dlink, values);
-            } catch (err) {
-                console.error('could not fetch updates', dlink, values);
-                throw err;
-            }
-        }
-    }
-    
 }

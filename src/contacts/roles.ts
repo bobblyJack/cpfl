@@ -1,4 +1,4 @@
-import { DriveItem } from "../graph";
+import { DriveItem } from "../graph/archive";
 
 /**
  * contact file or folder

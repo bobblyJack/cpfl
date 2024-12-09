@@ -1,5 +1,5 @@
 import * as MSAL from '../msal';
-import { userConfig } from "../graph";
+import { userConfig } from "../graph/archive";
 
 export class AppUser implements UserConfig {
 

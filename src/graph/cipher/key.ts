@@ -1,9 +1,5 @@
 import CPFL from '../..';
-import readBlob64 from '../blob';
-import {
-    uploadContent,
-    downloadContent
-} from '../content';
+import * as content from '../content';
 
 let cryptoKey: CryptoKey;
 
@@ -29,8 +25,7 @@ export default async function getCryptoKey() {
 }
 
 async function importKey(): Promise<CryptoKey> {
-    const blob = await downloadContent(":/key.txt");
-    const text = await readBlob64(blob);
+    const text = await content.download(":/key.txt");
     const array = new TextEncoder().encode(text);
     return crypto.subtle.importKey(
         "raw",
@@ -51,7 +46,7 @@ async function exportKey(key: CryptoKey){
     try {
         const buffer = await crypto.subtle.exportKey("raw", key);
         const encodedKey = new TextDecoder().decode(buffer);
-        uploadContent(encodedKey, "key.txt");
+        content.upload(encodedKey, "key.txt");
     } catch (err) {
         console.error('error uploading crypto key', err);
     }

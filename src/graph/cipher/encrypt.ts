@@ -5,10 +5,10 @@ import getKey from './key';
  * @param obj item to encrypt or properties to update
  * @param base original encrypted item for updating
  */
-export async function enCrypto<T extends GraphBaseItem>(
-    obj: T | Partial<T>, 
-    base?: EncryptedGraphItem<T>
-): Promise<EncryptedGraphItem<T>> {
+export async function enCrypto(
+    obj: GraphItem | Partial<GraphItem>, 
+    base?: EncryptedGraphItem
+): Promise<EncryptedGraphItem> {
     const id = base ? base.id : obj.id as string;
     const iv = base ? base.iv : crypto.getRandomValues(new Uint8Array(12));
     const cryptoKey = await getKey();
@@ -34,6 +34,6 @@ export async function enCrypto<T extends GraphBaseItem>(
     } else {
         return {
             ...data, id, iv
-        } as EncryptedGraphItem<T>;
+        };
     }
 }

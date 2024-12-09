@@ -1,100 +1,104 @@
 import CPFL from "../..";
 import getCacheDB from "./db";
-import {enCrypto} from '../cipher';
+import {deCrypto, enCrypto} from '../cipher';
 
-/**
- * get object store
- * @param cache database scope
- * @param mode readonly / readwrite
- * @returns cache scoped object store
- */
-async function initAccess(cache: GraphCache, mode: IDBTransactionMode = "readonly") {
-    const db = await getCacheDB();
-    const trans = db.transaction(cache, mode);
-    trans.onerror = (ev) => CPFL.app.debug.err('transaction error', ev);
-    trans.onabort = (ev) => CPFL.app.debug.err('transaction aborted', ev);
-    trans.oncomplete = (ev) => CPFL.app.debug.log('transaction complete', ev);
-    return trans.objectStore(cache);
-}
-
-/**
- * get object index
- * @param cache database scope
- * @param index key reference
- * @returns idb index
- * @tbd define index types and fold into get item
- */
-export async function getIndex(cache: GraphCache, index: string) {
-    const store = await initAccess(cache);
-    return store.index(index);
-}
-
-/**
- * get object
- * @param cache database scope 
- * @param id key reference
- * @returns encrypted item
- */
-export async function getItem<T extends GraphItem>(cache: GraphCache | IDBIndex, key: string) {
-    let req: IDBRequest;
-    if (typeof cache === 'string') {
-        const store = await initAccess(cache);
-        req = store.get(key);
-    } else {
-        req = cache.get(key);
-    }
-    return new Promise<EncryptedGraphItem<T>>((resolve, reject) => {
-        req.onerror = reject;
-        req.onsuccess = () => {
-            resolve(req.result);
-        };
-    });
-}
-
-/**
- * add object to store
- * @param cache database scope
- * @param item unencrypted item
- * @param force overwrite existing item
- */
-export async function setItem<T extends GraphItem>(cache: GraphCache, item: T, force: boolean = false) {
-    const store = await initAccess(cache, "readwrite");
-    const encryptedItem = await enCrypto(item);
-    if (force) {
-        store.put(encryptedItem)
-    } else {
-        store.add(encryptedItem);
-    }
-}
-
-/**
- * update object in store
- * @param cache database scope
- * @param id key reference
- * @param patch partial object
- */
-export async function updateItem<T extends GraphItem>(cache: GraphCache, id: string, patch: Partial<T>) {
-    const store = await initAccess(cache, "readwrite");
-    const getreq: IDBRequest<EncryptedGraphItem<T>> = store.get(id);
-    getreq.onsuccess = async () => {
-        const base = getreq.result;
-        const update = await enCrypto(patch, base);
-        store.put(update);
-    }
-}
-
-class CacheRequest {
-    public static async init(cache: GraphCache, mode: IDBTransactionMode = "readonly") {
+export default class DatabaseRequest {
+    /**
+     * init db transaction
+     * @param cache db scope
+     * @returns new DatabaseRequest
+     */
+    public static async init(cache: GraphCache) {
         const db = await getCacheDB();
-        const trans = db.transaction(cache, mode);
-        trans.onerror = (ev) => CPFL.app.debug.err('transaction error', ev);
-        trans.onabort = (ev) => CPFL.app.debug.err('transaction aborted', ev);
-        trans.oncomplete = (ev) => CPFL.app.debug.log('transaction complete', ev);
-        return new CacheRequest(trans.objectStore(cache));
+        const trans = db.transaction(cache, "readwrite");
+        trans.onerror = (ev) => CPFL.app.debug.err('idb transaction error', ev);
+        trans.onabort = (ev) => CPFL.app.debug.err('idb transaction aborted', ev);
+        trans.oncomplete = (ev) => CPFL.app.debug.log('idb transaction complete', ev);
+        return new DatabaseRequest(trans.objectStore(cache));
     }
 
-    public readonly store: IDBObjectStore;
-    private constructor(store: IDBObjectStore) {
-        this.store = store;
+    private constructor(
+        private readonly _store: IDBObjectStore) {
+        CPFL.app.debug.log('idb transaction initiated'); 
     }
+
+    /**
+     * get decrypted item
+     * @param id key reference
+     */
+    public async get(id: string): Promise<GraphItem>;
+    /**
+     * get decrypted property
+     * @param id key reference
+     * @param prop property key
+     * @return stringified value
+     */
+    public async get(id: string, prop: Exclude<keyof GraphItem, "id">): Promise<string>;
+    public async get(
+        key: string, 
+        prop?: Exclude<keyof GraphItem, "id">
+    ): Promise<GraphItem | string> {
+        const req: IDBRequest<EncryptedGraphItem> = this._store.get(key);
+        return new Promise<GraphItem | string>((resolve, reject) => {
+            req.onerror = reject;
+            req.onsuccess = async () => {
+                try {
+                    const res = req.result;
+                    if (!res) {
+                        throw new Error('undefined idb entry');
+                    }
+                    if (!prop) {
+                        const item = await deCrypto(res)
+                        resolve(item);
+                    } else if (!res[prop]) {
+                        throw new Error('undefined property value');
+                    } else {
+                        const val: ArrayBuffer = res[prop];
+                        const text = await deCrypto(val, res.iv);
+                        resolve(text);
+                    }
+                } catch (err) {
+                    reject(err);
+                }
+            }
+        });
+    }
+
+    /**
+     * add encrypted item
+     * @param obj unencrypted obj
+     */
+    public async set(obj: GraphItem): Promise<void>;
+    /**
+     * put encrypted item
+     * @param obj unencrypted obj
+     * @param force overwrite db
+     */
+    public async set(obj: GraphItem, force: true): Promise<void>;
+    /**
+     * update encrypted item
+     * @param patch updated props
+     * @param id base key
+     */
+    public async set(patch: Partial<GraphItem>, id: string): Promise<void>;
+    public async set(obj: GraphItem | Partial<GraphItem>, mode: string | boolean = false): Promise<void> {
+        let item: EncryptedGraphItem;
+        let base: EncryptedGraphItem | undefined = undefined;
+
+        if (typeof mode === 'string') {
+            base = await new Promise<EncryptedGraphItem>(resolve => {
+                const req = this._store.get(mode);
+                req.onsuccess = () => resolve(req.result);
+            });
+        }
+
+        item = await enCrypto(obj, base);
+
+        if (mode) {
+            this._store.put(item);
+        } else {
+            this._store.add(item);
+        }
+    }
+
 }

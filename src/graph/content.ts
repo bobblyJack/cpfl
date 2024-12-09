@@ -5,16 +5,17 @@ import authFetch from "./fetch";
 /**
  * fetch file content blob using id or path
  */
-export async function downloadContent(input: GraphURLFragment, source: GraphScope = "app") {
+export async function download(input: GraphURLFragment, source: GraphScope = "app") {
     return fetchResponse(input, source);
     async function fetchResponse(input: GraphURLFragment, source: GraphScope, retry: boolean = false) {
         const url: URL = formURL(input, source);
         url.searchParams.set("$select", "id,@microsoft.graph.downloadUrl");
         const init = await authFetch(url);
-        const body = await init.json() as GraphFile;
+        const body = await init.json() as GraphItem;
         if (body["@microsoft.graph.downloadUrl"]) {
             const res = await fetch(body["@microsoft.graph.downloadUrl"]);
-            return res.blob();
+            const blob = await res.blob();
+            return readBlob64(blob);
         }
         if (retry || !body.id) {
             throw new Error('no content stream');
@@ -24,9 +25,25 @@ export async function downloadContent(input: GraphURLFragment, source: GraphScop
 }
 
 /**
+ * convert blob file to base 64 string
+ */
+async function readBlob64(blob: Blob) {
+    return new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onerror = (err) => {
+            reject(err);
+        }
+        reader.onload = () => { 
+            resolve(reader.result as string);
+        }
+        reader.readAsText(blob);
+    });
+}
+
+/**
  * upload plaintext file content by path
  */
-export async function uploadContent(content: string, path: string, source: GraphScope = "app") {
+export async function upload(content: string, path: string, source: GraphScope = "app") {
     try {
         const url = formURL(`:/${path}:/content`, source);
         return authFetch(url, 4, content);
