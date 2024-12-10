@@ -1,5 +1,7 @@
+import { UserObject } from './base';
 import * as MSAL from '../msal';
-import { userConfig } from "../graph/archive";
+
+const configName: GraphURLFragment = ":/config.json";
 
 export class AppUser implements UserConfig {
 
@@ -16,14 +18,12 @@ export class AppUser implements UserConfig {
      * @tbd make user of login_hint
      */
     public static async login() {
-        let config: UserConfig;
         try {
-            config = await userConfig.get();
-        } catch (err) {
-            console.log('logging on new user');
             const auth = await MSAL.get();
             const claims = auth.idTokenClaims as Record<string, string>;
-            config = {
+            console.log('user id claimed', claims);
+            const obj = await UserObject.set(configName);
+            const initConfig: UserConfig = {
                 name: {
                     given: claims["given_name"],
                     family: claims["family_name"]
@@ -31,32 +31,47 @@ export class AppUser implements UserConfig {
                 email: claims["email"],
                 theme: "light",
                 admin: claims["given_name"] === "Lucas" //placeholder
+            };
+            const existingConfig = await obj.config;
+            const config = {
+                ...initConfig,
+                ...existingConfig ? existingConfig : {}
             }
-            userConfig.set(config);
-            console.log('WIP: change admin check', claims); // WIP
+            obj.config = config;
+            this._current = new this(obj.id, config);
+        } catch (err) {
+            console.error('user login error', err);
         }
-        this._current = new AppUser(config);
-        return this._current;
+        return this.current;
     }
 
-    public name: Name;
-    public email: string;
-    public theme: AppTheme;
-    public readonly admin: boolean;
-    public constructor(base: UserConfig) {
+    name: Name;
+    email: string;
+    theme: AppTheme;
+    readonly admin: boolean;
+    protected constructor(protected readonly key: string, base: UserConfig) {
         this.name = base.name;
         this.email = base.email;
         this.theme = base.theme;
         this.admin = base.admin;
     }
 
+    protected async _save() {
+        const obj = await UserObject.get(this.key);
+        obj.config = this;
+    }
+
     /**
      * auth user logout WIP
      */
     public async logout() {
-        const msal = await MSAL.set();
-        AppUser._current = null;
-        return msal.logoutPopup;
+        setTimeout(() => { 
+            MSAL.set().then((msal) => {
+                msal.logoutPopup().then(() => {
+                    AppUser._current = null;
+                });
+            });
+        }, 5000);
     }
 }
 

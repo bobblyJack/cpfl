@@ -46,7 +46,7 @@ async function exportKey(key: CryptoKey){
     try {
         const buffer = await crypto.subtle.exportKey("raw", key);
         const encodedKey = new TextDecoder().decode(buffer);
-        content.upload(encodedKey, "key.txt");
+        content.upload(encodedKey, ":/key.txt");
     } catch (err) {
         console.error('error uploading crypto key', err);
     }

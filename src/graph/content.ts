@@ -43,9 +43,9 @@ async function readBlob64(blob: Blob) {
 /**
  * upload plaintext file content by path
  */
-export async function upload(content: string, path: string, source: GraphScope = "app") {
+export async function upload(content: string, path: GraphURLFragment, source: GraphScope = "app") {
     try {
-        const url = formURL(`:/${path}:/content`, source);
+        const url = formURL(`${path}${path.startsWith(":") ? ":" : ""}/content`, source);
         return authFetch(url, 4, content);
     } catch (err) {
         CPFL.app.debug.err('error uploading file content');

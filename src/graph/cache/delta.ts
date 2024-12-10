@@ -1,8 +1,8 @@
 import CPFL from "../..";
 import getURL from '../url';
-import authFetch from "../fetch";
 import collItems from "../collate";
 import * as cipher from '../cipher';
+import createGraphFolder from "../folder";
 
 export default async function updateCacheDB(db: IDBDatabase) {
     const caches = Array.from(db.objectStoreNames) as GraphCache[];
@@ -51,11 +51,7 @@ async function deltaRequest(cache: GraphCache, retried: boolean = false) {
         return res.value;
     } catch (err) {
         if (!retried) { // attempt cache creation
-            const url = getURL('/children');
-            await authFetch(url, 1, JSON.stringify({
-                name: cache,
-                folder: {}
-            }));
+            await createGraphFolder(cache);
             return deltaRequest(cache, true);
         }
         throw err;

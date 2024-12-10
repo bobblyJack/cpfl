@@ -1,6 +1,7 @@
 type GraphCache = "matters" | "contacts" | "precedents"; // local storage
 type GraphScope = "user" | "app"; // cloud storage root
 type GraphURLFragment = `/${string}` | `:/${string}` // enforce correct path strings
+type GraphItemType = "file" | "folder"; // facet check
 
 interface GraphBaseItem {
     id: string;
@@ -19,10 +20,13 @@ interface GraphItem extends GraphBaseItem {
         childCount: number;
     };
     "@microsoft.graph.downloadUrl"?: string | URL;
+    eTag?: string; // entity tag - tracks content
+    cTag?: string; // change tag - tracks metadata
+    content?: string | string[] // extension property
 }
 
 interface GraphItemReference extends GraphBaseItem {
-    path?: string; // TBD: handle percent encoding
+    path?: string;
     driveId?: string;
     siteId?: string;
 }
