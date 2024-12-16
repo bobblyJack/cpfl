@@ -22,7 +22,7 @@ interface GraphItem extends GraphBaseItem {
     "@microsoft.graph.downloadUrl"?: string | URL;
     eTag?: string; // entity tag - tracks content
     cTag?: string; // change tag - tracks metadata
-    content?: string | string[] // extension property
+    content?: string // stringified extension object
 }
 
 interface GraphItemReference extends GraphBaseItem {
@@ -40,6 +40,7 @@ interface GraphItemCollection {
 type EncryptedGraphItem = {
     id: string; // plaintext key ref
     iv: Uint8Array; // decryption vector
+    hx?: string; // history - indexed parent id
 } & {
     [K in keyof Omit<GraphItem, "id">]: ArrayBuffer; // encrypted data
 }

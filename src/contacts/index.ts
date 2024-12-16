@@ -1,5 +1,5 @@
 import CPFL from "..";
-import { DriveItem } from "../graph/archive";
+import { ContactObject } from "./base";
 import { ContactAddresses } from "./address";
 import { ContactName } from "./names";
 
@@ -8,41 +8,14 @@ import { ContactName } from "./names";
  */
 export class ContactItem implements ContactCard {
 
-    protected static readonly cache: GraphCache = "contacts";
-    protected static readonly type: ContactType;
-
-    public static async create(fileLabel: string): Promise<ContactItem>
-    public static async create(fileContact: ContactCard): Promise<ContactItem>
-    public static async create(input: string | ContactCard): Promise<ContactItem> {
-        if (typeof input === 'string') {
-            const fileLabel = input;
-            if (!this.type) {
-                console.log('creating typeless contact');
-            }
-            const item = await DriveItem.create(`${fileLabel}.json`, this.cache);
-            const contact = new this(item.id, {type: this.type});
-            item.saveContent(contact);
-            return contact;
-        }
-        let fileLabel: string = input.name ? `${input.name.family}_${input.name.given}` : 'NewContactFile';
-        if (!input.name) {
-            console.log('creating default filelabel');
-        }
-        fileLabel += ".json";
-        const item = await DriveItem.create(fileLabel, this.cache);
-        let contact: ContactItem;
-        switch (input.type) {
-            case "party": contact = new ContactParty(item.id, input); break;
-            case "lawyer": contact = new ContactLawyer(item.id, input); break;
-            case "counsel": contact = new ContactCounsel(item.id, input); break;
-        }
-        item.saveContent(contact);
-        return contact;
+    public static async get(id: string) {
+        const obj = await ContactObject.get(id);
+        const card = await obj.load();
+        return new this(id, card);
     }
 
-    public static async open<T extends ContactItem>(fileID: string): Promise<T> {
-        const item = await DriveItem.get(this.cache, fileID);
-        return item.parseContent();
+    public static async set(type: ContactType, fileName: string) {
+
     }
 
     public readonly id: string; // driveitem id key
@@ -52,6 +25,8 @@ export class ContactItem implements ContactCard {
     public email: string;
     public phones: string[] = [];
     public gender?: Gender;
+    public dob?: Date;
+    public occupation?: string;
     
     protected constructor(id: string, base: ContactCard) {
         this.id = id;
@@ -80,23 +55,6 @@ export class ContactItem implements ContactCard {
         return this.address.post.location.trim();
     }
 
-}
-
-
-/**
- * party contact
- */
-export class ContactParty extends ContactItem {
-    public static readonly type: ContactType = "party";
-
-    public dob?: Date;
-    public occupation?: string;
-    public constructor(id: string, base: ContactCard) {
-        super(id, base);
-        this.dob = base.dob;
-        this.occupation = base.occupation;
-    }
-
     public get age(): number {
         if (!this.dob) { // TBD: better error handling here
             throw new Error('age calculation requires dob')
@@ -113,30 +71,5 @@ export class ContactParty extends ContactItem {
         }
         return age;
     }
-}
 
-
-/**
- * lawyer contact
- * @tbd map of firms
- * @tbd lcodes
- */
-export class ContactLawyer extends ContactItem {
-    public static readonly type: ContactType = "lawyer";
-
-    public get firm(): string {
-        return this.business;
-    }
-}
-
-/**
- * counsel contact
- * @tbd map of chambers
- */
-export class ContactCounsel extends ContactItem {
-    public static readonly type: ContactType = "counsel";
-
-    public get chambers(): string {
-        return this.business;
-    }
 }

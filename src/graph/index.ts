@@ -80,7 +80,7 @@ export class GraphObject implements GraphItem {
     protected _parent?: Promise<GraphObject>;
     protected _eTag?: string;
     protected _cTag?: string;
-    protected _content?: string | string[];
+    protected _content?: string;
     protected constructor(base: GraphItem) {
         this.id = base.id;
         this.type = base.folder ? "folder" : "file";
@@ -137,18 +137,20 @@ export class GraphObject implements GraphItem {
                 console.log('item metadata updated');
             }
             if (patch.content && this.type === "file") { // upload file content
-                if (!this._updater) {
-                    this._updater = setTimeout(async () => {
-                        try {
-                            await content.upload(this._content as string, this.path, this.scope);
-                            console.log('item content updated');
-                        } catch (err) {
-                            console.error('error in timed content upload', err);
-                        } finally {
-                            this._updater = null;
-                        } 
-                    }, 5000);
+                if (this._updater) {
+                    clearTimeout(this._updater);
+                    this._updater = null;
                 }
+                this._updater = setTimeout(async () => {
+                    try {
+                        await content.upload(this._content as string, this.path, this.scope);
+                        console.log('item content updated');
+                    } catch (err) {
+                        console.error('error in timed content upload', err);
+                    } finally {
+                        this._updater = null;
+                    } 
+                }, 5000);
             }
             if (this.scope === "app") { // update local cache
                 const dbreq = await DatabaseRequest.init(this.cache);
@@ -219,6 +221,10 @@ export class GraphObject implements GraphItem {
         return this._content;
     }
 
+    /**
+     * download content
+     * @returns unparsed strings
+     */
     protected async _download() {
         if (this.content) {
             const url = this.url;
@@ -233,24 +239,17 @@ export class GraphObject implements GraphItem {
                 this._eTag = eTag;
             }
         }
-        if (this.type === "file") { // string content
+        if (this.type === "file") { // stringified content
             this._content = await content.download(this.path, this.scope);
-        } else if (this.type === "folder") { // string[] content (child ids)
-            const url = formGraphURL(`${this.path}/children`, this.scope);
-            const children = await collItems(url);
-            this._content = children.map(item => item.id);
+        } else if (this.type === "folder") { // stringified record of child name:id
+            const dbreq = await DatabaseRequest.init(this.cache);
+            const records = await dbreq.list(this.id);
+            this._content = JSON.stringify(records);
+            this._update({content: this._content});
         } else {
             throw new Error('invalid item type');
         }
         return this._content;
-    }
-
-    protected async _parse<T extends {}>() {
-        if (this.type === "folder") {
-            throw new Error('invalid item type');
-        }
-        const text = await this._download() as string;
-        return JSON.parse(text) as T;
     }
 
 }

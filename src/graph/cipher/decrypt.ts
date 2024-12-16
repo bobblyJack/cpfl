@@ -24,7 +24,7 @@ export async function deCrypto(encryptedItem: EncryptedGraphItem | ArrayBuffer, 
     iv = encryptedItem.iv;
     const data: Record<string, any> = {};
     for (const [k, v] of Object.entries(encryptedItem)) {
-        if (k !== "id" && v instanceof ArrayBuffer) {
+        if (v instanceof ArrayBuffer) {
             data[k] = await decryptData(key, iv, v);
         }
     }

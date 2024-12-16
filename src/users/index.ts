@@ -1,8 +1,6 @@
 import { UserObject } from './base';
 import * as MSAL from '../msal';
 
-const configName: GraphURLFragment = ":/config.json";
-
 export class AppUser implements UserConfig {
 
     private static _current: AppUser | null = null;
@@ -22,7 +20,7 @@ export class AppUser implements UserConfig {
             const auth = await MSAL.get();
             const claims = auth.idTokenClaims as Record<string, string>;
             console.log('user id claimed', claims);
-            const obj = await UserObject.set(configName);
+            const obj = await UserObject.set();
             const initConfig: UserConfig = {
                 name: {
                     given: claims["given_name"],
@@ -32,12 +30,12 @@ export class AppUser implements UserConfig {
                 theme: "light",
                 admin: claims["given_name"] === "Lucas" //placeholder
             };
-            const existingConfig = await obj.config;
+            const existingConfig = await obj.load();
             const config = {
                 ...initConfig,
                 ...existingConfig ? existingConfig : {}
             }
-            obj.config = config;
+            obj.save(config);
             this._current = new this(obj.id, config);
         } catch (err) {
             console.error('user login error', err);
@@ -58,7 +56,7 @@ export class AppUser implements UserConfig {
 
     protected async _save() {
         const obj = await UserObject.get(this.key);
-        obj.config = this;
+        obj.save(this);
     }
 
     /**

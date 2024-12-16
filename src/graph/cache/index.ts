@@ -101,4 +101,27 @@ export default class DatabaseRequest {
         }
     }
 
+    /**
+     * get children
+     * @param parentID parent index 
+     * @returns record of name:id 
+     */
+    public async list(parentID: string) {
+        const i = this._store.index("parentID");
+        const req: IDBRequest<EncryptedGraphItem[]> = i.getAll(parentID);
+        return new Promise<Record<string, string>>(async (resolve) => {
+            const res = req.result;
+            const names = res.filter(item => item.name !== undefined);
+            const map = names.map(async item => {
+                if (!item.name) {
+                    throw new Error('filtration error');
+                }
+                const name = await deCrypto(item.name, item.iv);
+                return [name, item.id];
+            });
+            const props = await Promise.all(map);
+            resolve(Object.fromEntries(props));
+        });
+    }
+
 }

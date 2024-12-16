@@ -11,6 +11,7 @@ export async function enCrypto(
 ): Promise<EncryptedGraphItem> {
     const id = base ? base.id : obj.id as string;
     const iv = base ? base.iv : crypto.getRandomValues(new Uint8Array(12));
+    const hx = obj.parentReference ? obj.parentReference.id : base ? base.hx : undefined;
     const cryptoKey = await getKey();
 
     const data: Record<string, ArrayBuffer> = {};
@@ -29,11 +30,12 @@ export async function enCrypto(
     if (base) {
         return {
             ...base,
-            ...data
+            ...data,
+            hx
         }
     } else {
         return {
-            ...data, id, iv
+            ...data, id, iv, hx
         };
     }
 }

@@ -1,4 +1,5 @@
 import CPFL from "..";
+import { MatterObject } from "./base";
 import actionstep from "./actionstep";
 import { MatterChild } from "./kids";
 import { MatterParticipant } from "./roles";
@@ -12,7 +13,6 @@ import {
 
 
 export class MatterItem implements MatterCard {
-    static readonly cache: GraphCache = "matters";
 
     public static get page() {
         const page = CPFL.app.html('act');

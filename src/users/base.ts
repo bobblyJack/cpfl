@@ -7,25 +7,25 @@ export class UserObject extends GraphObject {
     public static async get(id?: string) {
         return super.get(id) as Promise<UserObject>;
     }
-    public static async set(name: string) {
-        return super.set("file", name) as Promise<UserObject>;
+    public static async set() {
+        return super.set("file", 'config.json') as Promise<UserObject>;
     }
 
-    public get config(): Promise<UserConfig> {
-        return this._parse<UserConfig>();
+    public async load(): Promise<UserConfig> {
+        const content = await this._download();
+        return JSON.parse(content);
     }
 
-    public set config(patch: Partial<UserConfig>) {
-        this.config.then(config => {
-            const update = {
-                ...config,
-                ...patch
-            }
-            if (config !== update) {
-                this._content = JSON.stringify(update);
-                this._update({content: "patch"});
-            }
-        });
+    public async save(patch: Partial<UserConfig>) {
+        const config = await this.load();
+        const update = {
+            ...config,
+            ...patch
+        }
+        if (config !== update) {
+            this._content = JSON.stringify(update);
+            this._update({content: this._content});
+        }
     }
 
 }

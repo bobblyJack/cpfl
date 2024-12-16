@@ -10,7 +10,10 @@ export default async function buildCacheDB(this: IDBOpenDBRequest, ev: IDBVersio
             autoIncrement: true
         }
         for (const store of cacheNames) {
-            db.createObjectStore(store, dbParams);
+            const objectStore = db.createObjectStore(store, dbParams);
+            objectStore.createIndex('parentID', 'hx', {
+                unique: false
+            });
         }
     }
 }
