@@ -2,8 +2,8 @@ export class ContactName implements Name {
     private _gnames: string;
     private _fname: string;
     public constructor(base?: Name) {
-        this._gnames = base?.given.trim() || "";
-        this._fname = base?.family.trim() || "";
+        this._gnames = base?.given.trim() || "anon";
+        this._fname = base?.family.trim() || "contact";
     }
 
     public get given(): string {
@@ -31,11 +31,10 @@ export class ContactName implements Name {
 
     public get initials(): string {
         let initials = "";
-            const names = this.given.split(" ").concat(this.family.split(" "));
-            for (const name of names) {
-                initials += name.slice(0,1);
-            }
-            return initials.toUpperCase();
-
+        const names = this.given.split(" ").concat(this.family.split(" "));
+        for (const name of names) {
+            initials += name.slice(0,1);
+        }
+        return initials.toUpperCase();
     }
 }

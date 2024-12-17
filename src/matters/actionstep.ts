@@ -1,4 +1,4 @@
-import { MatterItem } from ".";
+import { AppMatter } from ".";
 
 /**
  * fetch actionstep matter data from current word doc
@@ -25,23 +25,22 @@ export default async function () {
             throw new Error('actionstep id undefined');
         }
 
-        const clientName = data[8][1];
-        if (!clientName) {
-            throw new Error('client fname undefined');
+        const client: ContactCard = mapParticipantData(data, 1);
+        if (!client.name) {
+            throw new Error('client name undefined');
         }
 
-        const file = await MatterItem.create(`${clientName}_${id}`);
+        const file = await AppMatter.create(client);
         file.asref = Number(id);
-        file.addParticipant(1, "party", mapParticipantData(data, 1));
-        file.addParticipant(2, "party", mapParticipantData(data, 2));
-        file.addParticipant(1, "lawyer", mapParticipantData(data, 3));
-        file.addParticipant(2, "lawyer", mapParticipantData(data, 4));
-        file.addParticipant(1, "counsel", mapParticipantData(data, 5));
-        file.addParticipant(2, "counsel", mapParticipantData(data, 6));
-
+        file.addRole(2, mapParticipantData(data, 2));
+        file.addRole(1, mapParticipantData(data, 3));
+        file.addRole(2, mapParticipantData(data, 4));
+        file.addRole(1, mapParticipantData(data, 5));
+        file.addRole(2, mapParticipantData(data, 6));
         file.relationship = mapRelationshipData(data);
+
         for (const child of mapChildren(data)) {
-            file.children.set(child.name.given, child)
+            file.addChild(child);
         }
 
         

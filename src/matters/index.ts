@@ -1,18 +1,12 @@
 import CPFL from "..";
-import { MatterObject } from "./base";
 import actionstep from "./actionstep";
+import { AppContact } from "../contacts";
+import { MatterObject } from "./base";
 import { MatterChild } from "./kids";
-import { MatterParticipant } from "./roles";
 import { POV } from "./sides";
-import { 
-    ContactCounsel, 
-    ContactItem, 
-    ContactLawyer, 
-    ContactParty 
-} from "../contacts";
 
 
-export class MatterItem implements MatterCard {
+export class AppMatter implements MatterCard {
 
     public static get page() {
         const page = CPFL.app.html('act');
@@ -23,14 +17,14 @@ export class MatterItem implements MatterCard {
     }
 
     public static async list() {
-        return DriveItem.cache(this.cache);
+        return MatterObject.list();
     }
 
-    private static _current: MatterItem | null = null;
-    public static get current(): MatterItem | null {
+    private static _current: AppMatter | null = null;
+    public static get current(): AppMatter | null {
         return this._current;
     }
-    public static set current(matter: MatterItem | null) { // WIP matter nav
+    public static set current(matter: AppMatter | null) { // WIP matter nav
         if (matter !== this._current) {
 
             try {
@@ -38,6 +32,9 @@ export class MatterItem implements MatterCard {
                 if (matter && !this._current) {
                     nullSub.main.hidden = true;
                     for (const foot of this.page.feet) {
+                        if (foot.key !== 'act_null') {
+                            foot.main.removeAttribute('hidden')
+                        }
                         
                     }
                 } else if (this._current && !matter) {
@@ -58,123 +55,143 @@ export class MatterItem implements MatterCard {
         }
     }
 
-    static async create(fileName: string) {
-        const item = await DriveItem.create(`${fileName}.json`, this.cache);
-        const matter = new this(item.id);
-        item.saveContent(matter);
+    /**
+     * create new matter
+     */
+    static async create(client: ContactCard) {
+        const obj: MatterObject = await MatterObject.create(client.name);
+        const matter = new this(obj.id, client);
         this.current = matter;
         return this.current;
     }
 
+    /**
+     * open existing matter
+     */
     static async open(fileID: string) {
-        const item = await DriveItem.get(this.cache, fileID);
-        this.current = await item.parseContent<MatterItem>();
+        const obj = await MatterObject.get(fileID) as MatterObject;
+        const base = await obj.load();
+        const matter = new this(obj.id, base);
+        this.current = matter;
         return this.current;
     }
 
-    /** import from actionstep */
+    /**
+     * import matter from actionstep
+     */
     static async import() {
         this.current = await actionstep();
         return this.current;
     }
 
-    readonly id: string;
-    asref?: number;
-    readonly participants: Map<ParticipantReferenceKey, MatterParticipant[]>;
-    relationship: RelationshipHistory;
-    readonly children: Map<string, MatterChild>;
-    respondent?: boolean;
-    protected constructor(id: string, base?: MatterCard) {
+    public readonly id: string; // graphitem id
+    public asref?: number; // actionstep id
+    public participants: ParticipantRoles = {};
+    public children: MatterChild[] = [];
+    public relationship: RelationshipHistory = {};
+    public respondent?: boolean;
+    protected constructor(id: string, base: MatterCard | ContactCard) {
         this.id = id;
-        this.asref = base?.asref;
-        this.respondent = base?.respondent;
-        this.relationship = base?.relationship ?? {};
-        this.participants = new Map();
-        this.children = new Map();
-        if (base) {
-            for (const [key, val] of Array.from(base.participants.entries())) {
-                const array = []
-                for (const participant of val) {
-                    array.push(new MatterParticipant(participant));
-                }
-                this.participants.set(key, array);
+        if ('participants' in base) { // matter card base
+            this.asref = base.asref;
+            this.respondent = base.respondent;
+            this.relationship = base.relationship;
+            this.participants = base.participants;
+            for (const child of base.children) {
+                this.children.push(new MatterChild(id, child));
             }
-            for (const child of Array.from(base.children.values())) {
-                const kid = new MatterChild(child);
-                this.children.set(kid.name.given, kid);
-            }
+        } else { // contact card base (client)
+            this.addRole(1, base, true);
         }
     }
 
-    private saveTimer: NodeJS.Timeout | null = null;
+    protected async _base() {
+        return MatterObject.get(this.id) as Promise<MatterObject>;
+    }
+
     public async save() {
-        if (!this.saveTimer) {
-            this.saveTimer = setTimeout(async () => {
-                CPFL.app.debug.log('saving matter', this);
-                const item = await DriveItem.get(MatterItem.cache, this.id);
-                item.saveContent(this);
-            }, 10000);
-        }
+        const obj = await this._base();
+        obj.save(this);
     }
 
-    public async addParticipant(side: POV | number, type: ContactType, contact: string | ContactCard) {
-        const key: ParticipantReferenceKey = `${side}_${type}`;
-        const array = this.participants.get(key) ?? [];
-        let item: ContactItem;
-        if (typeof contact === 'string') {
-            item = await ContactItem.open(contact);
+    public async getRole(id: string): Promise<AppContact>;
+    public async getRole(side: POV | number, type: ContactType, id?: number): Promise<AppContact>;
+    public async getRole(p1: string | number, type?: ContactType, p2: number = 0) {
+        let id: string;
+        if (typeof p1 === 'string') {
+            id = p1;
         } else {
-            item = await ContactItem.create(contact);
+            if (!type) {
+                throw new Error('invalid param type');
+            }
+            const roles = this.getRoles(p1, type);
+            id = roles[p2];
         }
-        array.push(new MatterParticipant({id: item.id, side, type}));
-        this.participants.set(key, array);
+        return AppContact.get(id);
     }
 
-    public async getParticipant<T extends ContactItem>(side: POV | number, type: ContactType) {
-        const participants = this.participants.get(`${side}_${type}`);
-        if (!participants || !participants.length) {
-            return []
-        } else if (participants.length === 1) {
-            return participants[0].openContact<T>();
-        } else {
-            return Promise.all(participants.map((participant) => participant.openContact<T>()));
+    public getRoles(side: POV | number, type: ContactType): string[] {
+        let roles = this.participants[side];
+        if (!roles) {
+            this.participants[side] = new Map<ContactType, string[]>();
+            return this.getRoles(side, type);
+        }
+        let role = roles.get(type);
+        if (!role) {
+            role = [];
+            roles.set(type, role);
+        }
+        return role;
+    }
+
+    public async addRole(side: POV | number, contact: ContactCard, primary?: boolean): Promise<void>;
+    public async addRole(side: POV | number, type: ContactType, id: string, primary?: boolean): Promise<void>;
+    public async addRole(side: POV | number, type: ContactType, name: Name, primary?: boolean): Promise<void>;
+    public async addRole(
+        side: POV | number, 
+        p1: ContactType | ContactCard, 
+        p2: string | Name | boolean = false, 
+        p3?: boolean
+    ) {
+        try {
+            const type: ContactType = typeof p1 === 'string' ? p1 : p1.type;
+            const roles = this.getRoles(side, type);
+            let id: string;
+            if (typeof p2 === 'string') {
+                id = p2;
+            } else {
+                let base: Name | ContactCard;
+                if (typeof p1 !== 'string') {
+                    base = p1;
+                } else if (typeof p2 !== 'boolean') {
+                    base = p2;
+                } else {
+                    throw new Error('invalid param type');
+                }
+                const obj = await AppContact.set(type, base);
+                id = obj.id;
+            }
+            const filtered = roles.filter(exists => exists !== id);
+            const primary: boolean = typeof p2 === 'boolean' ? p2 : (p3 ?? false);
+            if (primary) {
+                this.participants[side].set(type, [id].concat(filtered));
+            } else {
+                this.participants[side].set(type, filtered.concat([id]));
+            } 
+            console.log('contact added');
+        } catch (err) {
+            console.error('error adding contact', err);
         }
     }
 
-    public get client() {
-        return this.getParticipant<ContactParty>(1, "party").then((clients => {
-            if (Array.isArray(clients)) {
-                if (!clients.length) {
-                    throw new Error('primary client unmapped');
-                }
-                return clients[0];
+    public addChild(base: ChildCard) {
+        for (const child of this.children) {
+            if (child.name.given === base.name.given) {
+                console.log('child already present');
+                return;
             }
-            return clients;
-        }));
-    }
-
-    public get lawyer() {
-        return this.getParticipant<ContactLawyer>(1, "lawyer").then((lawyers => {
-            if (Array.isArray(lawyers)) {
-                if (!lawyers.length) {
-                    throw new Error('assigned lawyer unmapped');
-                }
-                return lawyers[0];
-            }
-            return lawyers;
-        }));
-    }
-
-    public get counsel() {
-        return this.getParticipant<ContactCounsel>(1, "counsel").then((counsel => {
-            if (Array.isArray(counsel)) {
-                if (!counsel.length) {
-                    throw new Error('counsel unmapped');
-                }
-                return counsel[0];
-            }
-            return counsel;
-        }));
+        }
+        this.children.push(new MatterChild(this.id, base));
     }
 
 }

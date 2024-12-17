@@ -1,17 +1,16 @@
 interface MatterCard {
-    participants: Map<ParticipantReferenceKey, ParticipantReference[]>;
-    relationship: RelationshipHistory;
-    children: Map<string, ChildCard>; // given name -> child
     asref?: number; // actionstep id
-    respondent?: boolean;
+    participants: ParticipantRoles;
+    relationship: RelationshipHistory;
+    children: ChildCard[];
+    respondent?: boolean; // app/res toggle
 }
 
-type ParticipantReferenceKey = `${number}_${ContactType}` // side_type -> contacts
-
-interface ParticipantReference {
-    id: string;
-    type: ContactType;
-    side: number;
+/**
+ * nested contact tree from role pov -> contact id[]
+ */
+interface ParticipantRoles { // nested contact tree
+    [side: number]: Map<ContactType, string[]>;
 }
 
 interface RelationshipHistory {

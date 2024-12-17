@@ -1,24 +1,37 @@
-import CPFL from "..";
 import { ContactObject } from "./base";
 import { ContactAddresses } from "./address";
 import { ContactName } from "./names";
 
-/**
- * generic contact
- */
-export class ContactItem implements ContactCard {
+export class AppContact implements ContactCard {
+
+    protected static index: Map<string, AppContact> = new Map();
 
     public static async get(id: string) {
-        const obj = await ContactObject.get(id);
-        const card = await obj.load();
-        return new this(id, card);
+        let contact = this.index.get(id);
+        if (!contact) {
+            const obj = await ContactObject.get(id) as ContactObject;
+            const card = await obj.load();
+            contact = new this(id, card);
+        }
+        return contact;
     }
 
-    public static async set(type: ContactType, fileName: string) {
-
+    public static async set(type: ContactType, base: Name | ContactCard) {
+        const name = isContactCard(base) ? base.name : base;
+        base = isContactCard(base) ? base : {type, name}
+        const obj = await ContactObject.create(type, name);
+        let contact = this.index.get(obj.id);
+        if (!contact) {
+            contact = new this(obj.id, base);
+        }
+        return contact;
+        function isContactCard(input: Name | ContactCard): input is ContactCard {
+            return 'type' in input;
+        }
     }
 
-    public readonly id: string; // driveitem id key
+    public readonly id: string; // graphItem key
+    public readonly asref?: number; // actionstep id
     public readonly type: ContactType;
     public name: ContactName;
     public address: ContactAddresses;
@@ -28,8 +41,10 @@ export class ContactItem implements ContactCard {
     public dob?: Date;
     public occupation?: string;
     
+    
     protected constructor(id: string, base: ContactCard) {
         this.id = id;
+        this.asref = base.asref;
         this.type = base.type;
         this.name = new ContactName(base.name);
         this.email = base.email || "";
@@ -38,17 +53,11 @@ export class ContactItem implements ContactCard {
         for (const num in base.phones) {
             this.phones.push(num);
         }
+        AppContact.index.set(id, this);
     }
 
-    private saveTimer: NodeJS.Timeout | null = null;
-    public async save() {
-        if (!this.saveTimer) {
-            this.saveTimer = setTimeout(async () => {
-                CPFL.app.debug.log('saving contact', this);
-                const item = await DriveItem.get(ContactItem.cache, this.id);
-                item.saveContent(this);
-            }, 10000);
-        }
+    public async base() { // graphItem object
+        return ContactObject.get(this.id) as Promise<ContactObject>;
     }
 
     protected get business(): string {
@@ -59,17 +68,21 @@ export class ContactItem implements ContactCard {
         if (!this.dob) { // TBD: better error handling here
             throw new Error('age calculation requires dob')
         }
-        const today = new Date();
-        let age = today.getFullYear() - this.dob.getFullYear();
-        const months = today.getMonth() - this.dob.getMonth();
-        if (months === 0) {
-            if (today.getDate() < this.dob.getDate()) {
-                age--;
-            }
-        } else if (months < 0) {
-            age--;
-        }
-        return age;
+        return calcAge(this.dob);
     }
 
+}
+
+export function calcAge(dob: Date) {
+    const today = new Date();
+    let age = today.getFullYear() - dob.getFullYear();
+    const months = today.getMonth() - dob.getMonth();
+    if (months === 0) {
+        if (today.getDate() < dob.getDate()) {
+            age--;
+        }
+    } else if (months < 0) {
+        age--;
+    }
+    return age;
 }

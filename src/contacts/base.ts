@@ -14,9 +14,10 @@ export class ContactObject extends GraphObject {
         return folder;
     }
 
-    public static async create(type: ContactType, name: string) {
+    public static async create(type: ContactType, name: Name) {
         const folder = await this._folder(type);
-        return this.set("file", name, folder) as Promise<ContactObject>;
+        const fileName = `${name.family}_${name.given.slice(0,2)}.json`;
+        return this.set("file", fileName.toLowerCase(), folder) as Promise<ContactObject>;
     }
 
     public static async list(type: ContactType): Promise<Record<string, string>> {

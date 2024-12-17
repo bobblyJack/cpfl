@@ -1,8 +1,7 @@
 import CPFL from '../..';
 import './style.css';
-import nullMatter from './null.html';
+import nullSub from './null';
 import { HeadPage } from '../main';
-import { MatterItem } from '../../matters';
 
 function actLabels(key: string) {
     switch (key as ActSection) {
@@ -22,53 +21,20 @@ export default async function (app: CPFL) {
     page.nav.button.classList.add("warn");
 
     // no active matter section
+    nullSub(page);
+
+    // how do i cleanly get them to toggle back and forth between groups of feet.
+    // do i literally add in groups ?
+    // seems possibly overkill for just this use case
+    // what about adding in disabling whole subs, or forcing overwrite where they cant get turned off?
+    // also overkill possibly
     
-    const nullSub = page.set('act_null');
-    nullSub.nav.button.hidden = true;
-    nullSub.main.innerHTML = nullMatter;
 
-    const newFileName = nullSub.main.querySelector('#new-matter input') as HTMLInputElement;
-    const newButton = nullSub.main.querySelector('#new-matter button') as HTMLButtonElement;
-    newButton.onclick = () => {
-        if (!newFileName.value) {
-            console.error('value needed for new matter file name');
-        } else {
-            MatterItem.create(newFileName.value);
-        }
-    }
+    
 
-    const importSection = nullSub.main.querySelector('#import-matter') as HTMLDivElement;
-    if (app.mode !== "taskpane") {
-        importSection.hidden = true;
-    } else {
-        const importButton = importSection.querySelector('button') as HTMLButtonElement;
-        importButton.onclick = () => MatterItem.import();
-    }
+    
 
-    const loadSection = nullSub.main.querySelector('#load-matter') as HTMLDivElement;
-    const loadSelector = loadSection.querySelector('select') as HTMLSelectElement;
-    const loadButton = loadSection.querySelector('button') as HTMLButtonElement;
-
-    const map = await MatterItem.list();
-    if (!map.size) {
-        loadSection.hidden = true;
-    } else {
-        for (const [fileName, fileID] of Array.from(map.entries())) {
-            const option = document.createElement('option');
-            option.textContent = fileName;
-            option.value = fileID;
-            loadSelector.appendChild(option);
-        }
-    }
-
-    loadButton.onclick = () => {
-        try {
-            const id = loadSelector.value;
-            MatterItem.open(id)
-        } catch (err) {
-            console.error('error opening matter', err);
-        }
-    }
+    
 
     // active matter sections
 

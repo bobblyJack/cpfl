@@ -1,15 +1,15 @@
 type ContactType = "party" | "lawyer" | "counsel";
 
 interface ContactCard {
+    asref?: number; // actionstep id
     type: ContactType;
-    name?: Name;
+    name: Name;
     email?: string;
     gender?: Gender;
     dob?: Date;
     occupation?: string;
     phones?: string[];
     address?: StreetAddresses;
-    asref?: number; // actionstep id
 }
 
 interface Name {
