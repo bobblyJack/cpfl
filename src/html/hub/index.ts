@@ -5,6 +5,7 @@ import './style.css';
 export default async function (app: CPFL) {
     const hub = new HeadPage("hub", `Welcome ${app.user.name.given}`);
     hub.loader = () => populateDashboard(hub);
+    return hub;
 }
 
 function populateDashboard(hub: HeadPage) {

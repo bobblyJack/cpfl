@@ -4,7 +4,7 @@ import { FootPage } from "./section";
 
 export class HeadPage extends BaseHTML {
       
-    public readonly index: Map<FootKey, FootPage> = new Map();
+    private _index: Map<FootKey, FootPage> = new Map();
     public readonly main: HTMLElement = document.createElement('main');
     public readonly fnav: HTMLElement = document.createElement('nav');
     public labeller?: (section: string) => string;
@@ -14,6 +14,7 @@ export class HeadPage extends BaseHTML {
         html.set(this);
         this._title = title ? title : this.label;
         this.main.className = this.key;
+        this.fnav.className = this.key;
         this.app.hnav.appendChild(this.nav.button);
     }
 
@@ -21,9 +22,9 @@ export class HeadPage extends BaseHTML {
      * nav exposed browsing
      */
     public render(): void {
-        BaseHTML.display.head?.nav.button.removeAttribute('disabled');
+        this.nav.disable();
+        BaseHTML.display.head?.nav.enable();
         this.app.title = this.title;
-        this.nav.button.disabled = true;
         this.app.main.replaceWith(this.main);
         this.app.fnav.replaceWith(this.fnav);
         super.render();
@@ -61,14 +62,14 @@ export class HeadPage extends BaseHTML {
      * get all page sections
      */
     public get feet(): FootPage[] {
-        return Array.from(this.index.values());
+        return Array.from(this._index.values());
     }
 
     /**
      * get specific page section
      */
     public get(key: FootKey): FootPage {
-        const page = this.index.get(key);
+        const page = this._index.get(key);
         if (!page) {
             throw new Error(`can't find subsection ${key} on ${this.key}`);
         }
@@ -82,7 +83,7 @@ export class HeadPage extends BaseHTML {
         if (typeof page === 'string') {
             page = new FootPage(page, this);
         }
-        this.index.set(page.key as FootKey, page);
+        this._index.set(page.key as FootKey, page);
         return page;
     }
 

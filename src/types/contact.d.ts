@@ -21,6 +21,7 @@ type Gender = "M" | "F" | "X";
 
 interface StreetAddresses {
     main: StreetAddress;
+    split?: boolean; // main != post
     post?: StreetAddress | null;
 }
 
@@ -28,8 +29,9 @@ interface StreetAddress {
     location?: string;
     street: string;
     suburb: string;
-    state: string;
+    state: AusState | string;
     postcode: string;
     country?: string;
 }
 
+type AusState = "SA" | "VIC" | "NSW" | "QLD" | "TAS" | "WA" | "NT" | "ACT";

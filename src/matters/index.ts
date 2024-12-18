@@ -25,33 +25,28 @@ export class AppMatter implements MatterCard {
         return this._current;
     }
     public static set current(matter: AppMatter | null) { // WIP matter nav
+        this._current?.save();
         if (matter !== this._current) {
-
             try {
                 const nullSub = this.page.get('act_null');
-                if (matter && !this._current) {
-                    nullSub.main.hidden = true;
-                    for (const foot of this.page.feet) {
-                        if (foot.key !== 'act_null') {
-                            foot.main.removeAttribute('hidden')
-                        }
-                        
-                    }
-                } else if (this._current && !matter) {
-                    nullSub.main.removeAttribute('hidden');
-                }
 
-                if (this._current) {
-                    this._current.save();
+                if (matter && !this._current) { // open matter
+                    this.page.fnav.removeAttribute('hidden');
+                    this.page.nav.unflag();
+                    nullSub.hide();
+                    const actSub = this.page.get('act_us');
+                    actSub.render();
+
+                } else if (!matter && this._current) { // close matter
+                    this.page.nav.flag();
+                    nullSub.render();
                 }
 
             } catch (err) {
-
+                console.error('error changing active matter', err);
             } finally {
                 this._current = matter;
             }
-
-            
         }
     }
 

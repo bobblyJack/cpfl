@@ -1,28 +1,33 @@
 export class ContactName implements Name {
-    private _gnames: string;
-    private _fname: string;
+    public readonly block: HTMLDivElement;
+    private _gnames: HTMLInputElement;
+    private _fname: HTMLInputElement;
     public constructor(base?: Name) {
-        this._gnames = base?.given.trim() || "anon";
-        this._fname = base?.family.trim() || "contact";
+        this.block = document.createElement('div');
+
+        this._gnames = this._textField('Given Names', base?.given.trim());
+        this.block.appendChild(this._gnames);
+
+        this._fname = this._textField('Family Name', base?.family.trim());
+        this.block.appendChild(this._fname);
+    }
+
+    private _textField(ph: string = "...", init?: string) {
+        const e = document.createElement('input');
+        e.type = "text";
+        e.placeholder = ph;
+        if (init) {
+            e.value = init;
+        }
+        return e;
     }
 
     public get given(): string {
-        return this._gnames;
-    }
-    public set given(gnames: string) {
-        if (gnames && gnames !== this._gnames) {
-            this._gnames = gnames.trim();
-        }
+        return this._gnames.value;
     }
 
     public get family(): string {
-        return this._fname;
-    }
-
-    public set family(fname: string) {
-        if (fname && fname !== this._fname) {
-            this._fname = fname.trim();
-        }
+        return this._fname.value;
     }
 
     public get full(): string {
