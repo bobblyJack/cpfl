@@ -1,0 +1,1 @@
+// consolidate same props / methods between field classes.

@@ -1,25 +1,22 @@
+import * as Fields from '../fields';
+
 export class ContactName implements Name {
-    public readonly block: HTMLDivElement;
-    private _gnames: HTMLInputElement;
-    private _fname: HTMLInputElement;
+    public readonly block: HTMLFieldSetElement;
+    private _gnames: Fields.InputField;
+    private _fname: Fields.InputField;
     public constructor(base?: Name) {
-        this.block = document.createElement('div');
+        this.block = Fields.createFieldSet('Contact Name');
 
-        this._gnames = this._textField('Given Names', base?.given.trim());
-        this.block.appendChild(this._gnames);
+        this._gnames = new Fields.InputField('Given Names');
+        this._fname = new Fields.InputField('Family Name');
 
-        this._fname = this._textField('Family Name', base?.family.trim());
-        this.block.appendChild(this._fname);
-    }
-
-    private _textField(ph: string = "...", init?: string) {
-        const e = document.createElement('input');
-        e.type = "text";
-        e.placeholder = ph;
-        if (init) {
-            e.value = init;
+        if (base) {
+            this._gnames.value = base.given.trim();
+            this._fname.value = base.family.trim();
         }
-        return e;
+
+        this.block.appendChild(this._gnames.block);
+        this.block.appendChild(this._fname.block);
     }
 
     public get given(): string {

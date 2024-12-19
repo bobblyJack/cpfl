@@ -1,39 +1,36 @@
+import * as Fields from '../fields';
+
 export class ContactAddresses implements StreetAddresses {
+    public readonly block: HTMLFieldSetElement;
     public readonly main: ContactAddress;
-    public readonly block: HTMLDivElement;
+    public readonly splitter: Fields.InputField;
 
     public constructor(base?: StreetAddresses) {
-        this.block = document.createElement('div');
-
+        this.block = Fields.createFieldSet('Contact Address');
         this.main = new ContactAddress(base?.main);
         this.block.appendChild(this.main.block);
+        this.splitter = new Fields.InputField('Use Different Postal Address', {
+            inputType: "checkbox",
+            specifiedName: "split"
+        });
 
         if (base?.split) {
             this._post = new ContactAddress(base?.post, true);
         }
 
-        const splitterLabel = document.createElement('label');
-        splitterLabel.innerText = "Use Different Postal Address";
-        splitterLabel.appendChild(this.splitter);
+        this.splitter.checked = this._post !== null;
+        this.splitter.onchange = () => {
+            console.log('splitter change detected', this);
+            this.post = null;
+        }
+        this.block.appendChild(this.splitter.block);
 
         if (this._post) {
             this.block.appendChild(this._post.block);
         }
     }
 
-    private _splitter?: HTMLInputElement;
-    private get splitter(): HTMLInputElement {
-        if (!this._splitter) {
-            const set = this;
-            this._splitter = document.createElement('input');
-            this._splitter.type = "checkbox";
-            this._splitter.checked = this._post !== null;
-            this._splitter.onchange = () => {
-                set.post = null;
-            };
-        }
-        return this._splitter;
-    }
+    
     public get split(): boolean {
         return this.splitter.checked;
     }
@@ -67,60 +64,72 @@ export class ContactAddresses implements StreetAddresses {
 const ausStates: AusState[] = ["SA", "VIC", "NSW", "QLD", "TAS", "WA", "NT", "ACT"]
 
 class ContactAddress implements StreetAddress {
-    public readonly block: HTMLLabelElement;
-    private _location: HTMLInputElement;
-    private _street: HTMLInputElement;
-    private _suburb: HTMLInputElement;
-    private _state: HTMLSelectElement | HTMLInputElement;
-    private _postcode: HTMLInputElement;
-    private _country: HTMLInputElement;
+    public readonly block: HTMLFieldSetElement;
+    private _location: Fields.InputField;
+    private _street: Fields.InputField;
+    private _suburb: Fields.InputField;
+    private _state: Fields.DropField | Fields.InputField;
+    private _postcode: Fields.InputField;
+    private _country: Fields.InputField;
     
     public constructor(base: StreetAddress | null = null, post: boolean = false) {
-        this.block = document.createElement('label');
-        this.block.innerText = post ? "Postal Address" : "Primary Address";
-        this._location = this._textInput('Location');
-        this.block.appendChild(this._location);
+        this.block = Fields.createFieldSet(post ? "Postal Address" : "Primary Address");
+
+        this._location = new Fields.InputField('Location', {
+            specifiedName: 'location'
+        });
+        this.block.appendChild(this._location.block);
         
-        this._street = this._textInput('Street Address');
-        this.block.appendChild(this._street);
+        this._street = new Fields.InputField('Street Address', {
+            specifiedName: 'street'
+        });
+        this.block.appendChild(this._street.block);
         
         const innerBlock = document.createElement('span');
         
-            this._suburb = this._textInput('Suburb/City');
-            innerBlock.appendChild(this._suburb);
+            this._suburb = new Fields.InputField('Suburb/City', {
+                specifiedName: 'suburb'
+            });
+            innerBlock.appendChild(this._suburb.block);
 
             if (base && base.country && base.country !== "Australia") {
-                this._state = this._textInput('State/Region');
-                this._state.name = 'state';
+                this._state = new Fields.InputField('State/Region', {
+                    specifiedName: 'state'
+                });
             } else {
                 this._state = this._stateAUS();
             }
-            innerBlock.appendChild(this._state);
+            innerBlock.appendChild(this._state.block);
 
-            this._postcode = this._textInput('Postcode');
-            innerBlock.appendChild(this._postcode);
+            this._postcode = new Fields.InputField('Postcode', {
+                specifiedName: 'postcode'
+            });
+            innerBlock.appendChild(this._postcode.block);
             
         this.block.appendChild(innerBlock);
 
-        this._country = this._textInput('Country (if not Australia)');
-        this._country.oninput = () => {
-            let newState: HTMLInputElement | HTMLSelectElement;
+        this._country = new Fields.InputField('Country (if not Australia)', {
+            specifiedName: 'country'
+        });
+        this._country.onchange = () => {
+            let newState: Fields.DropField | Fields.InputField;
             if (!this._country.value || this._country.value.toLowerCase() === "australia") {
                 newState = this._stateAUS();
                 this._postcode.pattern = "\\d{4}";
                 this._postcode.title = "4 Digit Postcode";
 
             } else {
-                newState = this._textInput('State/Region');
-                newState.name = 'state';
+                newState = new Fields.InputField('State/Region', {
+                    specifiedName: 'state'
+                });
                 this._postcode.pattern = "";
                 this._postcode.title = "";
             }
 
-            this._state.replaceWith(newState);
+            this._state.block.replaceWith(newState.block);
             this._state = newState;
         }
-        this.block.appendChild(this._country);
+        this.block.appendChild(this._country.block);
 
         if (base) {
             this._location.value = base.location || "";
@@ -133,26 +142,13 @@ class ContactAddress implements StreetAddress {
 
     }
 
-    private _textInput(ph: string = "...") {
-        const e = document.createElement('input');
-        e.type = "text";
-        e.placeholder = ph;
-        return e;
-    }
-
-    private _stateAUS(def: AusState = "SA") {
-        const ausSelect = document.createElement('select');
-        ausSelect.name = "state";
-        for (const state of ausStates) {
-            const option = document.createElement('option');
-            option.value = state;
-            option.innerText = state;
-            if (state === def) {
-                option.selected = true;
-            }
-            ausSelect.appendChild(option);
-        }
-        return ausSelect;
+    private _stateAUS(def: AusState = "SA"): Fields.DropField {
+        return new Fields.DropField('State/Territory', {
+            specifiedName: 'state',
+            matchedLabels: true,
+            optionsList: ausStates.map(state => [state]),
+            selectedIndex: ausStates.indexOf(def)
+        });
     }
 
     public get location(): string {
@@ -187,20 +183,13 @@ class ContactAddress implements StreetAddress {
 
     public watch(field: keyof StreetAddress, action: (ev: Event) => any) {
         const element = this._mapField(field);
-        if (element instanceof HTMLInputElement) {
-            element.oninput = action;
-        } else {
-            element.onchange = action;
-        }
+        element.onchange = action;
+        
     }
 
     public ignore(field: keyof StreetAddress) {
         const element = this._mapField(field);
-        if (element instanceof HTMLInputElement) {
-            element.oninput = null;
-        } else {
-            element.onchange = null;
-        }
+        element.onchange = null;
     }
 
 }
