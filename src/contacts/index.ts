@@ -1,6 +1,8 @@
 import { ContactObject } from "./base";
 import { ContactAddresses } from "./address";
 import { ContactName } from "./names";
+import { BirthDate } from "./birth";
+export { ContactChild } from "./kids";
 
 export class AppContact implements ContactCard {
 
@@ -38,7 +40,7 @@ export class AppContact implements ContactCard {
     public email: string;
     public phones: string[] = [];
     public gender?: Gender;
-    public dob?: Date;
+    public dob?: BirthDate;
     public occupation?: string;
     
     
@@ -49,7 +51,10 @@ export class AppContact implements ContactCard {
         this.name = new ContactName(base.name);
         this.email = base.email || "";
         this.gender = base.gender;
-        this.address = new ContactAddresses(base.address);
+        this.address = new ContactAddresses(base.address)
+        if (base.dob) {
+            this.dob = new BirthDate(base.dob);
+        }
         for (const num in base.phones) {
             this.phones.push(num);
         }
@@ -60,29 +65,4 @@ export class AppContact implements ContactCard {
         return ContactObject.get(this.id) as Promise<ContactObject>;
     }
 
-    protected get business(): string {
-        return this.address.post.location.trim();
-    }
-
-    public get age(): number {
-        if (!this.dob) { // TBD: better error handling here
-            throw new Error('age calculation requires dob')
-        }
-        return calcAge(this.dob);
-    }
-
-}
-
-export function calcAge(dob: Date) {
-    const today = new Date();
-    let age = today.getFullYear() - dob.getFullYear();
-    const months = today.getMonth() - dob.getMonth();
-    if (months === 0) {
-        if (today.getDate() < dob.getDate()) {
-            age--;
-        }
-    } else if (months < 0) {
-        age--;
-    }
-    return age;
 }

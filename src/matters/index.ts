@@ -1,8 +1,7 @@
 import CPFL from "..";
 import actionstep from "./actionstep";
-import { AppContact } from "../contacts";
+import { AppContact, ContactChild } from "../contacts";
 import { MatterObject } from "./base";
-import { MatterChild } from "./kids";
 import { POV } from "./sides";
 
 
@@ -82,7 +81,7 @@ export class AppMatter implements MatterCard {
     public readonly id: string; // graphitem id
     public asref?: number; // actionstep id
     public participants: ParticipantRoles = {};
-    public children: MatterChild[] = [];
+    public children: ContactChild[] = [];
     public relationship: RelationshipHistory = {};
     public respondent?: boolean;
     protected constructor(id: string, base: MatterCard | ContactCard) {
@@ -93,7 +92,7 @@ export class AppMatter implements MatterCard {
             this.relationship = base.relationship;
             this.participants = base.participants;
             for (const child of base.children) {
-                this.children.push(new MatterChild(id, child));
+                this.children.push(new ContactChild(id, child));
             }
         } else { // contact card base (client)
             this.addRole(1, base, true);
@@ -186,7 +185,7 @@ export class AppMatter implements MatterCard {
                 return;
             }
         }
-        this.children.push(new MatterChild(this.id, base));
+        this.children.push(new ContactChild(this.id, base));
     }
 
 }

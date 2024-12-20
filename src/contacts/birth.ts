@@ -1,9 +1,5 @@
 // dob element + age calculator in one (exportable) thing
 
-import { InputField } from "../fields";
-
-const dobMap: WeakMap<BirthDate, InputField> = new Map();
-
 export class BirthDate extends Date {
 
     /**
@@ -18,9 +14,16 @@ export class BirthDate extends Date {
      * @param input "YYYY-MM-DD"
      */
     public constructor(input: string);
-    public constructor(p1: string | number, p2?: number, p3?: number) {
+    /**
+     * construct birth date
+     * @param date base date object
+     */
+    public constructor(date: Date);
+    public constructor(p1: string | number | Date, p2?: number, p3?: number) {
         if (typeof p1 === 'string') {
             super(p1)
+        } else if (p1 instanceof Date) {
+            super(p1.toISOString())
         } else {
             const year = p1;
             const monthIndex = (p2 ?? 1) - 1;
@@ -47,23 +50,4 @@ export class BirthDate extends Date {
         return this.toISOString().split('T')[0];
     }
 
-    public getField() {
-        let field = dobMap.get(this);
-        if (!field) {
-            field = new InputField("Date of Birth", {
-                inputType: "date",
-                specifiedName: "dob"
-            });
-            field.value = this.value;
-        }
-        return field;
-
-    }
-
-}
-
-class DOBInputField extends InputField {
-    public get date(): BirthDate {
-        
-    }
 }
