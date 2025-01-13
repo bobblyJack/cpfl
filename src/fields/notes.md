@@ -14,3 +14,8 @@ no, keep it to just user input elements (beyond literally input)
 need to either contain the element they are for
 or use "for" attribute = element_id
 can also use "form" attribute = form_id but probably not needed.
+
+# process
+one abstract class with extensions ? or one super class that does everything ?
+how different do the "subs" need to be, and how annoying, type-wise, will it be to have a super class
+what do we actually need to be able to input or select ?
