@@ -1,74 +1,75 @@
-// consolidate same props / methods between field classes.
+import { setUniqueID } from "./id";
 
-function mapInputTypes(type: HTMLInputType) { // define fields by their output type ? yes.
-    // this function could actually be useful tbh.
-    switch (type) {
-        // boolean
-        case "checkbox":
-        case "radio": // this isn't really boolean it is a multi-select isn't it
-
-        // date
-        case "date":
-        case "month":
-        case "week":
-
-        // text
-        case "text":
-        case "email":
-        case "url":
-        case "password":
-        case "tel":
-        case "search":
-
-        // number
-        case "number":
-        case "range":
-
-        // blob
-        case "file":
-    }
-
-}
-
-type FieldOutput = string | number | boolean | Date;
-
-interface FieldData<T extends FieldOutput> {
-    label: string;
-    value: T;
-}
-
-class HTMLFieldElement<T extends FieldOutput> implements FieldData<T> {
-
+export abstract class HTMLFieldElement<T extends FieldOutputType> implements FieldData<T> {
     protected _block: HTMLLabelElement;
     protected _label: HTMLSpanElement;
-    protected _break?: HTMLBRElement;
     protected _field: HTMLInputElement | HTMLSelectElement;
-    protected _options: (HTMLOptionElement | HTMLInputElement)[] = []; // should i even use fucking radios
 
     public constructor(data: FieldData<T>) {
+        
         this._block = document.createElement('label');
-
         this._label = document.createElement('span');
-        this.label = data.label;
 
-        this._field = document.createElement('input');
+        if (data.type.includes('select')) {
+            this._field = document.createElement('select');
+            if (data.type === 'select-multiple') {
+                this._field.multiple = true;
+            }
+        } else {
+            this._field = document.createElement('input');
+            this._field.type = data.type;
+        }
+        
+        this._label.innerText = data.label;
+        this._field.name = data.name ? data.name : data.label.replace(/ /g, "");
 
+        if (data.type === 'checkbox') {
+            this._block.appendChild(this._field);
+            this._block.appendChild(this._label);
+        } else {
+            this._block.appendChild(this._label);
+            this._block.appendChild(this._field);
+        }
 
     }
 
-    get block() {
+    
+
+    public get block(): HTMLLabelElement {
         return this._block;
     }
 
-    get label(): string {
+    public get label(): string {
         return this._label.innerText;
     }
-    set label(text: string) {
+    public set label(text: string) {
         this._label.innerText = text;
     }
 
-    get value() {
-        return this._field.value as T;
+    public get type(): FieldInputType {
+        return this._field.type as FieldInputType;
     }
-}
 
+    public get value(): T | null {
+        const val = this._field.value;
+        if (!val) {
+            return null;
+        }
+        return val as T;
+    }
+
+    public get id(): string {
+        return this._field.id;
+    }
+    public set id(id: string) {
+        setUniqueID(this._field, id);
+    }
+
+    public get onchange() {
+        return this._field.onchange;
+    }
+    public set onchange(action: ((ev: Event) => any) | null) {
+        this._field.onchange = action;
+    }
+
+}

@@ -3,7 +3,7 @@
  * @param element the html element to label
  * @param id the string id base
  */
-export default function setUniqueID(element: HTMLElement, id: string) {
+export function setUniqueID(element: HTMLElement, id: string) {
     try {
         return getUniqueID(element, id);
     } catch (err) {
