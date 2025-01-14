@@ -1,19 +1,10 @@
-import { DropField } from "../fields";
+import { SelectField } from "../fields"
 
-const genderOptions: Gender[] = ["M", "F", "X"]
-
-export default function createGenderSelect(def?: Gender) {
-    const select = new DropField('Gender');
-    const blankOption = select.create(["", "..."]);
-    blankOption.disabled = true;
-    blankOption.selected = true;
-    select.add(blankOption);
-    for (const gender of genderOptions) {
-        const e = select.create([gender], true);
-        select.add(e);
-    }
-    if (def) {
-        select.value = def;
-    }
-    return select;
+export default function createGenderField(def: Gender | null = null) {
+    return new SelectField<Gender>({
+        name: 'gender',
+        label: 'Gender',
+        value: def,
+        options: [["M"], ["F"], ["X"]]
+    });
 }

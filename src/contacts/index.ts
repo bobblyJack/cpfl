@@ -1,7 +1,6 @@
 import { ContactObject } from "./base";
 import { ContactAddresses } from "./address";
 import { ContactName } from "./names";
-import { BirthDate } from "./birth";
 export { ContactChild } from "./kids";
 
 export class AppContact implements ContactCard {

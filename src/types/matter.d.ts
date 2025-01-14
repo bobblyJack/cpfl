@@ -34,6 +34,6 @@ interface RelationshipHistory {
 
 interface ChildCard {
     name: Name;
-    dob?: Date;
-    gender?: Gender;
+    dob: FieldData<Date>;
+    gender: FieldData<Gender>;
 }

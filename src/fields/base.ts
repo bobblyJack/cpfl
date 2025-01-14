@@ -1,29 +1,29 @@
 import { setUniqueID } from "./id";
 
-export abstract class HTMLFieldElement<T extends FieldOutputType> implements FieldData<T> {
+export abstract class HTMLFieldElement<T extends FieldOutputType, U extends FieldInputType> implements FieldData<T> {
     protected _block: HTMLLabelElement;
     protected _label: HTMLSpanElement;
     protected _field: HTMLInputElement | HTMLSelectElement;
 
-    public constructor(data: FieldData<T>) {
+    public constructor(type: U, data: FieldData<T>) {
         
         this._block = document.createElement('label');
         this._label = document.createElement('span');
 
-        if (data.type.includes('select')) {
+        if (type.includes('select')) {
             this._field = document.createElement('select');
-            if (data.type === 'select-multiple') {
+            if (type === 'select-multiple') {
                 this._field.multiple = true;
             }
         } else {
             this._field = document.createElement('input');
-            this._field.type = data.type;
+            this._field.type = type;
         }
         
         this._label.innerText = data.label;
         this._field.name = data.name ? data.name : data.label.replace(/ /g, "");
 
-        if (data.type === 'checkbox') {
+        if (type === 'checkbox') {
             this._block.appendChild(this._field);
             this._block.appendChild(this._label);
         } else {
@@ -46,8 +46,8 @@ export abstract class HTMLFieldElement<T extends FieldOutputType> implements Fie
         this._label.innerText = text;
     }
 
-    public get type(): FieldInputType {
-        return this._field.type as FieldInputType;
+    public get type(): U {
+        return this._field.type as U;
     }
 
     public get value(): T | null {
@@ -58,11 +58,23 @@ export abstract class HTMLFieldElement<T extends FieldOutputType> implements Fie
         return val as T;
     }
 
+    public set value(val: T | null) {
+        if (!val) {
+            this._field.value = "";
+        } else {
+            this._field.value = String(val);
+        }
+    }
+
     public get id(): string {
         return this._field.id;
     }
     public set id(id: string) {
-        setUniqueID(this._field, id);
+        if (id) {
+            setUniqueID(this._field, id);
+        } else {
+            this._field.id = "";
+        }
     }
 
     public get onchange() {

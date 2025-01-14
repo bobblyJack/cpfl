@@ -1,19 +1,18 @@
-import { BirthDate } from "./birth";
+import { DateField, SelectField } from "../fields";
 import { ContactName } from "./names";
+import createGenderField from "./gender";
+import createDOBField from "./dob";
 
 export class ContactChild implements ChildCard {
     name: ContactName;
-    dob?: BirthDate | undefined;
-    gender?: Gender | undefined;
+    dob: DateField;
+    gender: SelectField<Gender>;
     constructor(
         public readonly parents: string, // matter id
         base: ChildCard
     ) {
         this.name = new ContactName(base.name);
-        this.gender = base.gender;
-        if (base.dob) {
-            this.dob = new BirthDate(base.dob);
-        }
+        this.gender = createGenderField(base.gender.value);
+        this.dob = createDOBField(base.dob.value);
     }
-
 }

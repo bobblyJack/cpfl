@@ -1,4 +1,13 @@
 /**
+ * basic field interface (for indexing)
+ */
+interface FieldData<T extends FieldOutputType> {
+    value: T | null;
+    label: string;
+    name?: string;
+}
+
+/**
  * accepted html input element types
  * @tbd blob "file"
  * @tbd select "radio"
@@ -14,13 +23,3 @@ type FieldInputTypeDate = "date" | "month" | "week"
  * types for parsing field values
  */
 type FieldOutputType = string | number | boolean | Date;
-
-/**
- * basic field interface (for indexing)
- */
-interface FieldData<T extends FieldOutputType> {
-    value: T | null;
-    label: string;
-    name?: string;
-    type: FieldInputType;
-}

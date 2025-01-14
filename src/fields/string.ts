@@ -1,29 +1,40 @@
-import { HTMLFieldElement } from "./base";
+import { HTMLDropFieldElement } from "./options";
 
-export class StringField extends HTMLFieldElement<string> {
-    
-    public constructor(data: FieldData<string>) {
-        super(data);
+/**
+ * string fields
+ * @wip restricted types (tel, email, url, search)
+ * @wip field length
+ * @tbd multi-line text area
+ */
+export class StringField extends HTMLDropFieldElement<string, FieldInputTypeString> {
+    protected _field!: HTMLInputElement;
+    public constructor(data: FieldData<string>, type: FieldInputTypeString = "text") {
+        super(type, data);
+        this.value = data.value ?? "";
     }
 
-    
-}
+    public get list(): HTMLDataListElement {
+        if (!this._list) {
+            this._list = document.createElement('datalist');
+            this.id = `${this._field.name}-dropfield`;
+            this._list.id = `${this.id}-list`;
+            this._field.setAttribute('list', this._list.id);
+            this._block.appendChild(this._list);
+        }
+        return this._list;
+    }
 
-// placeholders
-// options - here as a data list, then inherited by select as proper select options
+    public get value(): string {
+        return this._field.value;
+    }
+    public set value(text: string) {
+        this._field.value = text;
+    }
 
-function createOption(data: FieldOptionData, match: boolean = false) {
-    const value = data[0];
-    const label = data[1];
-    const element = document.createElement('option');
-    element.value = value;
-    element.textContent = label || (match ? value : "");
-    return element;
-}
-
-function createOptGroup(label: string, options: HTMLOptionElement[] = []) {
-    const element = document.createElement('optgroup');
-    element.label = label;
-    options.map(option => element.appendChild(option));
-    return element;
+    public get placeholder(): string {
+        return this._field.placeholder;
+    }
+    public set placeholder(ph: string) {
+        this._field.placeholder = ph;
+    }   
 }

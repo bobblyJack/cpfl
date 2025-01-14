@@ -1,35 +1,35 @@
-import { StringField } from './string';
+import { HTMLDropFieldElement } from "./options";
 
-interface SelectData<T extends string> extends FieldData<T> {
-    type: FieldInputTypeSelect;
-
+interface SelectFieldData<T extends string> extends FieldData<T> {
+    multiple?: boolean;
+    options?: [T, string?][];
 }
 
-// create dummy null option for select fields "...";
-
-export class SelectField<T extends string> extends StringField {
+/**
+ * dropdown text fields
+ * @wip select-multiple
+ * @tbd radio groups
+ */
+export class SelectField<T extends string> extends HTMLDropFieldElement<T, FieldInputTypeSelect> {
     protected _field!: HTMLSelectElement;
-    public constructor(data: SelectData<T>) {
-        super(data);
-    }
+    public constructor(data: SelectFieldData<T>) {
+        const type: FieldInputTypeSelect = data.multiple ? "select-multiple" : "select-one";
+        super(type, data);
 
-    protected _init(type: FieldInputTypeSelect) {
-        const field = document.createElement('select');
-        if (type === 'select-multiple') {
-            field.multiple = true;
+        this._list = this._field;
+
+        const blank = this.createOption("" as T, "...");
+        blank.disabled = true;
+        if (data.options) {
+            for (const option of data.options) {
+                this.createOption(option[0], option[1]);
+            }
         }
-        return field;
-    }
-
-    protected get _options(): HTMLOptionsCollection {
-        return this._field.options;
-    }
-
-    public get selection(): number {
-        return this._options.selectedIndex;
-    }
-    public set selection(i: number) {
-        this._options.selectedIndex = i;
+        if (!data.value) {
+            blank.selected = true;
+        } else {
+            this.value = data.value;
+        }
     }
     
 }

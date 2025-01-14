@@ -5,33 +5,33 @@ interface ContactCard {
     type: ContactType;
     name: Name;
     email?: string;
-    gender?: Gender;
-    dob?: Date;
+    gender: FieldData<Gender>;
+    dob: FieldData<Date>;
     occupation?: string;
     phones?: string[];
-    address?: StreetAddresses;
+    address: StreetAddresses;
 }
 
 interface Name {
-    given: string;
-    family: string;
+    given: FieldData<string>;
+    family: FieldData<string>;
 }
 
 type Gender = "M" | "F" | "X";
 
 interface StreetAddresses {
     main: StreetAddress;
-    split?: boolean; // main != post
-    post?: StreetAddress | null;
+    splitter: FieldData<boolean>; // main != post
+    post: StreetAddress | null;
 }
 
 interface StreetAddress {
-    location?: string;
-    street: string;
-    suburb: string;
-    state: AusState | string;
-    postcode: string;
-    country?: string;
+    location: FieldData<string>;
+    street: FieldData<string>;
+    suburb: FieldData<string>;
+    state: FieldData<AusState> | FieldData<string>;
+    postcode: FieldData<string>;
+    country: FieldData<string>;
 }
 
 type AusState = "SA" | "VIC" | "NSW" | "QLD" | "TAS" | "WA" | "NT" | "ACT";
